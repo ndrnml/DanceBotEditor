@@ -8,6 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.nio.IntBuffer;
+
 
 public class EditorActivity extends Activity {
 
@@ -28,8 +30,8 @@ public class EditorActivity extends Activity {
         startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
 
         // TODO: initialize media player
-        // TODO: initialize native sound handler
 
+        // TODO: initialize native sound handler
 
     }
 
@@ -58,10 +60,14 @@ public class EditorActivity extends Activity {
                 mMusicFile = new MusicFile(songTitle, songPath);
 
                 // Update music file information
-                TextView currSong = (TextView) findViewById(R.id.txt_song_title_id);
-                currSong.setText(songTitle);
-                TextView currDir = (TextView) findViewById(R.id.txt_song_path_id);
-                currDir.setText(songPath);
+                TextView selectedSongTitle = (TextView) findViewById(R.id.txt_song_title_id);
+                selectedSongTitle.setText(songTitle);
+                TextView selectedSongFilePath = (TextView) findViewById(R.id.txt_song_path_id);
+                selectedSongFilePath.setText(songPath);
+
+                // TODO: Every time a new song gets selected the native sound handler has to be initialized
+                int err = NativeSoundHandlerInit(songPath);
+                Log.v(LOG_TAG, "error code: " + err);
 
                 // TODO: open and decode mp3 file
 
@@ -108,4 +114,15 @@ public class EditorActivity extends Activity {
         }
     }
 
+
+    /**
+     *
+     * LOAD NATIVE LIBRARIES AND FUNCTIONS
+     */
+    // Initialize native sound handler from selected music file
+    private native int NativeSoundHandlerInit(String musicFilePath);
+
+    static {
+        System.loadLibrary("NativeSoundHandler");
+    }
 }
