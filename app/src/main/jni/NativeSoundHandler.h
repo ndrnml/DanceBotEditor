@@ -6,7 +6,7 @@
 #include "SoundFile.h"
 #include "Mp3Decoder.h"
 //#include "Mp3Encoder.h"
-//#include "BeatExtractor.h"
+#include "BeatExtractor.h"
 
 class NativeSoundHandler {
 
@@ -16,17 +16,18 @@ class NativeSoundHandler {
 public:
 
     // TODO: why do i need this?
-    NativeSoundHandler() {};
-    ~NativeSoundHandler() {};
+    NativeSoundHandler();
+    ~NativeSoundHandler();
 
     int initAndDecodeSoundFile(const char* file_path);
+    int extractBeats(int* beat_buffer, int beat_buffer_size);
 
 private:
 
-    SoundFile m_sound_file;
+    SoundFile* m_sound_file;
     Mp3Decoder m_mp3_decoder;
     //Mp3Encoder m_mp3_encoder;
-    //BeatExtractor m_beat_extractor;
+    BeatExtractor m_beat_extractor;
 
 };
 

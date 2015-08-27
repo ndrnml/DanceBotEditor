@@ -8,8 +8,11 @@ class SoundFile {
 
 public:
 
-    SoundFile();
+    SoundFile(const char* file_path_);
     ~SoundFile();
+
+    int init(int channels_, long rate_, long num_samples_, int encoding_, size_t buffer_size_);
+    int prepareForBeatExtraction();
 
     const char* file_path;
     int channels;

@@ -1,7 +1,7 @@
 #ifndef MP3_DECODER_H_
 #define MP3_DECODER_H_
 
-#include <libmpg123/mpg123.h>
+#include <mpg123/mpg123.h>
 
 #include "SoundFile.h"
 
@@ -13,14 +13,13 @@ public:
     ~Mp3Decoder() {};
 
     int init(SoundFile* snd_file);
-    int decode();
+    int decode(SoundFile* snd_file);
 
 private:
 
-    int openFile();
+    int openFile(SoundFile* snd_file);
     void cleanup();
 
-    SoundFile* m_sound_file;
     mpg123_handle* m_mh;
 };
 

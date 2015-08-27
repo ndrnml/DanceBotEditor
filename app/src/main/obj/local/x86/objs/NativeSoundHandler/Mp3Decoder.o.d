@@ -34,8 +34,8 @@
  /home/andrin/Android/Ndk/platforms/android-21/arch-x86/usr/include/sys/sysmacros.h \
  /home/andrin/Android/Ndk/platforms/android-21/arch-x86/usr/include/memory.h \
  /home/andrin/Android/Ndk/platforms/android-21/arch-x86/usr/include/android/log.h \
- /home/andrin/AndroidStudioProjects/DanceBotEditor/app/src/main/jni/libmpg123/mpg123.h \
  /home/andrin/AndroidStudioProjects/DanceBotEditor/app/src/main/jni/Mp3Decoder.h \
+ /home/andrin/AndroidStudioProjects/DanceBotEditor/app/src/main/jni/mpg123/mpg123.h \
  /home/andrin/AndroidStudioProjects/DanceBotEditor/app/src/main/jni/SoundFile.h
 
 /home/andrin/Android/Ndk/sources/cxx-stl/llvm-libc++/../../android/support/include/stdlib.h:
@@ -106,8 +106,8 @@
 
 /home/andrin/Android/Ndk/platforms/android-21/arch-x86/usr/include/android/log.h:
 
-/home/andrin/AndroidStudioProjects/DanceBotEditor/app/src/main/jni/libmpg123/mpg123.h:
-
 /home/andrin/AndroidStudioProjects/DanceBotEditor/app/src/main/jni/Mp3Decoder.h:
+
+/home/andrin/AndroidStudioProjects/DanceBotEditor/app/src/main/jni/mpg123/mpg123.h:
 
 /home/andrin/AndroidStudioProjects/DanceBotEditor/app/src/main/jni/SoundFile.h:

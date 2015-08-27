@@ -8,8 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import java.nio.IntBuffer;
-
 
 public class EditorActivity extends Activity {
 
@@ -17,7 +15,7 @@ public class EditorActivity extends Activity {
 
     private static final int PICK_SONG_REQUEST = 1;
 
-    private MusicFile mMusicFile;
+    private DanceBotEditorProjectFile mProjectFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,22 +24,47 @@ public class EditorActivity extends Activity {
 
         // TODO: getActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Start intent that loads the editor view and starts pick-song-activity
         Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
         startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
 
         // TODO: initialize media player
 
-        // TODO: initialize native sound handler
+        // TODO: initialize dance bot project file, beat grid, music files etc...
+        // Project file initialization
+        mProjectFile = new DanceBotEditorProjectFile();
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        // The activity is about to become visible.
 
         // TODO: DO all initialization stuff here?
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // The activity has become visible (it is now "resumed").
+
+        // When a song is selected, start decoding and beat extraction in the background
+        // Skip this process, if the beat extraction has already been performed
+        // TODO: Check that the beat extraction was performed for the currently selected song
+        if (mProjectFile.musicFileSelected && !mProjectFile.beatExtractionDone) {
+
+            Log.v(LOG_TAG, "resumed EditorActivity with a song loaded");
+
+            // Perform beat extraction in async task
+            SoundFileHandlerAsyncTask soundFileHandler = new SoundFileHandlerAsyncTask(EditorActivity.this);
+            soundFileHandler.execute(mProjectFile);
+        }
+    }
+
+    /**
+     * Song selection activity is resolved here
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -50,28 +73,24 @@ public class EditorActivity extends Activity {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
 
+                // Notify project file handler that a music file was picked
+                mProjectFile.musicFileSelected = true;
+
                 String songTitle = data.getStringExtra("TITLE_ARTIST");
                 String songPath = data.getStringExtra("PATH");
 
                 Log.v(LOG_TAG, "title: " + songTitle);
                 Log.v(LOG_TAG, "path: " + songPath);
 
-                // Selected music file
-                mMusicFile = new MusicFile(songTitle, songPath);
+                // Selected music file is attached to the current project file
+                DanceBotMusicFile dbMusicFile = new DanceBotMusicFile(songTitle, songPath);
+                mProjectFile.attachMusicFile(dbMusicFile);
 
                 // Update music file information
                 TextView selectedSongTitle = (TextView) findViewById(R.id.txt_song_title_id);
                 selectedSongTitle.setText(songTitle);
                 TextView selectedSongFilePath = (TextView) findViewById(R.id.txt_song_path_id);
                 selectedSongFilePath.setText(songPath);
-
-                // TODO: Every time a new song gets selected the native sound handler has to be initialized
-                int err = NativeSoundHandlerInit(songPath);
-                Log.v(LOG_TAG, "error code: " + err);
-
-                // TODO: open and decode mp3 file
-
-                // TODO: extract beats
 
             } else {
 
@@ -119,10 +138,9 @@ public class EditorActivity extends Activity {
      *
      * LOAD NATIVE LIBRARIES AND FUNCTIONS
      */
-    // Initialize native sound handler from selected music file
-    private native int NativeSoundHandlerInit(String musicFilePath);
 
     static {
+        System.loadLibrary("mpg123");
         System.loadLibrary("NativeSoundHandler");
     }
 }
