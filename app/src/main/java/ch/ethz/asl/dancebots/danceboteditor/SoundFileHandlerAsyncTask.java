@@ -12,6 +12,10 @@ import java.nio.IntBuffer;
  */
 public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFile, Void, Integer> {
 
+    /**TODO
+     * TODO AsyncTasks don't follow Activity instances' life cycle. If you start an AsyncTask inside an Activity and you rotate the device, the Activity will be destroyed and a new instance will be created. But the AsyncTask will not die. It will go on living until it completes.
+     * TODO And when it completes, the AsyncTask won't update the UI of the new Activity. Indeed it updates the former instance of the activity that is not displayed anymore. This can lead to an Exception of the type java.lang.IllegalArgumentException: View not attached to window manager if you use, for instance, findViewById to retrieve a view inside the Activity.
+     */
     private static final String LOG_TAG = "SOUND_FILE_HANDLER";
 
     private ProgressDialog dialog;
@@ -23,6 +27,9 @@ public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFi
     public SoundFileHandlerAsyncTask(Activity activity) {
 
         dialog = new ProgressDialog(activity);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+
     }
 
     /**
@@ -45,6 +52,7 @@ public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFi
 
         // Then extract beats and return to previous activity
         err = NativeExtractBeats(params[0].getBeatGrid().getBeatBuffer(), params[0].getBeatGrid().getBeatBuffer().capacity());
+
         Log.v(LOG_TAG, "error code NativeExtractBeats: " + err);
 
         if (err < 0) {
@@ -63,6 +71,7 @@ public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFi
 
     /**
      * TODO comment
+     * This is run on the main UI thread
      */
     @Override
     protected void onPreExecute() {
@@ -76,11 +85,16 @@ public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFi
     }
 
     @Override
-    protected void onPostExecute(Integer integer) {
-        super.onPostExecute(integer);
+    protected void onPostExecute(Integer result) {
+        super.onPostExecute(result);
 
         if (dialog.isShowing()) {
             dialog.dismiss();
+        }
+
+        if (result == DanceBotError.NO_ERROR)
+        {
+            // TODO: successfully executed async task
         }
 
         Log.v(LOG_TAG, "PostExecute decoding extracting");

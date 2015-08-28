@@ -1,12 +1,19 @@
 package ch.ethz.asl.dancebots.danceboteditor;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import org.lucasr.twowayview.TwoWayView;
+
+import java.util.ArrayList;
 
 
 public class EditorActivity extends Activity {
@@ -16,6 +23,13 @@ public class EditorActivity extends Activity {
     private static final int PICK_SONG_REQUEST = 1;
 
     private DanceBotEditorProjectFile mProjectFile;
+    public State mEditorState = State.NEW;
+
+
+    // Possible states of the editor
+    public enum State {
+        NEW, OPENING, DECODING, EDITING, ENCODING, SAVED
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,15 +38,7 @@ public class EditorActivity extends Activity {
 
         // TODO: getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Start intent that loads the editor view and starts pick-song-activity
-        Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
-        startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
-
-        // TODO: initialize media player
-
-        // TODO: initialize dance bot project file, beat grid, music files etc...
-        // Project file initialization
-        mProjectFile = new DanceBotEditorProjectFile();
+        // TODO: DO all initialization stuff here?
 
     }
 
@@ -42,6 +48,29 @@ public class EditorActivity extends Activity {
         // The activity is about to become visible.
 
         // TODO: DO all initialization stuff here?
+
+        if (mEditorState == State.NEW) {
+
+            mEditorState = State.OPENING;
+
+            // Start intent that loads the editor view and starts pick-song-activity
+            Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
+            startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
+
+            // TODO: initialize dance bot project file, beat grid, music files etc...
+            // Project file initialization
+            mProjectFile = new DanceBotEditorProjectFile();
+        }
+
+        ArrayList<String> items = new ArrayList<String>();
+        items.add("Item 1");
+        items.add("Item 2");
+        items.add("Item 3");
+        items.add("Item 4");
+
+        ArrayAdapter<String> aItems = new ArrayAdapter<String>(this, R.layout.simple_list_item_1, items);
+        TwoWayView lvTest = (TwoWayView) findViewById(R.id.lvItems);
+        lvTest.setAdapter(aItems);
     }
 
     @Override
@@ -59,8 +88,31 @@ public class EditorActivity extends Activity {
             // Perform beat extraction in async task
             SoundFileHandlerAsyncTask soundFileHandler = new SoundFileHandlerAsyncTask(EditorActivity.this);
             soundFileHandler.execute(mProjectFile);
+
+            // Set the editor state to decoding (sensitive phase)
+            mEditorState = State.DECODING;
         }
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Another activity is taking focus (this activity is about to be "paused").
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // The activity is no longer visible (it is now "stopped")
+
+        // If the editor is currently decoding, editing or encoding ask user to leave
+        if (mEditorState == State.DECODING || mEditorState == State.ENCODING) {
+
+            // TODO abort/cancel all async tasks and background threads
+        }
+    }
+
 
     /**
      * Song selection activity is resolved here
@@ -94,12 +146,53 @@ public class EditorActivity extends Activity {
 
             } else {
 
-                // TODO
                 // resultCode == RESULT_CANCEL
                 Log.v(LOG_TAG, "resultCode != RESULT_OK");
+
+                // TODO finish activity
+                mEditorState = State.NEW;
+                finish();
+
             }
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+
+        // TODO: ask user to cancel the current project
+        Log.v(LOG_TAG, "Back button is pressed.");
+
+        askExit();
+    }
+
+
+    /**
+     * Exit app only if user select yes
+     */
+    private void askExit() {
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(EditorActivity.this);
+
+        alertDialog.setPositiveButton(R.string.txt_yes, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                mEditorState = State.NEW;
+                finish();
+            }
+        });
+
+        alertDialog.setNegativeButton(R.string.txt_no, null);
+
+        alertDialog.setMessage(R.string.alert_ask_exit_txt);
+        alertDialog.setTitle(R.string.app_name);
+        alertDialog.show();
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -120,8 +213,11 @@ public class EditorActivity extends Activity {
 
             case R.id.editor_action_open:
 
+                // TODO: move this to the ask open dialog
+                // TODO: This should only be possible if the user want's it -> State == NEW
                 Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
                 startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
+
                 return true;
 
             case R.id.editor_action_save:

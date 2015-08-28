@@ -23,6 +23,7 @@ public class DanceBotEditorProjectFile {
         mBeatGrid = new BeatGrid();
     }
 
+
     /**
      * TODO comment
      * @param dbMusicFile
@@ -32,11 +33,14 @@ public class DanceBotEditorProjectFile {
         mDBMusicFile = dbMusicFile;
     }
 
+
     public DanceBotMusicFile getDanceBotMusicFile() {
+
         return mDBMusicFile;
     }
 
     public BeatGrid getBeatGrid() {
+
         return mBeatGrid;
     }
 }

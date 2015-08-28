@@ -11,4 +11,7 @@
     <string name="txt_song_path">Pfad:</string>
     <string name="menu_editor_txt_open_music_file">Öffnen</string>
     <string name="menu_editor_txt_save_music_file">Speichern</string>
+    <string name="alert_ask_exit_txt">Do you really wanna exit?</string>
+    <string name="txt_yes">Yes</string>
+    <string name="txt_no">No</string>
 </resources>
