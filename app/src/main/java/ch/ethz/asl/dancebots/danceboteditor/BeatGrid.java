@@ -45,6 +45,14 @@ public class BeatGrid {
     }
 
     /**
+     * Get the true number of detected beats
+     * @return
+     */
+    public int getNumOfBeats() {
+        return mNumberOfBeats;
+    }
+
+    /**
      * Return the IntBuffer address. This is passed to the C++ code
      * @return IntBuffer
      */

@@ -17,15 +17,15 @@ import java.util.ArrayList;
 
 public class EditorActivity extends Activity {
 
-    private static final String LOG_TAG = "EDITOR_ACTIVITY";
-    private static final int PICK_SONG_REQUEST = 1;
-    private DanceBotEditorProjectFile mProjectFile;
-    private State mEditorState = State.NEW;
-
     // Possible states of the editor
     public enum State {
         NEW, OPENING, DECODING, EDITING, ENCODING, SAVED
     }
+
+    private static final String LOG_TAG = "EDITOR_ACTIVITY";
+    private static final int PICK_SONG_REQUEST = 1;
+    private DanceBotEditorProjectFile mProjectFile;
+    private State mEditorState = State.NEW;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,28 +58,6 @@ public class EditorActivity extends Activity {
             mProjectFile = new DanceBotEditorProjectFile();
         }
 
-        // Construct the data source
-        ArrayList<BeatElement> arrayOfElems = new ArrayList<>();
-        // Create the adapter to convert the array to views
-        BeatElementAdapter adapter = new BeatElementAdapter(this, arrayOfElems);
-        // Attach the adapter to a ListView
-        TwoWayView horizontalView = (TwoWayView) findViewById(R.id.twoway_view);
-
-        horizontalView.setAdapter(adapter);
-
-        adapter.add(new BeatElement(1, "A"));
-        adapter.add(new BeatElement(1, "B"));
-        adapter.add(new BeatElement(1, "C"));
-        adapter.add(new BeatElement(1, "D"));
-        adapter.add(new BeatElement(1, "E"));
-        adapter.add(new BeatElement(1, "F"));
-        adapter.add(new BeatElement(1, "G"));
-        adapter.add(new BeatElement(1, "H"));
-        adapter.add(new BeatElement(1, "I"));
-        adapter.add(new BeatElement(1, "J"));
-        adapter.add(new BeatElement(1, "K"));
-        adapter.add(new BeatElement(1, "L"));
-
     }
 
     @Override
@@ -101,15 +79,26 @@ public class EditorActivity extends Activity {
             /**
              * DUMMY DATA CONSTRUCTION
              */
-            int NUM_BEATS = 500;
+            int NUM_BEATS = 300;
             int SAMPLE_RATE = 44100;
             int DURATION = 180;
             int TOTAL_SAMPLES = DURATION * SAMPLE_RATE;
             int SPACING = TOTAL_SAMPLES / NUM_BEATS;
 
+            mProjectFile.initChoreography();
+            for (int i = 0; i < NUM_BEATS; ++i) {
+                mProjectFile.getChoreoManager().mMotorBeatElements.add(new MotorBeatElement(i, SPACING*i, MoveType.WAIT));
+            }
             /**
              * DATA CONSTRUCTION
              */
+
+            // Create the adapter to convert the array to views
+            BeatElementAdapter adapter = new BeatElementAdapter(this, mProjectFile.getChoreoManager().mMotorBeatElements);
+            // Attach the adapter to a ListView
+            TwoWayView horizontalView = (TwoWayView) findViewById(R.id.twoway_view);
+
+            horizontalView.setAdapter(adapter);
 
             // Set the editor state to decoding (sensitive phase)
             mEditorState = State.DECODING;

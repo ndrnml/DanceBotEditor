@@ -5,20 +5,20 @@ import android.graphics.Color;
 /**
  * Created by andrin on 28.08.15.
  */
-public class BeatElement {
+abstract class BeatElement<T extends MotionType> {
 
-    private int mSamplePosition;
-    private String mName;
-    private Color mColor;
-    private DanceBotMotion mMotion;
+    int mBeatPosition;
+    int mSamplePosition;
+    int mColor;
+    T mMotion;
 
-    public BeatElement(int pos, String name) {
+    abstract void updateProperties();
 
-        mSamplePosition = pos;
-        mName = name;
+    String getBeatPositionAsString() {
+        return Integer.toString(mBeatPosition);
     }
 
-    public String getName() {
-        return mName;
+    int getColor() {
+        return mColor;
     }
 }

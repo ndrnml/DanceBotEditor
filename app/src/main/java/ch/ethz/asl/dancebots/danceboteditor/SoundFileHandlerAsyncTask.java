@@ -76,6 +76,9 @@ public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFi
             // Successfully decoded and beats extracted
             params[0].beatExtractionDone = true;
 
+            // Populate beats
+            params[0].initChoreography();
+
             return DanceBotError.NO_ERROR;
         }
     }

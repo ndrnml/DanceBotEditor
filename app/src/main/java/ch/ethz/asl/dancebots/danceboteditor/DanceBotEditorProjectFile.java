@@ -24,9 +24,14 @@ public class DanceBotEditorProjectFile {
         startedEditing = false;
 
         mBeatGrid = new BeatGrid();
-        mChoreoManager = new ChoreographyManager();
     }
 
+
+    public void initChoreography() {
+
+        // Based on the detected beats, create a new choreography manager
+        mChoreoManager = new ChoreographyManager(mBeatGrid);
+    }
 
     /**
      * TODO comment
@@ -37,7 +42,6 @@ public class DanceBotEditorProjectFile {
         mDBMusicFile = dbMusicFile;
     }
 
-
     public DanceBotMusicFile getDanceBotMusicFile() {
 
         return mDBMusicFile;
@@ -47,4 +51,9 @@ public class DanceBotEditorProjectFile {
 
         return mBeatGrid;
     }
+
+    public ChoreographyManager getChoreoManager() {
+        return mChoreoManager;
+    }
+
 }

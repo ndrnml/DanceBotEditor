@@ -41,13 +41,17 @@ public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
             convertView.setTag(viewHolder);
 
         } else {
+
             viewHolder = (ViewHolder) convertView.getTag();
         }
+
         // Populate the data into the template view using the data object
-        viewHolder.name.setText(elem.getName());
+        viewHolder.name.setText(elem.getBeatPositionAsString());
+
+        // Stylize list item according to type
+        viewHolder.name.setBackgroundColor(elem.getColor());
 
         // Return the completed view to render on screen
         return convertView;
-
     }
 }

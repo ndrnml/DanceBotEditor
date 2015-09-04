@@ -5,7 +5,6 @@ import java.util.ArrayList;
 /**
  * Created by andrin on 04.09.15.
  */
-// TODO: Change to parent class DanceBotMotion -> then DanceBotMotorMotion and DanceBotLedMotion
 abstract class DanceBotMotion<T extends MotionType> {
 
     ArrayList<BeatElement> mBeatElements;

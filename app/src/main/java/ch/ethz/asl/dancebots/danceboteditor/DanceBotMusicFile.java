@@ -15,10 +15,6 @@ public class DanceBotMusicFile {
     private int mSampleRate;
     private int mChannels;
 
-    public DanceBotMusicFile() {
-        // TODO initialize all stuff
-    }
-
     public DanceBotMusicFile(String songTitle, String songArtist, String songPath, int duration) {
 
         mSongTitle = songTitle;

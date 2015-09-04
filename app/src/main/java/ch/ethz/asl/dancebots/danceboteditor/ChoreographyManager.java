@@ -1,5 +1,6 @@
 package ch.ethz.asl.dancebots.danceboteditor;
 
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 /**
@@ -7,18 +8,38 @@ import java.util.ArrayList;
  */
 public class ChoreographyManager {
 
-    private ArrayList<BeatElement> mBeatElements;
-    private ArrayList<DanceBotMotion> mDanceBotMotions;
+    //TODO -> change to private
+    public ArrayList<BeatElement> mMotorBeatElements;
 
-    public ChoreographyManager() {
-        mDanceBotMotions = new ArrayList<>();
+    private ArrayList<DanceBotMotorMotion> mMotorMotions;
+
+    public ChoreographyManager(BeatGrid beatGrid) {
+
+        mMotorBeatElements = new ArrayList<>();
+        mMotorMotions = new ArrayList<>();
+
+        initBeatElements(beatGrid);
     }
 
-    private void addMotion(DanceBotMotion motion) {
-        mDanceBotMotions.add(motion);
+    /**
+     * Initialize beat elements after successfully extracting all beats
+     * beatGrid.getBeatBuffer() must be NOT null
+     * @param beatGrid
+     */
+    private void initBeatElements(BeatGrid beatGrid) {
+
+        IntBuffer beatBuffer = beatGrid.getBeatBuffer();
+        int numBeats = beatGrid.getNumOfBeats();
+        int i = 0;
+
+        if (beatBuffer != null) {
+            while (i < numBeats) {
+
+                mMotorBeatElements.add(new MotorBeatElement(i, beatBuffer.get(i), MoveType.WAIT));
+            }
+        } else {
+            // TODO some error?
+        }
     }
 
-    private void removeMotion(DanceBotMotion motion) {
-        mDanceBotMotions.remove(motion);
-    }
 }
