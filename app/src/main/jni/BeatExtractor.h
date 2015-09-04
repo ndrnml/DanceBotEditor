@@ -6,7 +6,11 @@ class BeatExtractor {
 public:
 
     int extractBeats(SoundFile* sound_file, int* beat_buffer, int beat_buffer_size);
+    int getNumBeatsDetected();
 
+private:
+
+    int m_total_beats_detected;
 };
 
 #endif

@@ -22,6 +22,10 @@ public:
     int initAndDecodeSoundFile(const char* file_path);
     int extractBeats(int* beat_buffer, int beat_buffer_size);
 
+    int getSampleRate();
+    long getNumberOfSamples();
+    int getNumberOfBeatsDetected();
+
 private:
 
     SoundFile* m_sound_file;

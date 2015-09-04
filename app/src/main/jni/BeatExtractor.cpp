@@ -141,5 +141,17 @@ int BeatExtractor::extractBeats(SoundFile* sound_file, int* beat_buffer, int bea
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "number of beats detected: %i", number_of_beats_detected);
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "beat extraction finished");
 
+    // Store the total number of beats detected
+    m_total_beats_detected = number_of_beats_detected;
+
     return number_of_beats_detected;
+}
+
+
+/**
+ * TODO comment
+ */
+int BeatExtractor::getNumBeatsDetected()
+{
+    return m_total_beats_detected;
 }

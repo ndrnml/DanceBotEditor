@@ -21,6 +21,7 @@ public class MediaLibraryActivity extends ListActivity {
     private ArrayList<String> mSongListTitle = new ArrayList<>();
     private ArrayList<String> mSongListArtist = new ArrayList<>();
     private ArrayList<String> mSongListPath = new ArrayList<>();
+    private ArrayList<Integer> mSongListDuration = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +40,15 @@ public class MediaLibraryActivity extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id); // TODO: do i need this?
+        super.onListItemClick(l, v, position, id);
 
+        // Create return results for intent
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("TITLE_ARTIST", mSongListTitle.get(position) + ", " + mSongListArtist.get(position));
+        returnIntent.putExtra("TITLE", mSongListTitle.get(position));
+        returnIntent.putExtra("ARTIST", mSongListArtist.get(position));
         returnIntent.putExtra("PATH", mSongListPath.get(position));
+        returnIntent.putExtra("DURATION", mSongListDuration.get(position));
+
         setResult(RESULT_OK, returnIntent);
         finish();
 
@@ -56,24 +61,30 @@ public class MediaLibraryActivity extends ListActivity {
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
 
         if(musicCursor !=null && musicCursor.moveToFirst()){
-            //get columns
-            int titleColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.TITLE);
-            int idColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media._ID);
-            int artistColumn = musicCursor.getColumnIndex
-                    (android.provider.MediaStore.Audio.Media.ARTIST);
 
-            //add songs to list
+            // Get audio file meta data columns
+            int titleColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media._ID);
+            int artistColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ARTIST);
+            int durationColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.DURATION);
+            // int durationColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.SIZE);
+
+            // Add audio information to list
             do {
                 //long thisId = musicCursor.getLong(idColumn);
                 Uri path = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, musicCursor.getString(idColumn));
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
+                int thisDuration = musicCursor.getInt(durationColumn);
+
                 mSongListTitle.add(thisTitle);
                 mSongListArtist.add(thisArtist);
                 mSongListPath.add(getRealPathFromURI(this, path));
-
+                mSongListDuration.add(thisDuration);
             }
             while (musicCursor.moveToNext());
         }

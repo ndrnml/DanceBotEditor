@@ -7,6 +7,7 @@ public class DanceBotEditorProjectFile {
 
     public boolean musicFileSelected;
     public boolean beatExtractionDone;
+    public boolean startedEditing;
 
     private DanceBotMusicFile mDBMusicFile;
     private BeatGrid mBeatGrid;
@@ -19,6 +20,7 @@ public class DanceBotEditorProjectFile {
         // Init all important dance bot editor file properties
         musicFileSelected = false;
         beatExtractionDone = false;
+        startedEditing = false;
 
         mBeatGrid = new BeatGrid();
     }

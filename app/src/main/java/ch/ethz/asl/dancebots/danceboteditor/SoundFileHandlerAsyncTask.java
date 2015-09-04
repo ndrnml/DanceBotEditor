@@ -50,10 +50,21 @@ public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFi
             return DanceBotError.DECODING_ERR;
         }
 
+        // Extract sample rate from decoded file
+        params[0].getDanceBotMusicFile().setSampleRate(NativeGetSampleRate());
+        Log.v(LOG_TAG, "sample rate: " + NativeGetSampleRate());
+
+        // Extract total number of samples from decoded file
+        params[0].getDanceBotMusicFile().setTotalNumberOfSamples(NativeGetNumberOfSamples());
+        Log.v(LOG_TAG, "total number of samples: " + NativeGetNumberOfSamples());
+
         // Then extract beats and return to previous activity
         err = NativeExtractBeats(params[0].getBeatGrid().getBeatBuffer(), params[0].getBeatGrid().getBeatBuffer().capacity());
-
         Log.v(LOG_TAG, "error code NativeExtractBeats: " + err);
+
+        // Extract total number of beats detected from selected file
+        params[0].getDanceBotMusicFile().setNumberBeatsDetected(NativeGetNumBeatsDetected());
+        Log.v(LOG_TAG, "total number of beats detected: " + NativeGetNumBeatsDetected());
 
         if (err < 0) {
 
@@ -68,6 +79,7 @@ public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFi
             return DanceBotError.NO_ERROR;
         }
     }
+
 
     /**
      * TODO comment
@@ -108,5 +120,10 @@ public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFi
     private native int NativeSoundHandlerInit(String musicFilePath);
     // TODO comment
     private native int NativeExtractBeats(IntBuffer intBuffer, int intBufferSize);
-
+    // Get sample rate from selected song
+    private native int NativeGetSampleRate();
+    // Get total number of samples from selected song
+    private native long NativeGetNumberOfSamples();
+    // Get total number of beats detected from selected song
+    private native int NativeGetNumBeatsDetected();
 }

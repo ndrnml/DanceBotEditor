@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import org.lucasr.twowayview.TwoWayView;
@@ -19,12 +18,9 @@ import java.util.ArrayList;
 public class EditorActivity extends Activity {
 
     private static final String LOG_TAG = "EDITOR_ACTIVITY";
-
     private static final int PICK_SONG_REQUEST = 1;
-
     private DanceBotEditorProjectFile mProjectFile;
-    public State mEditorState = State.NEW;
-
+    private State mEditorState = State.NEW;
 
     // Possible states of the editor
     public enum State {
@@ -62,15 +58,28 @@ public class EditorActivity extends Activity {
             mProjectFile = new DanceBotEditorProjectFile();
         }
 
-        ArrayList<String> items = new ArrayList<String>();
-        items.add("Item 1");
-        items.add("Item 2");
-        items.add("Item 3");
-        items.add("Item 4");
+        // Construct the data source
+        ArrayList<BeatElement> arrayOfElems = new ArrayList<>();
+        // Create the adapter to convert the array to views
+        BeatElementAdapter adapter = new BeatElementAdapter(this, arrayOfElems);
+        // Attach the adapter to a ListView
+        TwoWayView horizontalView = (TwoWayView) findViewById(R.id.twoway_view);
 
-        ArrayAdapter<String> aItems = new ArrayAdapter<String>(this, R.layout.simple_list_item_1, items);
-        TwoWayView lvTest = (TwoWayView) findViewById(R.id.lvItems);
-        lvTest.setAdapter(aItems);
+        horizontalView.setAdapter(adapter);
+
+        adapter.add(new BeatElement(1, "A"));
+        adapter.add(new BeatElement(1, "B"));
+        adapter.add(new BeatElement(1, "C"));
+        adapter.add(new BeatElement(1, "D"));
+        adapter.add(new BeatElement(1, "E"));
+        adapter.add(new BeatElement(1, "F"));
+        adapter.add(new BeatElement(1, "G"));
+        adapter.add(new BeatElement(1, "H"));
+        adapter.add(new BeatElement(1, "I"));
+        adapter.add(new BeatElement(1, "J"));
+        adapter.add(new BeatElement(1, "K"));
+        adapter.add(new BeatElement(1, "L"));
+
     }
 
     @Override
@@ -88,6 +97,14 @@ public class EditorActivity extends Activity {
             // Perform beat extraction in async task
             SoundFileHandlerAsyncTask soundFileHandler = new SoundFileHandlerAsyncTask(EditorActivity.this);
             soundFileHandler.execute(mProjectFile);
+
+            /**
+             * DUMMY DATA CONSTRUCTION
+             */
+            int NUM_BEATS = 500;
+            /**
+             * DATA CONSTRUCTION
+             */
 
             // Set the editor state to decoding (sensitive phase)
             mEditorState = State.DECODING;
@@ -125,24 +142,34 @@ public class EditorActivity extends Activity {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
 
-                // Notify project file handler that a music file was picked
-                mProjectFile.musicFileSelected = true;
-
-                String songTitle = data.getStringExtra("TITLE_ARTIST");
+                String songTitle = data.getStringExtra("TITLE");
+                String songArtist = data.getStringExtra("ARTIST");
                 String songPath = data.getStringExtra("PATH");
+                int songDuration = data.getIntExtra("DURATION", 0); // Duration in ms
 
                 Log.v(LOG_TAG, "title: " + songTitle);
                 Log.v(LOG_TAG, "path: " + songPath);
 
                 // Selected music file is attached to the current project file
-                DanceBotMusicFile dbMusicFile = new DanceBotMusicFile(songTitle, songPath);
+                DanceBotMusicFile dbMusicFile = new DanceBotMusicFile(songTitle, songArtist, songPath, songDuration);
                 mProjectFile.attachMusicFile(dbMusicFile);
 
+                // Notify project file handler that a music file was picked
+                mProjectFile.musicFileSelected = true;
+
                 // Update music file information
+                // Title
                 TextView selectedSongTitle = (TextView) findViewById(R.id.txt_song_title_id);
                 selectedSongTitle.setText(songTitle);
+                // Artist
+                TextView selectedSongArtist = (TextView) findViewById(R.id.txt_song_artist_id);
+                selectedSongArtist.setText(songArtist);
+                // Path
                 TextView selectedSongFilePath = (TextView) findViewById(R.id.txt_song_path_id);
                 selectedSongFilePath.setText(songPath);
+                // Duration
+                TextView selectedSongDuration = (TextView) findViewById(R.id.txt_song_duration_id);
+                selectedSongDuration.setText(mProjectFile.getDanceBotMusicFile().getDurationReadable());
 
             } else {
 

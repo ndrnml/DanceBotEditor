@@ -14,4 +14,6 @@
     <string name="alert_ask_exit_txt">Do you really wanna exit?</string>
     <string name="txt_yes">Yes</string>
     <string name="txt_no">No</string>
+    <string name="txt_song_artist">Artist:</string>
+    <string name="txt_song_duration">Länge:</string>
 </resources>

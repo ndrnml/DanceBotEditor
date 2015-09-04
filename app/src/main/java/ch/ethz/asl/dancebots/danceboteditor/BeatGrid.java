@@ -9,8 +9,10 @@ import java.nio.IntBuffer;
  */
 public class BeatGrid {
 
-    private IntBuffer mBeatBuffer;
     private final int MAX_EXPECTED_BEATS = 1000;
+
+    private IntBuffer mBeatBuffer;
+    private int mNumberOfBeats;
 
     /**
      * TODO Comment
@@ -34,10 +36,19 @@ public class BeatGrid {
     }
 
     /**
+     * TODO
+     * @param numberOfBeats
+     */
+    private void setNumOfBeats(int numberOfBeats) {
+        mNumberOfBeats = numberOfBeats;
+    }
+
+    /**
      * TODO comment
      * @return
      */
     public IntBuffer getBeatBuffer() {
+
         return mBeatBuffer;
     }
 }
