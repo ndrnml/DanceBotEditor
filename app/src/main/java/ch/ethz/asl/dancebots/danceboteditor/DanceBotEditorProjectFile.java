@@ -11,6 +11,7 @@ public class DanceBotEditorProjectFile {
 
     private DanceBotMusicFile mDBMusicFile;
     private BeatGrid mBeatGrid;
+    private ChoreographyManager mChoreoManager;
 
     /**
      * TODO comment
@@ -23,6 +24,7 @@ public class DanceBotEditorProjectFile {
         startedEditing = false;
 
         mBeatGrid = new BeatGrid();
+        mChoreoManager = new ChoreographyManager();
     }
 
 

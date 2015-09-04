@@ -14,7 +14,6 @@ public class DanceBotMusicFile {
     private long mNumberOfSamples;
     private int mSampleRate;
     private int mChannels;
-    private int mNumBeatsDetected;
 
     public DanceBotMusicFile() {
         // TODO initialize all stuff
@@ -38,10 +37,6 @@ public class DanceBotMusicFile {
 
     public void setTotalNumberOfSamples(long samples) {
         mNumberOfSamples = samples;
-    }
-
-    public void setNumberBeatsDetected(int numBeats) {
-        mNumBeatsDetected = numBeats;
     }
 
     public String getSongPath() {

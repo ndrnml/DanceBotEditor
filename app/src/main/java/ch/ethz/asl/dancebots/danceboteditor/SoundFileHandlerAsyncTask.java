@@ -63,7 +63,7 @@ public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFi
         Log.v(LOG_TAG, "error code NativeExtractBeats: " + err);
 
         // Extract total number of beats detected from selected file
-        params[0].getDanceBotMusicFile().setNumberBeatsDetected(NativeGetNumBeatsDetected());
+        params[0].getBeatGrid().setNumOfBeats(NativeGetNumBeatsDetected());
         Log.v(LOG_TAG, "total number of beats detected: " + NativeGetNumBeatsDetected());
 
         if (err < 0) {

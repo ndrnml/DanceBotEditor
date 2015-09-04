@@ -95,13 +95,18 @@ public class EditorActivity extends Activity {
             Log.v(LOG_TAG, "resumed EditorActivity with a song loaded");
 
             // Perform beat extraction in async task
-            SoundFileHandlerAsyncTask soundFileHandler = new SoundFileHandlerAsyncTask(EditorActivity.this);
-            soundFileHandler.execute(mProjectFile);
+            //SoundFileHandlerAsyncTask soundFileHandler = new SoundFileHandlerAsyncTask(EditorActivity.this);
+            //soundFileHandler.execute(mProjectFile);
 
             /**
              * DUMMY DATA CONSTRUCTION
              */
             int NUM_BEATS = 500;
+            int SAMPLE_RATE = 44100;
+            int DURATION = 180;
+            int TOTAL_SAMPLES = DURATION * SAMPLE_RATE;
+            int SPACING = TOTAL_SAMPLES / NUM_BEATS;
+
             /**
              * DATA CONSTRUCTION
              */

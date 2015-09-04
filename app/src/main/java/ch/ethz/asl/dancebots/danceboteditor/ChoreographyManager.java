@@ -7,6 +7,7 @@ import java.util.ArrayList;
  */
 public class ChoreographyManager {
 
+    private ArrayList<BeatElement> mBeatElements;
     private ArrayList<DanceBotMotion> mDanceBotMotions;
 
     public ChoreographyManager() {

@@ -15,7 +15,8 @@ public class BeatGrid {
     private int mNumberOfBeats;
 
     /**
-     * TODO Comment
+     * The BeatGrid class is only used as an auxiliary class to pass the detected beats between native
+     * and java code
      */
     public BeatGrid() {
 
@@ -24,7 +25,8 @@ public class BeatGrid {
     }
 
     /**
-     * TODO comment
+     * This beat buffer data structure is needed for the communication between native and java code
+     * All later computations will NOT be made on the IntBuffer data structure
      */
     private void initBeatBuffer() {
 
@@ -32,20 +34,19 @@ public class BeatGrid {
         ByteBuffer bb = ByteBuffer.allocateDirect(MAX_EXPECTED_BEATS * Integer.SIZE);
         bb.order(ByteOrder.LITTLE_ENDIAN);
         mBeatBuffer = bb.asIntBuffer();
-
     }
 
     /**
-     * TODO
+     * Set the true number of detected beats
      * @param numberOfBeats
      */
-    private void setNumOfBeats(int numberOfBeats) {
+    public void setNumOfBeats(int numberOfBeats) {
         mNumberOfBeats = numberOfBeats;
     }
 
     /**
-     * TODO comment
-     * @return
+     * Return the IntBuffer address. This is passed to the C++ code
+     * @return IntBuffer
      */
     public IntBuffer getBeatBuffer() {
 
