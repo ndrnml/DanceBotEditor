@@ -1,11 +1,14 @@
 package ch.ethz.asl.dancebots.danceboteditor;
 
+import android.app.Activity;
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -14,6 +17,9 @@ import java.util.ArrayList;
  */
 public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
 
+    private ArrayList<BeatElement> mBeatElements;
+    private Toast mToast;
+
     // View lookup cache
     private static class ViewHolder {
         TextView name;
@@ -21,16 +27,17 @@ public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
 
     public BeatElementAdapter(Context context, ArrayList<BeatElement> elems) {
         super(context, 0, elems);
+        mBeatElements = elems;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         // Get beat grid element for this position
-        BeatElement elem = getItem(position);
+        final BeatElement elem = getItem(position);
 
         // Check if an existing view is being reused, otherwise inflate the view
-        ViewHolder viewHolder; // view lookup cache stored in tag
+        final ViewHolder viewHolder; // view lookup cache stored in tag
         if (convertView == null) {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -50,6 +57,22 @@ public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
 
         // Stylize list item according to type
         viewHolder.name.setBackgroundColor(elem.getColor());
+
+        mToast = Toast.makeText(getContext(), "", Toast.LENGTH_SHORT);
+        mToast.setGravity(Gravity.CENTER, 0, 0);
+
+        final View.OnClickListener simpleClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //mToast.setText("Item clicked: " + viewHolder.name.getText().toString());
+                mToast.setText("Item clicked: " + elem.getBeatPositionAsString());
+                mToast.show();
+            }
+        };
+
+        viewHolder.name.setOnClickListener(simpleClickListener);
+
+        convertView.setLongClickable(true);
 
         // Return the completed view to render on screen
         return convertView;

@@ -6,9 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.lucasr.twowayview.TwoWayView;
 
@@ -97,6 +101,22 @@ public class EditorActivity extends Activity {
             BeatElementAdapter adapter = new BeatElementAdapter(this, mProjectFile.getChoreoManager().mMotorBeatElements);
             // Attach the adapter to a ListView
             TwoWayView horizontalView = (TwoWayView) findViewById(R.id.twoway_view);
+
+            final Toast mToast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
+            mToast.setGravity(Gravity.CENTER, 0, 0);
+
+            horizontalView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    BeatElement beatElement = mProjectFile.getChoreoManager().mMotorBeatElements.get(position);
+
+                    mToast.setText("Item long clicked: " + position);
+                    mToast.show();
+
+                    return true;
+                }
+            });
 
             horizontalView.setAdapter(adapter);
 

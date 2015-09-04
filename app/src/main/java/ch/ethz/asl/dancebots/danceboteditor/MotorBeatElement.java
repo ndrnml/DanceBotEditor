@@ -11,7 +11,7 @@ public class MotorBeatElement extends BeatElement<MoveType> {
 
         mBeatPosition = beatPos;
         mSamplePosition = samplePos;
-        mMotion = motion;
+        mMotionType = motion;
 
         updateProperties();
     }
@@ -19,7 +19,7 @@ public class MotorBeatElement extends BeatElement<MoveType> {
     @Override
     void updateProperties() {
 
-        switch (mMotion) {
+        switch (mMotionType) {
 
             case WAIT:
                 mColor = Color.RED;

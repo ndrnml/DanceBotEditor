@@ -39,7 +39,7 @@
         android:id="@+id/twoway_view"
         style="@style/TwoWayView"
         android:layout_width="wrap_content"
-        android:layout_height="50px"
+        android:layout_height="100px"
         android:drawSelectorOnTop="false"
         tools:context=".EditorActivity" />
 

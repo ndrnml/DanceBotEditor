@@ -10,7 +10,7 @@ abstract class BeatElement<T extends MotionType> {
     int mBeatPosition;
     int mSamplePosition;
     int mColor;
-    T mMotion;
+    T mMotionType;
 
     abstract void updateProperties();
 
