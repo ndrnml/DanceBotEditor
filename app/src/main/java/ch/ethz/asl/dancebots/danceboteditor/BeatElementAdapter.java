@@ -6,6 +6,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,10 +36,13 @@ public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
 
         // Get beat grid element for this position
         final BeatElement elem = getItem(position);
+        final int elemPosition = position;
 
         // Check if an existing view is being reused, otherwise inflate the view
-        final ViewHolder viewHolder; // view lookup cache stored in tag
+        ViewHolder viewHolder; // view lookup cache stored in tag
+
         if (convertView == null) {
+
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
 
@@ -52,6 +56,9 @@ public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
+        // Ensure long clicks are also registered
+        convertView.setLongClickable(true);
+
         // Populate the data into the template view using the data object
         viewHolder.name.setText(elem.getBeatPositionAsString());
 
@@ -61,18 +68,27 @@ public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
         mToast = Toast.makeText(getContext(), "", Toast.LENGTH_SHORT);
         mToast.setGravity(Gravity.CENTER, 0, 0);
 
-        final View.OnClickListener simpleClickListener = new View.OnClickListener() {
+        // Create and attach on click listener
+        viewHolder.name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //mToast.setText("Item clicked: " + viewHolder.name.getText().toString());
-                mToast.setText("Item clicked: " + elem.getBeatPositionAsString());
+                mToast.setText(elem.getType() + ": Item clicked: " + elem.getBeatPositionAsString());
                 mToast.show();
             }
-        };
+        });
 
-        viewHolder.name.setOnClickListener(simpleClickListener);
+        // Create and attach on long click listener
+        viewHolder.name.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
 
-        convertView.setLongClickable(true);
+                mToast.setText(elem.getType() + ": Item long clicked: " + elemPosition);
+                mToast.show();
+
+                return true;
+            }
+        });
 
         // Return the completed view to render on screen
         return convertView;

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="ch.ethz.asl.dancebots.danceboteditor.EditorActivity">
+    tools:context="ch.ethz.asl.dancebots.danceboteditor.EditorActivity" >
 
     <!-- TODO: Maybe better to make table view -->
     <TextView
@@ -36,11 +36,46 @@
         android:id="@+id/txt_song_duration_id" />
 
     <org.lucasr.twowayview.TwoWayView
-        android:id="@+id/twoway_view"
+        android:id="@+id/motor_element_list"
         style="@style/TwoWayView"
         android:layout_width="wrap_content"
-        android:layout_height="100px"
+        android:layout_height="200px"
         android:drawSelectorOnTop="false"
         tools:context=".EditorActivity" />
+
+    <org.lucasr.twowayview.TwoWayView
+        android:id="@+id/led_element_list"
+        style="@style/TwoWayView"
+        android:layout_width="wrap_content"
+        android:layout_height="200px"
+        android:drawSelectorOnTop="false"
+        tools:context=".EditorActivity" />
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBar" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Play"
+            android:id="@+id/btn_play" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pause"
+            android:id="@+id/btn_pause"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/btn_play" />
+
+    </RelativeLayout>
+
 
 </LinearLayout>

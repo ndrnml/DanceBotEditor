@@ -16,9 +16,9 @@ enum MoveType implements MotionType {
 }
 
 enum LedType implements MotionType {
-    KnightRider,
-    Random,
-    Blink,
-    SameBlink,
-    Constant
+    KNIGHT_RIDER,
+    RANDOM,
+    BLINK,
+    SAME_BLINK,
+    CONSTANT
 }

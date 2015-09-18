@@ -6,17 +6,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.lucasr.twowayview.TwoWayView;
-
-import java.util.ArrayList;
 
 
 public class EditorActivity extends Activity {
@@ -92,33 +86,23 @@ public class EditorActivity extends Activity {
             mProjectFile.initChoreography();
             for (int i = 0; i < NUM_BEATS; ++i) {
                 mProjectFile.getChoreoManager().mMotorBeatElements.add(new MotorBeatElement(i, SPACING*i, MoveType.WAIT));
+                mProjectFile.getChoreoManager().mLedBeatElements.add(new LedBeatElement(i, SPACING*i, LedType.CONSTANT));
             }
             /**
-             * DATA CONSTRUCTION
+             * END DUMMY DATA CONSTRUCTION
              */
 
-            // Create the adapter to convert the array to views
-            BeatElementAdapter adapter = new BeatElementAdapter(this, mProjectFile.getChoreoManager().mMotorBeatElements);
-            // Attach the adapter to a ListView
-            TwoWayView horizontalView = (TwoWayView) findViewById(R.id.twoway_view);
+            // Create the beat adapters
+            BeatElementAdapter moveAdapter = new BeatElementAdapter(this, mProjectFile.getChoreoManager().mMotorBeatElements);
+            BeatElementAdapter ledAdapter = new BeatElementAdapter(this, mProjectFile.getChoreoManager().mLedBeatElements);
 
-            final Toast mToast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
-            mToast.setGravity(Gravity.CENTER, 0, 0);
+            // Attach movement adapter to the horizontal move ListView
+            TwoWayView moveView = (TwoWayView) findViewById(R.id.motor_element_list);
+            moveView.setAdapter(moveAdapter);
 
-            horizontalView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    BeatElement beatElement = mProjectFile.getChoreoManager().mMotorBeatElements.get(position);
-
-                    mToast.setText("Item long clicked: " + position);
-                    mToast.show();
-
-                    return true;
-                }
-            });
-
-            horizontalView.setAdapter(adapter);
+            // Attach led adapter
+            TwoWayView ledView = (TwoWayView) findViewById(R.id.led_element_list);
+            ledView.setAdapter(ledAdapter);
 
             // Set the editor state to decoding (sensitive phase)
             mEditorState = State.DECODING;
@@ -200,11 +184,12 @@ public class EditorActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
+        //super.onBackPressed(); // This has to be removed
 
         // TODO: ask user to cancel the current project
         Log.v(LOG_TAG, "Back button is pressed.");
 
+        // Popup alert dialog to confirm users decision
         askExit();
     }
 
@@ -227,7 +212,6 @@ public class EditorActivity extends Activity {
         });
 
         alertDialog.setNegativeButton(R.string.txt_no, null);
-
         alertDialog.setMessage(R.string.alert_ask_exit_txt);
         alertDialog.setTitle(R.string.app_name);
         alertDialog.show();

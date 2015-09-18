@@ -10,13 +10,12 @@ public class ChoreographyManager {
 
     //TODO -> change to private
     public ArrayList<BeatElement> mMotorBeatElements;
-
-    private ArrayList<DanceBotMotorMotion> mMotorMotions;
+    public ArrayList<BeatElement> mLedBeatElements;
 
     public ChoreographyManager(BeatGrid beatGrid) {
 
         mMotorBeatElements = new ArrayList<>();
-        mMotorMotions = new ArrayList<>();
+        mLedBeatElements = new ArrayList<>();
 
         initBeatElements(beatGrid);
     }
@@ -36,6 +35,7 @@ public class ChoreographyManager {
             while (i < numBeats) {
 
                 mMotorBeatElements.add(new MotorBeatElement(i, beatBuffer.get(i), MoveType.WAIT));
+                mLedBeatElements.add(new LedBeatElement(i, beatBuffer.get(i), LedType.CONSTANT));
             }
         } else {
             // TODO some error?
