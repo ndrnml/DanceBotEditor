@@ -1,13 +1,13 @@
-package ch.ethz.asl.dancebots.danceboteditor;
+package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.graphics.Color;
 
 /**
- * Created by andrin on 18.09.15.
+ * Created by andrin on 04.09.15.
  */
-public class LedBeatElement extends BeatElement<LedType> {
+public class MotorBeatElement extends BeatElement<MoveType> {
 
-    public LedBeatElement(int beatPos, int samplePos, LedType motion) {
+    public MotorBeatElement(int beatPos, int samplePos, MoveType motion) {
 
         // Initialize motion element properties$
         mMotionStartIndex = -1;
@@ -18,14 +18,7 @@ public class LedBeatElement extends BeatElement<LedType> {
         mSamplePosition = samplePos;
         mMotionType = motion;
 
-        // Initial update of element properties
         updateProperties();
-
-    }
-
-    @Override
-    String getType() {
-        return "LedType";
     }
 
     @Override
@@ -33,12 +26,17 @@ public class LedBeatElement extends BeatElement<LedType> {
 
         switch (mMotionType) {
 
-            case CONSTANT:
-                mColor = Color.BLUE;
+            case WAIT:
+                mColor = Color.RED;
                 break;
 
             default:
                 break;
         }
+    }
+
+    @Override
+    public String getType() {
+        return "MoveType";
     }
 }

@@ -1,4 +1,4 @@
-package ch.ethz.asl.dancebots.danceboteditor;
+package ch.ethz.asl.dancebots.danceboteditor.activities;
 
 import android.app.ListActivity;
 import android.content.ContentResolver;
@@ -12,6 +12,9 @@ import android.view.View;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+
+import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.adapters.SongListAdapter;
 
 /**
  * Created by andrin on 06.07.15.

@@ -1,4 +1,4 @@
-package ch.ethz.asl.dancebots.danceboteditor;
+package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 /**
  * Created by andrin on 09.07.15.

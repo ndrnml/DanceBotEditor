@@ -1,4 +1,4 @@
-package ch.ethz.asl.dancebots.danceboteditor;
+package ch.ethz.asl.dancebots.danceboteditor.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,12 +6,15 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import ch.ethz.asl.dancebots.danceboteditor.dialogs.BeatElementMenuDialog;
+import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.R;
 
 /**
  * Created by andrin on 28.08.15.
@@ -32,7 +35,7 @@ public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, final ViewGroup parent) {
 
         // Get beat grid element for this position
         final BeatElement elem = getItem(position);
@@ -72,14 +75,16 @@ public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
         viewHolder.name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //mToast.setText("Item clicked: " + viewHolder.name.getText().toString());
-                mToast.setText(elem.getType() + ": Item clicked: " + elem.getBeatPositionAsString());
-                mToast.show();
+
+                Context c = parent.getContext();
+                BeatElementMenuDialog dialog = new BeatElementMenuDialog();
+                dialog.initializeMenu(elem);
+                dialog.show(((Activity) c).getFragmentManager(), "blubb");
             }
         });
 
         // Create and attach on long click listener
-        viewHolder.name.setOnLongClickListener(new View.OnLongClickListener() {
+        /*viewHolder.name.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
 
@@ -89,7 +94,7 @@ public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
                 return true;
             }
         });
-
+*/
         // Return the completed view to render on screen
         return convertView;
     }

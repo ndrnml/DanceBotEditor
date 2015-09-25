@@ -1,4 +1,4 @@
-package ch.ethz.asl.dancebots.danceboteditor;
+package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import java.nio.IntBuffer;
 

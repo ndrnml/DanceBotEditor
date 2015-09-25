@@ -1,4 +1,4 @@
-package ch.ethz.asl.dancebots.danceboteditor;
+package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -6,6 +6,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.nio.IntBuffer;
+
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 
 /**
  * Created by andrin on 09.07.15.

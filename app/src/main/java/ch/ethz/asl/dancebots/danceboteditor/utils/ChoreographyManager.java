@@ -1,7 +1,13 @@
-package ch.ethz.asl.dancebots.danceboteditor;
+package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+
+import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
+import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.model.MoveType;
 
 /**
  * Created by andrin on 31.08.15.

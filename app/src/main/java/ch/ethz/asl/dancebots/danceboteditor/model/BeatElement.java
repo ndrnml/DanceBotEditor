@@ -1,11 +1,9 @@
-package ch.ethz.asl.dancebots.danceboteditor;
-
-import android.graphics.Color;
+package ch.ethz.asl.dancebots.danceboteditor.model;
 
 /**
  * Created by andrin on 28.08.15.
  */
-abstract class BeatElement<T extends MotionType> {
+public abstract class BeatElement<T extends MotionType> {
 
     // Information about the beat element's motion
     protected int mMotionStartIndex;
@@ -23,12 +21,12 @@ abstract class BeatElement<T extends MotionType> {
     abstract void updateProperties();
 
     // TODO for testing. to remove!
-    abstract String getType();
+    public abstract String getType();
 
     /**
      * TODO to test. remove later
      */
-    String getBeatPositionAsString() {
+    public String getBeatPositionAsString() {
         return Integer.toString(mBeatPosition);
     }
 
@@ -36,7 +34,7 @@ abstract class BeatElement<T extends MotionType> {
      *
      * @return
      */
-    int getColor() {
+    public int getColor() {
         return mColor;
     }
 }

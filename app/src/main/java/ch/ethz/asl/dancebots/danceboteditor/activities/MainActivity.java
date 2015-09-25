@@ -1,12 +1,14 @@
-package ch.ethz.asl.dancebots.danceboteditor;
+package ch.ethz.asl.dancebots.danceboteditor.activities;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.activities.EditorActivity;
 
 
 public class MainActivity extends Activity {

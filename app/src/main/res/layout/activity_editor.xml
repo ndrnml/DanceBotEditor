@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="ch.ethz.asl.dancebots.danceboteditor.EditorActivity" >
+    tools:context="ch.ethz.asl.dancebots.danceboteditor.activities.EditorActivity" >
 
     <!-- TODO: Maybe better to make table view -->
     <TextView
@@ -15,25 +15,25 @@
         android:text="@string/txt_song_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/txt_song_title_id" />
+        android:id="@+id/id_song_title" />
 
     <TextView
         android:text="@string/txt_song_artist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/txt_song_artist_id" />
+        android:id="@+id/id_song_artist" />
 
     <TextView
         android:text="@string/txt_song_path"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/txt_song_path_id" />
+        android:id="@+id/id_song_path" />
 
     <TextView
         android:text="@string/txt_song_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/txt_song_duration_id" />
+        android:id="@+id/id_song_duration" />
 
     <org.lucasr.twowayview.TwoWayView
         android:id="@+id/motor_element_list"
@@ -56,9 +56,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/seekBar" />
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <Button
             android:layout_width="wrap_content"
@@ -75,7 +76,7 @@
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/btn_play" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
 
 </LinearLayout>

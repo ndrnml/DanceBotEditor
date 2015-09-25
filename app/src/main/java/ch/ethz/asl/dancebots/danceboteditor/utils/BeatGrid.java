@@ -1,11 +1,12 @@
-package ch.ethz.asl.dancebots.danceboteditor;
+package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 /**
- * Created by andrin on 09.07.15.
+ * This class is exclusively for the data exchange between JNI (C++) and JAVA
+ * It serves as a data container for the gained extracted beats
  */
 public class BeatGrid {
 

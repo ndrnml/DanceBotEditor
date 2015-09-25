@@ -1,16 +1,29 @@
-package ch.ethz.asl.dancebots.danceboteditor;
+package ch.ethz.asl.dancebots.danceboteditor.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import org.lucasr.twowayview.TwoWayView;
+
+import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
+import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
+import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.model.MoveType;
+import ch.ethz.asl.dancebots.danceboteditor.R;
 
 
 public class EditorActivity extends Activity {
@@ -34,6 +47,10 @@ public class EditorActivity extends Activity {
 
         // TODO: DO all initialization stuff here?
 
+        // TODO: initialize dance bot project file, beat grid, music files etc...
+        // Project file initialization
+        mProjectFile = new DanceBotEditorProjectFile();
+
     }
 
     @Override
@@ -50,10 +67,6 @@ public class EditorActivity extends Activity {
             // Start intent that loads the editor view and starts pick-song-activity
             Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
             startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
-
-            // TODO: initialize dance bot project file, beat grid, music files etc...
-            // Project file initialization
-            mProjectFile = new DanceBotEditorProjectFile();
         }
 
     }
@@ -93,8 +106,8 @@ public class EditorActivity extends Activity {
              */
 
             // Create the beat adapters
-            BeatElementAdapter moveAdapter = new BeatElementAdapter(this, mProjectFile.getChoreoManager().mMotorBeatElements);
-            BeatElementAdapter ledAdapter = new BeatElementAdapter(this, mProjectFile.getChoreoManager().mLedBeatElements);
+            BeatElementAdapter moveAdapter = new BeatElementAdapter(EditorActivity.this, mProjectFile.getChoreoManager().mMotorBeatElements);
+            BeatElementAdapter ledAdapter = new BeatElementAdapter(EditorActivity.this, mProjectFile.getChoreoManager().mLedBeatElements);
 
             // Attach movement adapter to the horizontal move ListView
             TwoWayView moveView = (TwoWayView) findViewById(R.id.motor_element_list);
@@ -104,9 +117,19 @@ public class EditorActivity extends Activity {
             TwoWayView ledView = (TwoWayView) findViewById(R.id.led_element_list);
             ledView.setAdapter(ledAdapter);
 
+            // TODO remove or change this
+            registerForContextMenu(moveView);
+
             // Set the editor state to decoding (sensitive phase)
             mEditorState = State.DECODING;
         }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_editor, menu);
     }
 
     @Override
@@ -157,16 +180,16 @@ public class EditorActivity extends Activity {
 
                 // Update music file information
                 // Title
-                TextView selectedSongTitle = (TextView) findViewById(R.id.txt_song_title_id);
+                TextView selectedSongTitle = (TextView) findViewById(R.id.id_song_title);
                 selectedSongTitle.setText(songTitle);
                 // Artist
-                TextView selectedSongArtist = (TextView) findViewById(R.id.txt_song_artist_id);
+                TextView selectedSongArtist = (TextView) findViewById(R.id.id_song_artist);
                 selectedSongArtist.setText(songArtist);
                 // Path
-                TextView selectedSongFilePath = (TextView) findViewById(R.id.txt_song_path_id);
+                TextView selectedSongFilePath = (TextView) findViewById(R.id.id_song_path);
                 selectedSongFilePath.setText(songPath);
                 // Duration
-                TextView selectedSongDuration = (TextView) findViewById(R.id.txt_song_duration_id);
+                TextView selectedSongDuration = (TextView) findViewById(R.id.id_song_duration);
                 selectedSongDuration.setText(mProjectFile.getDanceBotMusicFile().getDurationReadable());
 
             } else {
