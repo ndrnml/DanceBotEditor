@@ -16,7 +16,6 @@
     <NumberPicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/submenu_element_picker"
-        android:padding="32dp" />
+        android:id="@+id/submenu_element_picker" />
 
 </LinearLayout>

@@ -88,7 +88,7 @@ public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
             @Override
             public boolean onLongClick(View v) {
 
-                mToast.setText(elem.getType() + ": Item long clicked: " + elemPosition);
+                mToast.setText(elem.getTypeAsString() + ": Item long clicked: " + elemPosition);
                 mToast.show();
 
                 return true;

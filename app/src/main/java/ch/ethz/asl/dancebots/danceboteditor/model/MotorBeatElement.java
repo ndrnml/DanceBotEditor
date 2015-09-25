@@ -18,6 +18,12 @@ public class MotorBeatElement extends BeatElement<MoveType> {
         mSamplePosition = samplePos;
         mMotionType = motion;
 
+        // TODO set default
+        mMotionTypeString = "Geradeaus";
+        mFrequencyString = "1/4";
+        mVelocityString = "1";
+        mChoreoLengthString = "1";
+
         updateProperties();
     }
 
@@ -36,7 +42,7 @@ public class MotorBeatElement extends BeatElement<MoveType> {
     }
 
     @Override
-    public String getType() {
+    public String getTypeAsString() {
         return "MoveType";
     }
 }

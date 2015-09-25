@@ -49,8 +49,8 @@ public class EditorActivity extends Activity {
 
         // TODO: initialize dance bot project file, beat grid, music files etc...
         // Project file initialization
-        mProjectFile = new DanceBotEditorProjectFile();
-
+        mProjectFile = DanceBotEditorProjectFile.getInstance();
+        mProjectFile.initBeatGrid();
     }
 
     @Override
@@ -179,16 +179,16 @@ public class EditorActivity extends Activity {
                 mProjectFile.musicFileSelected = true;
 
                 // Update music file information
-                // Title
+                // Update Title
                 TextView selectedSongTitle = (TextView) findViewById(R.id.id_song_title);
                 selectedSongTitle.setText(songTitle);
-                // Artist
+                // Update Artist
                 TextView selectedSongArtist = (TextView) findViewById(R.id.id_song_artist);
                 selectedSongArtist.setText(songArtist);
-                // Path
+                // Update Path
                 TextView selectedSongFilePath = (TextView) findViewById(R.id.id_song_path);
                 selectedSongFilePath.setText(songPath);
-                // Duration
+                // Update Duration
                 TextView selectedSongDuration = (TextView) findViewById(R.id.id_song_duration);
                 selectedSongDuration.setText(mProjectFile.getDanceBotMusicFile().getDurationReadable());
 

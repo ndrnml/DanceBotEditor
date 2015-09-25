@@ -18,14 +18,15 @@ public class LedBeatElement extends BeatElement<LedType> {
         mSamplePosition = samplePos;
         mMotionType = motion;
 
+        // TODO set default
+        mMotionTypeString = "Knight Rider";
+        mFrequencyString = "1/4";
+        mVelocityString = "1";
+        mChoreoLengthString = "1";
+
         // Initial update of element properties
         updateProperties();
 
-    }
-
-    @Override
-    public String getType() {
-        return "LedType";
     }
 
     @Override
@@ -41,4 +42,10 @@ public class LedBeatElement extends BeatElement<LedType> {
                 break;
         }
     }
+
+    @Override
+    public String getTypeAsString() {
+        return "LedType";
+    }
+
 }

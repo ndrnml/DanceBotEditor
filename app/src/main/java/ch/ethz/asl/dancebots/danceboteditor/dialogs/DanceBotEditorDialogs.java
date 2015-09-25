@@ -1,4 +1,4 @@
-package ch.ethz.asl.dancebots.danceboteditor.utils;
+package ch.ethz.asl.dancebots.danceboteditor.dialogs;
 
 import android.app.Activity;
 import android.app.AlertDialog;

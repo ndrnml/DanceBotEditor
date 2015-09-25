@@ -41,4 +41,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'org.lucasr.twowayview:twowayview:0.1.4'
+    //compile 'com.wefika:horizontal-picker:1.1.0'
 }
