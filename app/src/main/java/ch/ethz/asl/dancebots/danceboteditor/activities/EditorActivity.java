@@ -98,8 +98,8 @@ public class EditorActivity extends Activity {
 
             mProjectFile.initChoreography();
             for (int i = 0; i < NUM_BEATS; ++i) {
-                mProjectFile.getChoreoManager().mMotorBeatElements.add(new MotorBeatElement(i, SPACING*i, MoveType.WAIT));
-                mProjectFile.getChoreoManager().mLedBeatElements.add(new LedBeatElement(i, SPACING*i, LedType.CONSTANT));
+                mProjectFile.getChoreoManager().mMotorBeatElements.add(new MotorBeatElement(i, SPACING*i, mProjectFile.getMoveStates()));
+                mProjectFile.getChoreoManager().mLedBeatElements.add(new LedBeatElement(i, SPACING*i, mProjectFile.getLedStates()));
             }
             /**
              * END DUMMY DATA CONSTRUCTION

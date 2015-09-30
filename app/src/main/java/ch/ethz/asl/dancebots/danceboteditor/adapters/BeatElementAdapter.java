@@ -78,8 +78,8 @@ public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
 
                 Context c = parent.getContext();
                 BeatElementMenuDialog dialog = new BeatElementMenuDialog();
-                dialog.initializeMenu(elem);
-                dialog.show(((Activity) c).getFragmentManager(), "blubb");
+                dialog.initializeMenu(BeatElementAdapter.this, elem);
+                dialog.show(((Activity) c).getFragmentManager(), "element_menu");
             }
         });
 

@@ -7,7 +7,10 @@ import android.graphics.Color;
  */
 public class MotorBeatElement extends BeatElement<MoveType> {
 
-    public MotorBeatElement(int beatPos, int samplePos, MoveType motion) {
+    public MotorBeatElement(int beatPos, int samplePos, MoveType[] types) {
+
+        // Parent constructor call
+        super();
 
         // Initialize motion element properties$
         mMotionStartIndex = -1;
@@ -16,13 +19,7 @@ public class MotorBeatElement extends BeatElement<MoveType> {
         // Initialize beat element properties
         mBeatPosition = beatPos;
         mSamplePosition = samplePos;
-        mMotionType = motion;
-
-        // TODO set default
-        mMotionTypeIdx = 0;
-        mFrequencyIdx = 0;
-        mVelocityIdx = 0;
-        mChoreoLengthIdx = 0;
+        mMotionTypes = types;
 
         updateProperties();
     }
@@ -30,10 +27,10 @@ public class MotorBeatElement extends BeatElement<MoveType> {
     @Override
     public void updateProperties() {
 
-        switch (mMotionType) {
+        switch (mMotionTypes[mMotionTypeIdx]) {
 
             case STRAIGHT:
-                mColor = Color.BLACK;
+                mColor = Color.RED;
                 break;
 
             case SPIN:
@@ -53,7 +50,7 @@ public class MotorBeatElement extends BeatElement<MoveType> {
                 break;
 
             case WAIT:
-                mColor = Color.RED;
+                mColor = Color.WHITE;
                 break;
 
             default:
@@ -62,7 +59,16 @@ public class MotorBeatElement extends BeatElement<MoveType> {
     }
 
     @Override
+    public void setProperties(BeatElement elem) {
+
+        // TODO comment
+        mMotionTypeIdx = elem.getMotionTypeIdx();
+        mMotionStartIndex = elem.getMotionStartIndex();
+        mMotionLength = elem.getMotionLength();
+    }
+
+    @Override
     public String getTypeAsString() {
-        return "MoveType";
+        return this.getClass().toString();
     }
 }

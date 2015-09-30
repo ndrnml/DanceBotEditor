@@ -5,7 +5,7 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
  */
 public abstract class BeatElement<T extends MotionType> {
 
-    // Information about the beat element's motion
+    // Information about the beat element's choreography
     protected int mMotionStartIndex;
     protected int mMotionLength;
 
@@ -15,7 +15,7 @@ public abstract class BeatElement<T extends MotionType> {
 
     // Choreography properties of a beat element
     protected int mColor;
-    protected T mMotionType;
+    protected T[] mMotionTypes;
 
     protected int mMotionTypeIdx;
     protected int mFrequencyIdx;
@@ -25,7 +25,13 @@ public abstract class BeatElement<T extends MotionType> {
 
     // TODO
     public BeatElement() {
-        // TODO
+
+        // Default values
+        mMotionTypeIdx = 0;
+        mFrequencyIdx = 0;
+        mVelocityIdx = 0;
+        mLedLightsIdx = 0; // TODO
+        mChoreoLengthIdx = 0;
     }
 
     /**
@@ -33,10 +39,14 @@ public abstract class BeatElement<T extends MotionType> {
      */
     public abstract void updateProperties();
 
-    /**
-     * This method is just for testing purposes and might be removed in future time
-     */
+    public abstract void setProperties(BeatElement elem);
+
+    // This method is just for testing purposes and might be removed in future time
     public abstract String getTypeAsString();
+
+    ///////////
+    // SETTERS
+    ///////////
 
     public void setMotionStartIndex(int idx) {
         mMotionStartIndex = idx;
@@ -44,33 +54,22 @@ public abstract class BeatElement<T extends MotionType> {
     public void setMotionLength(int length) {
         mMotionLength = length;
     }
+    public void setMotionTypes(T[] types) {
+        mMotionTypes = types;
+    }
     public void setMotionTypeIdx(int idx) {
-        // TODO Check that idx is a valid number?
-        mMotionTypeIdx = idx;
+        mMotionTypeIdx = idx; // TODO Check that idx is a valid number?
     }
     public void setFrequencyIdx(int idx) {
-        // TODO Check that idx is a valid number?
-        mFrequencyIdx = idx;
+        mFrequencyIdx = idx; // TODO Check that idx is a valid number?
     }
     public void setVelocityIdx(int idx) {
-        // TODO Check that idx is a valid number?
-        mVelocityIdx = idx;
+        mVelocityIdx = idx; // TODO Check that idx is a valid number?
     }
     public void setChoreoLengthIdx(int idx) {
-        // TODO Check that idx is a valid number?
-        mChoreoLengthIdx = idx;
+        mChoreoLengthIdx = idx; // TODO Check that idx is a valid number?
     }
 
-    public MotionType getMotionType() {
-        return mMotionType;
-    }
-
-    /**
-     * TODO to test. remove later
-     */
-    public String getBeatPositionAsString() {
-        return Integer.toString(mBeatPosition);
-    }
 
 
     public int getMotionStartIndex() {
@@ -79,10 +78,19 @@ public abstract class BeatElement<T extends MotionType> {
     public int getMotionLength() {
         return mMotionLength;
     }
+
+    public int getBeatPosition() {
+        return mBeatPosition;
+    }
+    public String getBeatPositionAsString() {
+        return Integer.toString(mBeatPosition);
+    }
     public int getColor() {
         return mColor;
     }
-
+    public T getMotionType() {
+        return mMotionTypes[mMotionTypeIdx];
+    }
     public int getMotionTypeIdx() {
         return mMotionTypeIdx;
     }

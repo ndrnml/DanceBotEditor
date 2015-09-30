@@ -7,7 +7,10 @@ import android.graphics.Color;
  */
 public class LedBeatElement extends BeatElement<LedType> {
 
-    public LedBeatElement(int beatPos, int samplePos, LedType motion) {
+    public LedBeatElement(int beatPos, int samplePos, LedType[] types) {
+
+        // Parent constructor call
+        super();
 
         // Initialize motion element properties$
         mMotionStartIndex = -1;
@@ -16,13 +19,7 @@ public class LedBeatElement extends BeatElement<LedType> {
         // Initialize beat element properties
         mBeatPosition = beatPos;
         mSamplePosition = samplePos;
-        mMotionType = motion;
-
-        // TODO set default
-        mMotionTypeIdx = 0;
-        mFrequencyIdx = 0;
-        mVelocityIdx = 0;
-        mChoreoLengthIdx = 0;
+        mMotionTypes = types;
 
         // Initial update of element properties
         updateProperties();
@@ -32,10 +29,14 @@ public class LedBeatElement extends BeatElement<LedType> {
     @Override
     public void updateProperties() {
 
-        switch (mMotionType) {
+        switch (mMotionTypes[mMotionTypeIdx]) {
+
+            case KNIGHT_RIDER:
+                mColor = Color.BLUE;
+                break;
 
             case CONSTANT:
-                mColor = Color.BLUE;
+                mColor = Color.BLACK;
                 break;
 
 
@@ -45,8 +46,13 @@ public class LedBeatElement extends BeatElement<LedType> {
     }
 
     @Override
+    public void setProperties(BeatElement elem) {
+
+    }
+
+    @Override
     public String getTypeAsString() {
-        return "LedType";
+        return this.getClass().toString();
     }
 
 }

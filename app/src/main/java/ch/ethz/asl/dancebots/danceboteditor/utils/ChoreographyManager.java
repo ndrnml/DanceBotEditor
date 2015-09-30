@@ -1,11 +1,14 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
+import android.util.Log;
+
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
+import ch.ethz.asl.dancebots.danceboteditor.model.MotionType;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.MoveType;
 
@@ -13,6 +16,8 @@ import ch.ethz.asl.dancebots.danceboteditor.model.MoveType;
  * Created by andrin on 31.08.15.
  */
 public class ChoreographyManager {
+
+    private static final String LOG_TAG = "CHOREOGRAPHY_MANAGER";
 
     //TODO -> change to private
     public ArrayList<BeatElement> mMotorBeatElements;
@@ -26,24 +31,35 @@ public class ChoreographyManager {
         initBeatElements(beatGrid);
     }
 
-    public void updateElements(Class elemClass, BeatElement startElem, int startIdx, int choreoLength) {
+    public void updateChoreography(BeatElement startElem) {
 
-        int idx = startIdx;
-        ArrayList<BeatElement> elemArray = mLedBeatElements;
+        if (startElem.getClass().equals(LedBeatElement.class)) {
 
-        if (elemClass.equals(MotorBeatElement.class)) {
+            updateElements(mLedBeatElements, startElem);
 
-            elemArray = mMotorBeatElements;
+        } else if (startElem.getClass().equals(MotorBeatElement.class)) {
 
-        } else {
-            // TODO: This should never happen
+            updateElements(mMotorBeatElements, startElem);
         }
+    }
 
-        while (elemArray.get(idx).getMotionStartIndex() == -1 && choreoLength - 1 >= 0) {
+    public void updateElements(ArrayList<BeatElement> elemList, BeatElement startElem) {
 
-            // Get element
-            BeatElement elem = elemArray.get(idx);
-            elem.updateProperties();
+        int startIdx = startElem.getMotionStartIndex();
+        int choreoLength = startElem.getMotionLength();
+
+        for (int i = 1; i < choreoLength; ++i) {
+
+            int nextElemIdx = startIdx + i;
+
+            // Check that beat element i is not yet assigned to another choreography
+            if (elemList.get(nextElemIdx).getMotionStartIndex() == -1) {
+
+                // Get element
+                BeatElement elem = elemList.get(nextElemIdx);
+                elem.setProperties(startElem);
+                elem.updateProperties();
+            }
         }
     }
 
@@ -56,16 +72,17 @@ public class ChoreographyManager {
 
         IntBuffer beatBuffer = beatGrid.getBeatBuffer();
         int numBeats = beatGrid.getNumOfBeats();
-        int i = 0;
 
-        if (beatBuffer != null) {
-            while (i < numBeats) {
+        if (beatBuffer != null && numBeats > 0) {
+            for (int i = 0; i < numBeats; ++i) {
 
-                mMotorBeatElements.add(new MotorBeatElement(i, beatBuffer.get(i), MoveType.WAIT));
-                mLedBeatElements.add(new LedBeatElement(i, beatBuffer.get(i), LedType.CONSTANT));
+                // TODO CORRECT INITIALIZATION
+                //mMotorBeatElements.add(new MotorBeatElement(i, beatBuffer.get(i), ));
+                //mLedBeatElements.add(new LedBeatElement(i, beatBuffer.get(i)));
             }
         } else {
             // TODO some error?
+            Log.v(LOG_TAG, "Error: " + beatBuffer.toString() + ", Number of beats: " + numBeats);
         }
     }
 

@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
 import ch.ethz.asl.dancebots.danceboteditor.model.MoveType;
@@ -28,6 +29,7 @@ public class BeatElementMenuDialog extends DialogFragment {
     private View mBeatElementMenuView;
     private BeatElement mBeatElement;
     private DanceBotEditorProjectFile mDanceBotEditorProjectFile;
+    private BeatElementAdapter mBeatElementAdapter;
 
     private String[] mMenuListMotionTypes;
     private String[] mMenuListFrequencies;
@@ -45,26 +47,27 @@ public class BeatElementMenuDialog extends DialogFragment {
      * It loads all relevant information (menu lists) for setting up the menu
      * @param elem
      */
-    public void initializeMenu(BeatElement elem) {
+    public void initializeMenu(BeatElementAdapter adapter, BeatElement elem) {
 
         mBeatElement = elem;
         mDanceBotEditorProjectFile = DanceBotEditorProjectFile.getInstance();
+        mBeatElementAdapter = adapter;
 
         // Menu list initialization
-        mMenuListVelocities = mDanceBotEditorProjectFile.getVelocities();
-        mMenuChoreoLengths = mDanceBotEditorProjectFile.getChoreoLengths();
-        mMenuListLightSelection = mDanceBotEditorProjectFile.getLights();
+        mMenuListVelocities = mDanceBotEditorProjectFile.getVelocitiesStrings();
+        mMenuChoreoLengths = mDanceBotEditorProjectFile.getChoreoLengthsStrings();
+        mMenuListLightSelection = mDanceBotEditorProjectFile.getLedLightsStrings();
 
         // Further menu lists based on motion type
         if (mBeatElement.getMotionType().getClass() == LedType.class) { // LED_TYPE
 
-            mMenuListMotionTypes = mDanceBotEditorProjectFile.getLedStates();
-            mMenuListFrequencies = mDanceBotEditorProjectFile.getLedFrequencies();
+            mMenuListMotionTypes = mDanceBotEditorProjectFile.getLedStatesStrings();
+            mMenuListFrequencies = mDanceBotEditorProjectFile.getLedFrequenciesStrings();
 
         } else if (mBeatElement.getMotionType().getClass() == MoveType.class) { // MOVE_TYPE
 
-            mMenuListMotionTypes = mDanceBotEditorProjectFile.getMoveStates();
-            mMenuListFrequencies = mDanceBotEditorProjectFile.getMoveFrequencies();
+            mMenuListMotionTypes = mDanceBotEditorProjectFile.getMoveStatesStrings();
+            mMenuListFrequencies = mDanceBotEditorProjectFile.getMoveFrequenciesStrings();
 
         } else {
             Log.v(LOG_TAG, "Error doing menu initialization based on beat element type");
@@ -171,11 +174,22 @@ public class BeatElementMenuDialog extends DialogFragment {
                 .setPositiveButton(R.string.txt_save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+
                         // Save BeatElement properties
                         mBeatElement.setMotionTypeIdx(mMenuMotionIdx);
                         mBeatElement.setFrequencyIdx(mMenuFrequencyIdx);
                         mBeatElement.setVelocityIdx(mMenuVelocityIdx);
                         mBeatElement.setChoreoLengthIdx(mMenuChoreoLengthIdx);
+
+                        mBeatElement.setMotionStartIndex(mBeatElement.getBeatPosition());
+                        mBeatElement.setMotionLength(mDanceBotEditorProjectFile.getChoreoLengthAtIdx(mMenuChoreoLengthIdx));
+
+                        // This must be called after an element has been changed
+                        mBeatElement.updateProperties();
+
+                        mDanceBotEditorProjectFile.getChoreoManager().updateChoreography(mBeatElement);
+
+                        mBeatElementAdapter.notifyDataSetChanged();
                     }
                 })
                 .setNegativeButton(R.string.txt_cancel, new DialogInterface.OnClickListener() {

@@ -1,5 +1,12 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+
+import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
+import ch.ethz.asl.dancebots.danceboteditor.model.MoveType;
+
 /**
  * Created by andrin on 09.07.15.
  */
@@ -9,22 +16,28 @@ public class DanceBotEditorProjectFile {
     public boolean beatExtractionDone = false;
     public boolean startedEditing = false;
 
-    /**
-     * Menu units
-     * Make sure the order is the same as in the enum MotionType
-     */
-    private String[] mMoveStates = new String[]{"Geradeaus", "Drehung", "Wippen", "Vor- und Zurück", "Konstant", "Warten"};
-    private String[] mLedStates = new String[]{"Knight Rider", "Zufällig", "Blinken", "SAME_BLINK", "Konstant"};
-
-    private String[] mMoveFrequencies = new String[]{"1/4", "1/3", "1/2", "2/3", "1"};
-    private String[] mLedFrequencies = new String[]{"1/4", "1/3", "1/2", "2/3", "3/2", "2", "3", "4"};
-    private String[] mVelocities = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-    private String[] mLedLights = new String[]{"1", "2", "3", "4", "5", "6", "7", "8"};
-    private String[] mChoreoLengths = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-
     private DanceBotMusicFile mDBMusicFile;
     private BeatGrid mBeatGrid;
     private ChoreographyManager mChoreoManager;
+
+    /**
+     * MENU STRING UNITS
+     * Make sure the order is the same as in the enum MotionType
+     */
+    private String[] mMoveStatesStrings = new String[]{"Geradeaus", "Drehung", "Wippen", "Vor- und Zurück", "Konstant", "Warten"};
+    private String[] mLedStatesStrings = new String[]{"Knight Rider", "Zufällig", "Blinken", "SAME_BLINK", "Konstant"};
+    private String[] mMoveFrequenciesStrings = new String[]{"1/4", "1/3", "1/2", "2/3", "1"};
+    private String[] mLedFrequenciesStrings = new String[]{"1/4", "1/3", "1/2", "2/3", "3/2", "2", "3", "4"};
+    private String[] mVelocitiesStrings = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+    private String[] mLedLightsStrings = new String[]{"1", "2", "3", "4", "5", "6", "7", "8"};
+    private String[] mChoreoLengthsStrings = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+
+    /**
+     * MENU TYPE UNITS
+     */
+    private MoveType[] mMoveStates = MoveType.values();
+    private LedType[] mLedStates = LedType.values();
+    private int[] mChoreoLengths = new int[]{1,2,3,4,5,6,7,8,9,10};
 
     // Singleton instance
     private static DanceBotEditorProjectFile instance = null;
@@ -94,31 +107,41 @@ public class DanceBotEditorProjectFile {
         return mChoreoManager;
     }
 
-    public String[] getMoveStates() {
+    public String[] getMoveStatesStrings() {
+        return mMoveStatesStrings;
+    }
+
+    public String[] getLedStatesStrings() {
+        return mLedStatesStrings;
+    }
+
+    public String[] getMoveFrequenciesStrings() {
+        return mMoveFrequenciesStrings;
+    }
+
+    public String[] getLedFrequenciesStrings() {
+        return mLedFrequenciesStrings;
+    }
+
+    public String[] getVelocitiesStrings() {
+        return mVelocitiesStrings;
+    }
+
+    public String[] getLedLightsStrings() {
+        return mLedLightsStrings;
+    }
+
+    public String[] getChoreoLengthsStrings() {
+        return mChoreoLengthsStrings;
+    }
+
+    public MoveType[] getMoveStates() {
         return mMoveStates;
     }
-
-    public String[] getLedStates() {
+    public LedType[] getLedStates() {
         return mLedStates;
     }
-
-    public String[] getMoveFrequencies() {
-        return mMoveFrequencies;
-    }
-
-    public String[] getLedFrequencies() {
-        return mLedFrequencies;
-    }
-
-    public String[] getVelocities() {
-        return mVelocities;
-    }
-
-    public String[] getLights() {
-        return mLedLights;
-    }
-
-    public String[] getChoreoLengths() {
-        return mChoreoLengths;
+    public int getChoreoLengthAtIdx(int idx) {
+        return mChoreoLengths[idx];
     }
 }
