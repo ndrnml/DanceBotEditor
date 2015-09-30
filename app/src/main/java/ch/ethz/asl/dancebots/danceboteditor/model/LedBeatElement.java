@@ -19,10 +19,10 @@ public class LedBeatElement extends BeatElement<LedType> {
         mMotionType = motion;
 
         // TODO set default
-        mMotionTypeString = "Knight Rider";
-        mFrequencyString = "1/4";
-        mVelocityString = "1";
-        mChoreoLengthString = "1";
+        mMotionTypeIdx = 0;
+        mFrequencyIdx = 0;
+        mVelocityIdx = 0;
+        mChoreoLengthIdx = 0;
 
         // Initial update of element properties
         updateProperties();
@@ -37,6 +37,7 @@ public class LedBeatElement extends BeatElement<LedType> {
             case CONSTANT:
                 mColor = Color.BLUE;
                 break;
+
 
             default:
                 break;

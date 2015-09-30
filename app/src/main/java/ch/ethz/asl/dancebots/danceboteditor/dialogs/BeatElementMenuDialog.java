@@ -23,7 +23,7 @@ public class BeatElementMenuDialog extends DialogFragment {
 
     private static final String LOG_TAG = "BEAT_ELEM_MENU_DIALOG";
 
-    public enum MENU_TYPE {MOTION, FREQUENCY, VELOCITY, LIGHTS, LENGTH}
+    public enum MENU_TYPE {MOTION, FREQUENCY, VELOCITY, LIGHTS, CHOREO_LENGTH}
 
     private View mBeatElementMenuView;
     private BeatElement mBeatElement;
@@ -35,8 +35,14 @@ public class BeatElementMenuDialog extends DialogFragment {
     private String[] mMenuListLightSelection;
     private String[] mMenuChoreoLengths;
 
+    private int mMenuMotionIdx;
+    private int mMenuFrequencyIdx;
+    private int mMenuVelocityIdx;
+    private int mMenuChoreoLengthIdx;
+
     /**
      * Ensure that this method is called directly after instantiation of the menu
+     * It loads all relevant information (menu lists) for setting up the menu
      * @param elem
      */
     public void initializeMenu(BeatElement elem) {
@@ -68,23 +74,44 @@ public class BeatElementMenuDialog extends DialogFragment {
     /**
      * Callback method, which will be called on positive click within submenu
      */
-    public void doPositiveClick() {
+    public void doPositiveClick(MENU_TYPE type, int newVal) {
 
-        // Update motion text view
-        TextView motionTypeTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_motion_type_default);
-        motionTypeTextView.setText(mBeatElement.getMotionTypeString()); // TODO change default value
+        switch (type) {
 
-        // Update frequency text view
-        TextView frequencyTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_frequency_default);
-        frequencyTextView.setText(mBeatElement.getFrequencyString()); // TODO change default value
+            case MOTION:
+                // Update motion text view
+                mMenuMotionIdx = newVal;
+                TextView motionTypeTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_motion_type_default);
+                motionTypeTextView.setText(mMenuListMotionTypes[newVal]); // TODO change default value
+                break;
 
-        // Update velocity text view
-        TextView velocityTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_velocity_default);
-        velocityTextView.setText(mBeatElement.getVelocityString()); // TODO change default value
+            case FREQUENCY:
+                // Update frequency text view
+                mMenuFrequencyIdx = newVal;
+                TextView frequencyTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_frequency_default);
+                frequencyTextView.setText(mMenuListFrequencies[newVal]); // TODO change default value
+                break;
 
-        // Update length text view
-        TextView choreoLengthTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_length_default);
-        choreoLengthTextView.setText(mBeatElement.getChoreoLengthString()); // TODO change default value
+            case VELOCITY:
+                // Update velocity text view
+                mMenuVelocityIdx = newVal;
+                TextView velocityTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_velocity_default);
+                velocityTextView.setText(mMenuListVelocities[newVal]); // TODO change default value
+                break;
+
+            case LIGHTS:
+                break;
+
+            case CHOREO_LENGTH:
+                // Update length text view
+                mMenuChoreoLengthIdx = newVal;
+                TextView choreoLengthTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_length_default);
+                choreoLengthTextView.setText(mMenuChoreoLengths[newVal]); // TODO change default value
+                break;
+
+            default:
+                break;
+        }
 
         Log.v(LOG_TAG, "doPositiveClick()");
     }
@@ -94,18 +121,18 @@ public class BeatElementMenuDialog extends DialogFragment {
      * @param id
      * @param menuList
      */
-    public void buildSubMenu(int id, String defaultValue, final String[] menuList, final MENU_TYPE menuType, final String menuTag) {
+    public void buildSubMenu(int id, int elemIdx, final String[] menuList, final MENU_TYPE menuType, final String menuTag) {
 
         // Create submenu for specific TextView
         TextView textView = (TextView) mBeatElementMenuView.findViewById(id);
-        textView.setText(defaultValue);
+        textView.setText(menuList[elemIdx]);
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 SubMenuDialog submenu = new SubMenuDialog();
                 // Initialize the sub menu (AlertDialog) with the corresponding view and menu list
-                submenu.initializeSubMenu(BeatElementMenuDialog.this, menuType, mBeatElement, menuList);
+                submenu.initializeSubMenu(BeatElementMenuDialog.this, menuType, menuList);
                 submenu.show(getFragmentManager(), menuTag);
             }
         });
@@ -123,33 +150,37 @@ public class BeatElementMenuDialog extends DialogFragment {
         mBeatElementMenuView = inflater.inflate(R.layout.beat_element_menu, null);
 
         // Add motion submenu
-        buildSubMenu(R.id.txt_motion_type_default, mBeatElement.getMotionTypeString(), mMenuListMotionTypes, MENU_TYPE.MOTION, "motion_menu");
+        buildSubMenu(R.id.txt_motion_type_default, mBeatElement.getMotionTypeIdx(), mMenuListMotionTypes, MENU_TYPE.MOTION, "motion_menu");
 
         // Add frequency submenu
-        buildSubMenu(R.id.txt_frequency_default, mBeatElement.getFrequencyString(), mMenuListFrequencies, MENU_TYPE.FREQUENCY, "frequency_menu");
+        buildSubMenu(R.id.txt_frequency_default, mBeatElement.getFrequencyIdx(), mMenuListFrequencies, MENU_TYPE.FREQUENCY, "frequency_menu");
 
         // Add velocity submenu
-        buildSubMenu(R.id.txt_velocity_default, mBeatElement.getVelocityString(), mMenuListVelocities, MENU_TYPE.VELOCITY, "velocity_menu");
+        buildSubMenu(R.id.txt_velocity_default, mBeatElement.getVelocityIdx(), mMenuListVelocities, MENU_TYPE.VELOCITY, "velocity_menu");
 
         // Add choreography length submenu
-        buildSubMenu(R.id.txt_length_default, mBeatElement.getChoreoLengthString(), mMenuChoreoLengths, MENU_TYPE.LENGTH, "choreo_length_menu");
+        buildSubMenu(R.id.txt_length_default, mBeatElement.getChoreoLengthIdx(), mMenuChoreoLengths, MENU_TYPE.CHOREO_LENGTH, "choreo_length_menu");
 
         // Compose AlertDialog with custom elements
         builder.setTitle("Element: " + mBeatElement.getBeatPositionAsString());
 
+        // Build final view with positive and negative buttons
         builder.setView(mBeatElementMenuView)
 
                 // Add action buttons
                 .setPositiveButton(R.string.txt_save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        // save properties ...
-                        // TODO
+                        // Save BeatElement properties
+                        mBeatElement.setMotionTypeIdx(mMenuMotionIdx);
+                        mBeatElement.setFrequencyIdx(mMenuFrequencyIdx);
+                        mBeatElement.setVelocityIdx(mMenuVelocityIdx);
+                        mBeatElement.setChoreoLengthIdx(mMenuChoreoLengthIdx);
                     }
                 })
                 .setNegativeButton(R.string.txt_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // TODO
+                        // Discard BeatElement properties
                     }
                 });
 

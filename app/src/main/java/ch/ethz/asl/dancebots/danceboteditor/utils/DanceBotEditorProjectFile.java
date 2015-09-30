@@ -19,8 +19,8 @@ public class DanceBotEditorProjectFile {
     private String[] mMoveFrequencies = new String[]{"1/4", "1/3", "1/2", "2/3", "1"};
     private String[] mLedFrequencies = new String[]{"1/4", "1/3", "1/2", "2/3", "3/2", "2", "3", "4"};
     private String[] mVelocities = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-    private String[] mLights = new String[]{"1", "2", "3", "4", "5", "6", "7", "8"};
-    private String[] mLengths = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+    private String[] mLedLights = new String[]{"1", "2", "3", "4", "5", "6", "7", "8"};
+    private String[] mChoreoLengths = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
 
     private DanceBotMusicFile mDBMusicFile;
     private BeatGrid mBeatGrid;
@@ -115,10 +115,10 @@ public class DanceBotEditorProjectFile {
     }
 
     public String[] getLights() {
-        return mLights;
+        return mLedLights;
     }
 
     public String[] getChoreoLengths() {
-        return mLengths;
+        return mChoreoLengths;
     }
 }

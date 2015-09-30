@@ -11,18 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
-import ch.ethz.asl.dancebots.danceboteditor.model.MotionType;
 
 /**
  * Created by andrin on 25.09.15.
@@ -34,16 +25,13 @@ public class SubMenuDialog extends DialogFragment {
     private View mSubmenuView;
     private BeatElementMenuDialog mCallerDialog;
     private BeatElementMenuDialog.MENU_TYPE mMenuType;
-    private BeatElement mBeatElement;
     private String[] mMenuList;
 
     public void initializeSubMenu(BeatElementMenuDialog dialog,
                                   BeatElementMenuDialog.MENU_TYPE menuType,
-                                  BeatElement beatElem,
                                   String[] menuList) {
         mCallerDialog = dialog;
         mMenuType = menuType;
-        mBeatElement = beatElem;
         mMenuList = menuList;
     }
 
@@ -88,39 +76,8 @@ public class SubMenuDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
 
-                        switch(mMenuType) {
-
-                            case MOTION:
-                                // Save motion property
-                                mBeatElement.setMotionTypeString(mMenuList[numberPicker.getValue()]);
-                                break;
-
-                            case FREQUENCY:
-                                // Save frequency property
-                                mBeatElement.setFrequencyString(mMenuList[numberPicker.getValue()]);
-                                break;
-
-                            case VELOCITY:
-                                // Save velocity property
-                                mBeatElement.setVelocityString(mMenuList[numberPicker.getValue()]);
-                                break;
-
-                            case LIGHTS:
-                                // Save lights property
-                                //mBeatElement.(mMenuList[numberPicker.getValue()]); TODO
-                                break;
-
-                            case LENGTH:
-                                // Save choreography length property
-                                mBeatElement.setChoreoLengthString(mMenuList[numberPicker.getValue()]);
-                                break;
-
-                            default:
-                                break;
-                        }
-
                         // Callback of parent menu
-                        mCallerDialog.doPositiveClick();
+                        mCallerDialog.doPositiveClick(mMenuType, numberPicker.getValue());
 
                         Log.v(LOG_TAG, mMenuList[numberPicker.getValue()]);
                     }

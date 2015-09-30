@@ -19,10 +19,10 @@ public class MotorBeatElement extends BeatElement<MoveType> {
         mMotionType = motion;
 
         // TODO set default
-        mMotionTypeString = "Geradeaus";
-        mFrequencyString = "1/4";
-        mVelocityString = "1";
-        mChoreoLengthString = "1";
+        mMotionTypeIdx = 0;
+        mFrequencyIdx = 0;
+        mVelocityIdx = 0;
+        mChoreoLengthIdx = 0;
 
         updateProperties();
     }
@@ -31,6 +31,26 @@ public class MotorBeatElement extends BeatElement<MoveType> {
     void updateProperties() {
 
         switch (mMotionType) {
+
+            case STRAIGHT:
+                mColor = Color.BLACK;
+                break;
+
+            case SPIN:
+                mColor = Color.GRAY;
+                break;
+
+            case TWIST:
+                mColor = Color.GREEN;
+                break;
+
+            case BACK_AND_FORTH:
+                mColor = Color.CYAN;
+                break;
+
+            case CONSTANT:
+                mColor = Color.YELLOW;
+                break;
 
             case WAIT:
                 mColor = Color.RED;

@@ -17,32 +17,49 @@ public abstract class BeatElement<T extends MotionType> {
     protected int mColor;
     protected T mMotionType;
 
-    protected String mMotionTypeString;
-    protected String mFrequencyString;
-    protected String mVelocityString;
-    protected String mChoreoLengthString;
+    protected int mMotionTypeIdx;
+    protected int mFrequencyIdx;
+    protected int mVelocityIdx;
+    protected int mLedLightsIdx;
+    protected int mChoreoLengthIdx;
+
+    // TODO
+    public BeatElement() {
+        // TODO
+    }
+
     /**
      * Update beat element properties according to changes of motion
      */
-    abstract void updateProperties();
-
-    public void setMotionTypeString(String s) {
-        mMotionTypeString = s;
-    }
-    public void setFrequencyString(String s) {
-        mFrequencyString = s;
-    }
-    public void setVelocityString(String s) {
-        mVelocityString = s;
-    }
-    public void setChoreoLengthString(String s) {
-        mChoreoLengthString = s;
-    }
+    public abstract void updateProperties();
 
     /**
-     * TODO for testing. to remove!
+     * This method is just for testing purposes and might be removed in future time
      */
     public abstract String getTypeAsString();
+
+    public void setMotionStartIndex(int idx) {
+        mMotionStartIndex = idx;
+    }
+    public void setMotionLength(int length) {
+        mMotionLength = length;
+    }
+    public void setMotionTypeIdx(int idx) {
+        // TODO Check that idx is a valid number?
+        mMotionTypeIdx = idx;
+    }
+    public void setFrequencyIdx(int idx) {
+        // TODO Check that idx is a valid number?
+        mFrequencyIdx = idx;
+    }
+    public void setVelocityIdx(int idx) {
+        // TODO Check that idx is a valid number?
+        mVelocityIdx = idx;
+    }
+    public void setChoreoLengthIdx(int idx) {
+        // TODO Check that idx is a valid number?
+        mChoreoLengthIdx = idx;
+    }
 
     public MotionType getMotionType() {
         return mMotionType;
@@ -55,24 +72,27 @@ public abstract class BeatElement<T extends MotionType> {
         return Integer.toString(mBeatPosition);
     }
 
-    /**
-     *
-     * @return
-     */
+
+    public int getMotionStartIndex() {
+        return mMotionStartIndex;
+    }
+    public int getMotionLength() {
+        return mMotionLength;
+    }
     public int getColor() {
         return mColor;
     }
 
-    public String getMotionTypeString() {
-        return mMotionTypeString;
+    public int getMotionTypeIdx() {
+        return mMotionTypeIdx;
     }
-    public String getFrequencyString() {
-        return mFrequencyString;
+    public int getFrequencyIdx() {
+        return mFrequencyIdx;
     }
-    public String getVelocityString() {
-        return mVelocityString;
+    public int getVelocityIdx() {
+        return mVelocityIdx;
     }
-    public String getChoreoLengthString() {
-        return mChoreoLengthString;
+    public int getChoreoLengthIdx() {
+        return mChoreoLengthIdx;
     }
 }

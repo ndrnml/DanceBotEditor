@@ -26,6 +26,27 @@ public class ChoreographyManager {
         initBeatElements(beatGrid);
     }
 
+    public void updateElements(Class elemClass, BeatElement startElem, int startIdx, int choreoLength) {
+
+        int idx = startIdx;
+        ArrayList<BeatElement> elemArray = mLedBeatElements;
+
+        if (elemClass.equals(MotorBeatElement.class)) {
+
+            elemArray = mMotorBeatElements;
+
+        } else {
+            // TODO: This should never happen
+        }
+
+        while (elemArray.get(idx).getMotionStartIndex() == -1 && choreoLength - 1 >= 0) {
+
+            // Get element
+            BeatElement elem = elemArray.get(idx);
+            elem.updateProperties();
+        }
+    }
+
     /**
      * Initialize beat elements after successfully extracting all beats
      * beatGrid.getBeatBuffer() must be NOT null
