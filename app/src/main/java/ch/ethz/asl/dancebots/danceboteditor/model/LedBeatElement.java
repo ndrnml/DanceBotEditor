@@ -30,7 +30,7 @@ public class LedBeatElement extends BeatElement<LedType> {
     }
 
     @Override
-    void updateProperties() {
+    public void updateProperties() {
 
         switch (mMotionType) {
 

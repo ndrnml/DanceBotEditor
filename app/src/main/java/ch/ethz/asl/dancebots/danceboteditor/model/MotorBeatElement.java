@@ -28,7 +28,7 @@ public class MotorBeatElement extends BeatElement<MoveType> {
     }
 
     @Override
-    void updateProperties() {
+    public void updateProperties() {
 
         switch (mMotionType) {
 
