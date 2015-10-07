@@ -9,7 +9,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
@@ -27,7 +30,7 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
 
     private static final String LOG_TAG = "BEAT_ELEM_MENU_DIALOG";
 
-    public enum MENU_TYPE {MOTION, MOTOR_FREQUENCY, VELOCITY_LEFT, LIGHTS, CHOREO_LENGTH}
+    public enum MENU_TYPE {MOTION, FREQUENCY, VELOCITY_LEFT, VELOCITY_RIGHT, CHOREO_LENGTH}
 
     private View mBeatElementMenuView;
     private T mBeatElement;
@@ -37,12 +40,15 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
     private String[] mMenuListMotionTypes;
     private String[] mMenuListFrequencies;
     private String[] mMenuListVelocities;
-    private String[] mMenuListLightSelection;
     private String[] mMenuChoreoLengths;
-
+    private ArrayList<CheckBox> mCheckBoxes;
+    private int[] mLedLightSwitches;
+    private int mNumCheckBoxes;
+    
     private int mMenuMotionIdx;
     private int mMenuFrequencyIdx;
-    private int mMenuVelocityIdx;
+    private int mMenuVelocityLeftIdx;
+    private int mMenuVelocityRightIdx;
     private int mMenuChoreoLengthIdx;
 
     /**
@@ -52,20 +58,24 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
      */
     public void initializeMenu(BeatElementAdapter adapter, T elem) {
 
+        mBeatElementAdapter = adapter;
         mBeatElement = elem;
         mDanceBotEditorProjectFile = DanceBotEditorProjectFile.getInstance();
-        mBeatElementAdapter = adapter;
 
         // Menu list initialization
         mMenuListVelocities = mDanceBotEditorProjectFile.getVelocitiesStrings();
         mMenuChoreoLengths = mDanceBotEditorProjectFile.getChoreoLengthsStrings();
-        mMenuListLightSelection = mDanceBotEditorProjectFile.getLedLightsStrings();
 
         // Further menu lists based on motion type
         if (mBeatElement.getMotionType().getClass() == LedType.class) { // LED_TYPE
 
             mMenuListMotionTypes = mDanceBotEditorProjectFile.getLedStatesStrings();
             mMenuListFrequencies = mDanceBotEditorProjectFile.getLedFrequenciesStrings();
+
+            // Check box initialization
+            mNumCheckBoxes = LedBeatElement.getNumLedLights();
+            mCheckBoxes = new ArrayList<>(mNumCheckBoxes);
+            mLedLightSwitches = new int[mNumCheckBoxes];
 
         } else if (mBeatElement.getMotionType().getClass() == MotorType.class) { // MOVE_TYPE
 
@@ -91,7 +101,7 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
                 motionTypeTextView.setText(mMenuListMotionTypes[newVal]); // TODO change default value
                 break;
 
-            case MOTOR_FREQUENCY:
+            case FREQUENCY:
                 // Update frequency text view
                 mMenuFrequencyIdx = newVal;
                 TextView frequencyTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_frequency_default);
@@ -100,13 +110,16 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
 
             case VELOCITY_LEFT:
                 // Update velocity text view
-                mMenuVelocityIdx = newVal;
-                TextView velocityTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_velocity_left_default);
-                velocityTextView.setText(mMenuListVelocities[newVal]); // TODO change default value
+                mMenuVelocityLeftIdx = newVal;
+                TextView velocityLeftTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_velocity_left_default);
+                velocityLeftTextView.setText(mMenuListVelocities[newVal]); // TODO change default value
                 break;
 
-            case LIGHTS:
-                // TODO
+            case VELOCITY_RIGHT:
+                // Update velocity text view
+                mMenuVelocityRightIdx = newVal;
+                TextView velocityRightTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_velocity_right_default);
+                velocityRightTextView.setText(mMenuListVelocities[newVal]); // TODO change default value
                 break;
 
             case CHOREO_LENGTH:
@@ -121,6 +134,22 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
         }
 
         Log.v(LOG_TAG, "doPositiveClick()");
+    }
+
+    private void processCheckBoxes() {
+
+        for (int i = 0; i < mNumCheckBoxes; ++i) {
+
+            if (mCheckBoxes.get(i).isChecked()) {
+                // Set light switch on
+                mLedLightSwitches[i] = 1;
+                //Log.v(LOG_TAG, "checkbox: " + i + " is " + mCheckBoxes.get(i).isChecked());
+            } else {
+                // Set light switch off
+                mLedLightSwitches[i] = 0;
+                //Log.v(LOG_TAG, "checkbox: " + i + " is " + mCheckBoxes.get(i).isChecked());
+            }
+        }
     }
 
     /**
@@ -152,13 +181,20 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
         buildSubMenu(R.id.txt_motion_type_default, elem.getMotionTypeIdx(), mMenuListMotionTypes, MENU_TYPE.MOTION, "motion_menu");
 
         // Add frequency submenu
-        buildSubMenu(R.id.txt_frequency_default, elem.getFrequencyIdx(), mMenuListFrequencies, MENU_TYPE.MOTOR_FREQUENCY, "frequency_menu");
-
-        // Add velocity submenu TODO
-        //buildSubMenu(R.id.txt_lights, elem.getVelocityIdx(), mMenuListVelocities, MENU_TYPE.VELOCITY_LEFT, "velocity_menu");
+        buildSubMenu(R.id.txt_frequency_default, elem.getFrequencyIdx(), mMenuListFrequencies, MENU_TYPE.FREQUENCY, "frequency_menu");
 
         // Add choreography length submenu
         buildSubMenu(R.id.txt_length_default, elem.getChoreoLengthIdx(), mMenuChoreoLengths, MENU_TYPE.CHOREO_LENGTH, "choreo_length_menu");
+
+        // Register check boxes menu
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box1));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box2));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box3));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box4));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box5));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box6));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box7));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box8));
 
         // Hide not relevant menu items
         mBeatElementMenuView.findViewById(R.id.menu_item_velocity_left).setVisibility(View.GONE);
@@ -171,10 +207,13 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
         buildSubMenu(R.id.txt_motion_type_default, elem.getMotionTypeIdx(), mMenuListMotionTypes, MENU_TYPE.MOTION, "motion_menu");
 
         // Add frequency submenu
-        buildSubMenu(R.id.txt_frequency_default, elem.getFrequencyIdx(), mMenuListFrequencies, MENU_TYPE.MOTOR_FREQUENCY, "frequency_menu");
+        buildSubMenu(R.id.txt_frequency_default, elem.getFrequencyIdx(), mMenuListFrequencies, MENU_TYPE.FREQUENCY, "frequency_menu");
 
-        // Add velocity submenu
-        buildSubMenu(R.id.txt_velocity_left_default, elem.getVelocityIdx(), mMenuListVelocities, MENU_TYPE.VELOCITY_LEFT, "velocity_menu");
+        // Add velocity left submenu
+        buildSubMenu(R.id.txt_velocity_left_default, elem.getVelocityLeftIdx(), mMenuListVelocities, MENU_TYPE.VELOCITY_LEFT, "velocity_left_menu");
+
+        // Add velocity right submenu
+        buildSubMenu(R.id.txt_velocity_right_default, elem.getVelocityRightIdx(), mMenuListVelocities, MENU_TYPE.VELOCITY_RIGHT, "velocity_right_menu");
 
         // Add choreography length submenu
         buildSubMenu(R.id.txt_length_default, elem.getChoreoLengthIdx(), mMenuChoreoLengths, MENU_TYPE.CHOREO_LENGTH, "choreo_length_menu");
@@ -203,7 +242,6 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
         } else if (mBeatElement.getMotionType().getClass() == MotorType.class) { // MOVE_TYPE
 
             createMotorElementMenu((MotorBeatElement) mBeatElement);
-
         }
 
         // Compose AlertDialog with custom elements
@@ -226,13 +264,16 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
                         // Save Led/Motor element properties
                         if (mBeatElement.getMotionType().getClass() == LedType.class) { // LED_TYPE
 
-                            // TODO
-                            ((LedBeatElement) mBeatElement).setLedLightSwitch(new int[]{1,2});
+                            // Process all check boxes
+                            processCheckBoxes();
+                            // Set led light switches according to selected check boxes
+                            ((LedBeatElement) mBeatElement).setLedLightSwitches(mLedLightSwitches);
 
                         } else if (mBeatElement.getMotionType().getClass() == MotorType.class) { // MOVE_TYPE
 
-                            // TODO
-                            ((MotorBeatElement) mBeatElement).setVelocityLeftIdx(1);
+                            // Set velocities of motor
+                            ((MotorBeatElement) mBeatElement).setVelocityLeftIdx(mMenuVelocityLeftIdx);
+                            ((MotorBeatElement) mBeatElement).setVelocityLeftIdx(mMenuVelocityRightIdx);
                         }
 
                         // Notify all corresponding beat elements that belong to this choreography

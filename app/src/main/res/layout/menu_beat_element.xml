@@ -37,7 +37,7 @@
         android:gravity="center_vertical"
         android:id="@+id/menu_item_frequency">
 
-    <TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -63,7 +63,7 @@
         android:gravity="center_vertical"
         android:id="@+id/menu_item_velocity_left">
 
-    <TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -89,7 +89,7 @@
         android:gravity="center_vertical"
         android:id="@+id/menu_item_velocity_right">
 
-    <TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -115,7 +115,7 @@
         android:gravity="center_vertical"
         android:id="@+id/menu_item_lights">
 
-    <TextView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -128,68 +128,68 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1"
-            android:id="@+id/checkBox1"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/txt_lights"
-            android:checked="false" />
-
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2"
-            android:id="@+id/checkBox2"
+            android:id="@+id/light_check_box1"
             android:checked="false"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/checkBox1" />
-
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="3"
-            android:id="@+id/checkBox3"
-            android:checked="false"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/checkBox2" />
-
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="4"
-            android:id="@+id/checkBox4"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/checkBox3" />
-
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="5"
-            android:id="@+id/checkBox5"
-            android:layout_below="@+id/checkBox1"
+            android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/txt_lights" />
 
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="2"
+            android:id="@+id/light_check_box2"
+            android:checked="false"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/light_check_box1" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3"
+            android:id="@+id/light_check_box3"
+            android:checked="false"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/light_check_box2" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4"
+            android:id="@+id/light_check_box4"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/light_check_box3" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5"
+            android:id="@+id/light_check_box5"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/light_check_box4" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="6"
-            android:id="@+id/checkBox6"
-            android:layout_alignTop="@+id/checkBox5"
-            android:layout_toEndOf="@+id/checkBox5" />
+            android:id="@+id/light_check_box6"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/light_check_box5" />
 
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="7"
-            android:id="@+id/checkBox7"
-            android:layout_alignTop="@+id/checkBox6"
-            android:layout_toEndOf="@+id/checkBox6" />
+            android:id="@+id/light_check_box7"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/light_check_box6" />
 
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="8"
-            android:id="@+id/checkBox8"
-            android:layout_alignTop="@+id/checkBox7"
-            android:layout_toEndOf="@+id/checkBox7" />
+            android:id="@+id/light_check_box8"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/light_check_box7" />
 
     </RelativeLayout>
 

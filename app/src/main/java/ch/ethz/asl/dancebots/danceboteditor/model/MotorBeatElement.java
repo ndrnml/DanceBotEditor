@@ -1,7 +1,6 @@
 package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 
@@ -11,6 +10,7 @@ import ch.ethz.asl.dancebots.danceboteditor.R;
 public class MotorBeatElement extends BeatElement<MotorType> {
 
     private int mVelocityLeftIdx;
+    private int mVelocityRightIdx;
 
     public MotorBeatElement(Context context, int beatPos, int samplePos, MotorType[] types) {
 
@@ -22,6 +22,7 @@ public class MotorBeatElement extends BeatElement<MotorType> {
 
         // Initialize specific motor element default properties
         mVelocityLeftIdx = 0;
+        mVelocityRightIdx = 0;
         mColor = mContext.getResources().getColor(R.color.motor_list_default_color);
 
     }
@@ -41,7 +42,8 @@ public class MotorBeatElement extends BeatElement<MotorType> {
         super.setProperties(elem);
 
         // TODO is this cast type safe?
-        mVelocityLeftIdx = ((MotorBeatElement) elem).getVelocityIdx();
+        mVelocityLeftIdx = ((MotorBeatElement) elem).getVelocityLeftIdx();
+        mVelocityRightIdx = ((MotorBeatElement) elem).getVelocityRightIdx();
     }
 
     @Override
@@ -49,8 +51,11 @@ public class MotorBeatElement extends BeatElement<MotorType> {
         return this.getClass().toString();
     }
 
-    public int getVelocityIdx() {
+    public int getVelocityLeftIdx() {
         return mVelocityLeftIdx;
     }
 
+    public int getVelocityRightIdx() {
+        return mVelocityRightIdx;
+    }
 }
