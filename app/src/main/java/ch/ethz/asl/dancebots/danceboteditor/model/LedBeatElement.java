@@ -1,53 +1,53 @@
 package ch.ethz.asl.dancebots.danceboteditor.model;
 
+import android.content.Context;
 import android.graphics.Color;
+
+import ch.ethz.asl.dancebots.danceboteditor.R;
 
 /**
  * Created by andrin on 18.09.15.
  */
 public class LedBeatElement extends BeatElement<LedType> {
 
-    public LedBeatElement(int beatPos, int samplePos, LedType[] types) {
+    private final int NUM_LED_LIGHTS = 8;
+    private int[] mLedLightSwitch; // Its values should be 0 or 1
+
+    public LedBeatElement(Context context, int beatPos, int samplePos, LedType[] types) {
 
         // Parent constructor call
-        super();
-
-        // Initialize motion element properties$
-        mMotionStartIndex = -1;
-        mMotionLength = -1;
+        super(context, beatPos, samplePos);
 
         // Initialize beat element properties
-        mBeatPosition = beatPos;
-        mSamplePosition = samplePos;
         mMotionTypes = types;
 
-        // Initial update of element properties
-        updateProperties();
+        // Initialize specific led element default properties
+        mColor = mContext.getResources().getColor(R.color.led_list_default_color);
+        mLedLightSwitch = new int[NUM_LED_LIGHTS];
+
+        // Initialize led light indices to 0
+        for (int i = 0; i < NUM_LED_LIGHTS; ++i) {
+            mLedLightSwitch[i] = 0;
+        }
 
     }
 
-    @Override
-    public void updateProperties() {
+    /**
+     * Set properties of led element based on specific input values
+     * @param ledLightSwitch
+     */
+    public void setLedLightSwitch(int[] ledLightSwitch) {
 
-        switch (mMotionTypes[mMotionTypeIdx]) {
-
-            case KNIGHT_RIDER:
-                mColor = Color.BLUE;
-                break;
-
-            case CONSTANT:
-                mColor = Color.BLACK;
-                break;
-
-
-            default:
-                break;
-        }
+        // Set led element specific values
+        mLedLightSwitch = ledLightSwitch;
     }
 
     @Override
     public void setProperties(BeatElement elem) {
 
+        super.setProperties(elem);
+
+        mLedLightSwitch = ((LedBeatElement) elem).getLedLightSwitch();
     }
 
     @Override
@@ -55,4 +55,7 @@ public class LedBeatElement extends BeatElement<LedType> {
         return this.getClass().toString();
     }
 
+    public int[] getLedLightSwitch() {
+        return mLedLightSwitch;
+    }
 }

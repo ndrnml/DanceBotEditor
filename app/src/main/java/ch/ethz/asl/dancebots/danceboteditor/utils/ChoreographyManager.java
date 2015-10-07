@@ -7,10 +7,7 @@ import java.util.ArrayList;
 
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
-import ch.ethz.asl.dancebots.danceboteditor.model.MotionType;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.MoveType;
 
 /**
  * Created by andrin on 31.08.15.
@@ -43,7 +40,7 @@ public class ChoreographyManager {
         }
     }
 
-    public void updateElements(ArrayList<BeatElement> elemList, BeatElement startElem) {
+    private void updateElements(ArrayList<BeatElement> elemList, BeatElement startElem) {
 
         int startIdx = startElem.getMotionStartIndex();
         int choreoLength = startElem.getMotionLength();
@@ -52,13 +49,16 @@ public class ChoreographyManager {
 
             int nextElemIdx = startIdx + i;
 
-            // Check that beat element i is not yet assigned to another choreography
+            // Check that next beat element is not yet assigned to another choreography
             if (elemList.get(nextElemIdx).getMotionStartIndex() == -1) {
 
                 // Get element
                 BeatElement elem = elemList.get(nextElemIdx);
                 elem.setProperties(startElem);
-                elem.updateProperties();
+
+            } else {
+                //
+                break;
             }
         }
     }

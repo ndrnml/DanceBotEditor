@@ -1,11 +1,9 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
+import android.graphics.Color;
 
 import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
-import ch.ethz.asl.dancebots.danceboteditor.model.MoveType;
+import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
 
 /**
  * Created by andrin on 09.07.15.
@@ -16,6 +14,9 @@ public class DanceBotEditorProjectFile {
     public boolean beatExtractionDone = false;
     public boolean startedEditing = false;
 
+    // Singleton instance
+    private static DanceBotEditorProjectFile instance = null;
+
     private DanceBotMusicFile mDBMusicFile;
     private BeatGrid mBeatGrid;
     private ChoreographyManager mChoreoManager;
@@ -24,9 +25,9 @@ public class DanceBotEditorProjectFile {
      * MENU STRING UNITS
      * Make sure the order is the same as in the enum MotionType
      */
-    private String[] mMoveStatesStrings = new String[]{"Geradeaus", "Drehung", "Wippen", "Vor- und Zurück", "Konstant", "Warten"};
+    private String[] mMotorStatesStrings = new String[]{"Geradeaus", "Drehung", "Wippen", "Vor- und Zurück", "Konstant", "Warten"};
     private String[] mLedStatesStrings = new String[]{"Knight Rider", "Zufällig", "Blinken", "SAME_BLINK", "Konstant"};
-    private String[] mMoveFrequenciesStrings = new String[]{"1/4", "1/3", "1/2", "2/3", "1"};
+    private String[] mMotorFrequenciesStrings = new String[]{"1/4", "1/3", "1/2", "2/3", "1"};
     private String[] mLedFrequenciesStrings = new String[]{"1/4", "1/3", "1/2", "2/3", "3/2", "2", "3", "4"};
     private String[] mVelocitiesStrings = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
     private String[] mLedLightsStrings = new String[]{"1", "2", "3", "4", "5", "6", "7", "8"};
@@ -35,12 +36,11 @@ public class DanceBotEditorProjectFile {
     /**
      * MENU TYPE UNITS
      */
-    private MoveType[] mMoveStates = MoveType.values();
-    private LedType[] mLedStates = LedType.values();
+    private MotorType[] mMotorStates = MotorType.values(); // Get ENUM values
+    private LedType[] mLedStates = LedType.values(); // Get ENUM values
     private int[] mChoreoLengths = new int[]{1,2,3,4,5,6,7,8,9,10};
-
-    // Singleton instance
-    private static DanceBotEditorProjectFile instance = null;
+    private int[] mMotorColors = new int[]{Color.RED, Color.RED, Color.RED, Color.RED, Color.RED, Color.RED};
+    private int[] mLedColors = new int[]{Color.RED, Color.RED, Color.RED, Color.RED, Color.RED};
 
     /**
      * DanceBotEditorProjectFile is treated as Singleton
@@ -107,16 +107,16 @@ public class DanceBotEditorProjectFile {
         return mChoreoManager;
     }
 
-    public String[] getMoveStatesStrings() {
-        return mMoveStatesStrings;
+    public String[] getMotorStatesStrings() {
+        return mMotorStatesStrings;
     }
 
     public String[] getLedStatesStrings() {
         return mLedStatesStrings;
     }
 
-    public String[] getMoveFrequenciesStrings() {
-        return mMoveFrequenciesStrings;
+    public String[] getMotorFrequenciesStrings() {
+        return mMotorFrequenciesStrings;
     }
 
     public String[] getLedFrequenciesStrings() {
@@ -135,8 +135,8 @@ public class DanceBotEditorProjectFile {
         return mChoreoLengthsStrings;
     }
 
-    public MoveType[] getMoveStates() {
-        return mMoveStates;
+    public MotorType[] getMotorStates() {
+        return mMotorStates;
     }
     public LedType[] getLedStates() {
         return mLedStates;

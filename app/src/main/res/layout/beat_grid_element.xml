@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/txt_beat_grid_elem_type"
-    android:layout_width="100px"
+    android:layout_width="50px"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:background="@android:color/darker_gray"
-    android:alpha="0.8"/>
+    android:padding="10dp"
+    android:alpha="1.0" />

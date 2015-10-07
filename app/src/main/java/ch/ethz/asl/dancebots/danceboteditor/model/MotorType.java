@@ -1,6 +1,6 @@
 package ch.ethz.asl.dancebots.danceboteditor.model;
 
-public enum MoveType implements MotionType {
+public enum MotorType implements MotionType {
     STRAIGHT,
     SPIN,
     TWIST,

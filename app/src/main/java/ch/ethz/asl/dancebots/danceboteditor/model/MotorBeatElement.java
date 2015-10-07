@@ -1,74 +1,56 @@
 package ch.ethz.asl.dancebots.danceboteditor.model;
 
-import android.graphics.Color;
+import android.content.Context;
+import android.content.res.Resources;
+
+import ch.ethz.asl.dancebots.danceboteditor.R;
 
 /**
  * Created by andrin on 04.09.15.
  */
-public class MotorBeatElement extends BeatElement<MoveType> {
+public class MotorBeatElement extends BeatElement<MotorType> {
 
-    public MotorBeatElement(int beatPos, int samplePos, MoveType[] types) {
+    private int mVelocityLeftIdx;
+
+    public MotorBeatElement(Context context, int beatPos, int samplePos, MotorType[] types) {
 
         // Parent constructor call
-        super();
-
-        // Initialize motion element properties$
-        mMotionStartIndex = -1;
-        mMotionLength = -1;
+        super(context, beatPos, samplePos);
 
         // Initialize beat element properties
-        mBeatPosition = beatPos;
-        mSamplePosition = samplePos;
         mMotionTypes = types;
 
-        updateProperties();
+        // Initialize specific motor element default properties
+        mVelocityLeftIdx = 0;
+        mColor = mContext.getResources().getColor(R.color.motor_list_default_color);
+
     }
 
-    @Override
-    public void updateProperties() {
+    /**
+     * Set motor element properties based on specific input values
+     * @param idx
+     */
+    public void setVelocityLeftIdx(int idx) {
 
-        switch (mMotionTypes[mMotionTypeIdx]) {
-
-            case STRAIGHT:
-                mColor = Color.RED;
-                break;
-
-            case SPIN:
-                mColor = Color.GRAY;
-                break;
-
-            case TWIST:
-                mColor = Color.GREEN;
-                break;
-
-            case BACK_AND_FORTH:
-                mColor = Color.CYAN;
-                break;
-
-            case CONSTANT:
-                mColor = Color.YELLOW;
-                break;
-
-            case WAIT:
-                mColor = Color.WHITE;
-                break;
-
-            default:
-                break;
-        }
+        // Set motor element specific properties
+        mVelocityLeftIdx = idx; // TODO Check that idx is a valid number?
     }
 
     @Override
     public void setProperties(BeatElement elem) {
+        super.setProperties(elem);
 
-        // TODO comment
-        mMotionTypeIdx = elem.getMotionTypeIdx();
-        mMotionStartIndex = elem.getMotionStartIndex();
-        mMotionLength = elem.getMotionLength();
+        // TODO is this cast type safe?
+        mVelocityLeftIdx = ((MotorBeatElement) elem).getVelocityIdx();
     }
 
     @Override
     public String getTypeAsString() {
         return this.getClass().toString();
     }
+
+    public int getVelocityIdx() {
+        return mVelocityLeftIdx;
+    }
+
 }

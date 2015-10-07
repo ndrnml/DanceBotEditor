@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
 
 /**
  * Created by andrin on 25.09.15.
@@ -44,7 +43,7 @@ public class SubMenuDialog extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        mSubmenuView = inflater.inflate(R.layout.beat_element_submenu, null);
+        mSubmenuView = inflater.inflate(R.layout.menu_sub_element, null);
 
         // TODO Get title view
         //final TextView subMenuTitleView = (TextView) mSubmenuView.findViewById(R.id.id_submenu_title);

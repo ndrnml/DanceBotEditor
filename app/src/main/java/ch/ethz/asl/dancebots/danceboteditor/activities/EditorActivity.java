@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -20,9 +19,7 @@ import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.MoveType;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 
 
@@ -98,27 +95,27 @@ public class EditorActivity extends Activity {
 
             mProjectFile.initChoreography();
             for (int i = 0; i < NUM_BEATS; ++i) {
-                mProjectFile.getChoreoManager().mMotorBeatElements.add(new MotorBeatElement(i, SPACING*i, mProjectFile.getMoveStates()));
-                mProjectFile.getChoreoManager().mLedBeatElements.add(new LedBeatElement(i, SPACING*i, mProjectFile.getLedStates()));
+                mProjectFile.getChoreoManager().mMotorBeatElements.add(new MotorBeatElement(getApplicationContext(), i, SPACING*i, mProjectFile.getMotorStates()));
+                mProjectFile.getChoreoManager().mLedBeatElements.add(new LedBeatElement(getApplicationContext(), i, SPACING*i, mProjectFile.getLedStates()));
             }
             /**
              * END DUMMY DATA CONSTRUCTION
              */
 
             // Create the beat adapters
-            BeatElementAdapter moveAdapter = new BeatElementAdapter(EditorActivity.this, mProjectFile.getChoreoManager().mMotorBeatElements);
+            BeatElementAdapter motorAdapter = new BeatElementAdapter(EditorActivity.this, mProjectFile.getChoreoManager().mMotorBeatElements);
             BeatElementAdapter ledAdapter = new BeatElementAdapter(EditorActivity.this, mProjectFile.getChoreoManager().mLedBeatElements);
 
-            // Attach movement adapter to the horizontal move ListView
-            TwoWayView moveView = (TwoWayView) findViewById(R.id.motor_element_list);
-            moveView.setAdapter(moveAdapter);
+            // Attach motor adapter to the horizontal ListView
+            TwoWayView motorView = (TwoWayView) findViewById(R.id.motor_element_list);
+            motorView.setAdapter(motorAdapter);
 
             // Attach led adapter
             TwoWayView ledView = (TwoWayView) findViewById(R.id.led_element_list);
             ledView.setAdapter(ledAdapter);
 
             // TODO remove or change this
-            registerForContextMenu(moveView);
+            registerForContextMenu(motorView);
 
             // Set the editor state to decoding (sensitive phase)
             mEditorState = State.DECODING;
@@ -207,13 +204,15 @@ public class EditorActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed(); // This has to be removed
+        //super.onBackPressed(); // This has to be removed, REALLY?
 
         // TODO: ask user to cancel the current project
         Log.v(LOG_TAG, "Back button is pressed.");
 
         // Popup alert dialog to confirm users decision
-        askExit();
+        //askExit();
+
+        finish();
     }
 
 
