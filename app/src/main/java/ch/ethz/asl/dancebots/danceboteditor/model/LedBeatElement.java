@@ -1,6 +1,7 @@
 package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 
@@ -9,6 +10,7 @@ import ch.ethz.asl.dancebots.danceboteditor.R;
  */
 public class LedBeatElement extends BeatElement<LedType> {
 
+    private static final String LOG_TAG = "LED_BEAT_ELEMENT";
     private static final int NUM_LED_LIGHTS = 8;
 
     private boolean[] mLedLightSwitches;
@@ -32,10 +34,6 @@ public class LedBeatElement extends BeatElement<LedType> {
 
     }
 
-    public static int getNumLedLights() {
-        return NUM_LED_LIGHTS;
-    }
-
     /**
      * Set properties of led element based on specific input values
      * @param ledLightSwitches
@@ -46,12 +44,54 @@ public class LedBeatElement extends BeatElement<LedType> {
         mLedLightSwitches = ledLightSwitches;
     }
 
+    /**
+     * Set properties of led element based on specific input element
+     * @param elem
+     */
+    public void setLedLightSwitches(BeatElement elem) {
+        mLedLightSwitches = ((LedBeatElement) elem).getLedLightSwitches();
+    }
+
+    @Override
+    protected void setColor() {
+
+        switch (mMotionTypes[mMotionTypeIdx]) {
+
+            case KNIGHT_RIDER:
+                mColor = mContext.getResources().getColor(R.color.led_elem_color1);
+                break;
+
+            case RANDOM:
+                mColor = mContext.getResources().getColor(R.color.led_elem_color2);
+                break;
+
+            case BLINK:
+                mColor = mContext.getResources().getColor(R.color.led_elem_color3);
+                break;
+
+            case SAME_BLINK:
+                mColor = mContext.getResources().getColor(R.color.led_elem_color4);
+                break;
+
+            case CONSTANT:
+                mColor = mContext.getResources().getColor(R.color.led_elem_color5);
+                break;
+
+            default:
+                Log.e(LOG_TAG, "Error switch: " + mMotionTypes[mMotionTypeIdx]);
+                break;
+        }
+    }
+
     @Override
     public void setProperties(BeatElement elem) {
 
+        // Set general beat element properties
         super.setProperties(elem);
 
-        mLedLightSwitches = ((LedBeatElement) elem).getLedLightSwitches();
+        // Set led element specific properties
+        setColor();
+        setLedLightSwitches(elem);
     }
 
     @Override
@@ -61,5 +101,9 @@ public class LedBeatElement extends BeatElement<LedType> {
 
     public boolean[] getLedLightSwitches() {
         return mLedLightSwitches;
+    }
+
+    public static int getNumLedLights() {
+        return NUM_LED_LIGHTS;
     }
 }

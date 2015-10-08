@@ -7,6 +7,23 @@
     <color name="item_activated_color">#77CEEE</color>
 
     <color name="motor_list_default_color">#FFB163</color>
-    <color name="led_list_default_color">#ffd5ab</color>
+    <color name="motor_elem_color1">#C62828</color>
+    <color name="motor_elem_color2">#283593</color>
+    <color name="motor_elem_color3">#00838F</color>
+    <color name="motor_elem_color4">#558B2F</color>
+    <color name="motor_elem_color5">#EF6C00</color>
+    <color name="motor_elem_color6">#4E342E</color>
+    <color name="motor_elem_color7">#1565C0</color>
+    <color name="motor_elem_color8">#9E9D24</color>
+
+    <color name="led_list_default_color">#FFD5AB</color>
+    <color name="led_elem_color1">#E53935</color>
+    <color name="led_elem_color2">#3F51B5</color>
+    <color name="led_elem_color3">#00BCD4</color>
+    <color name="led_elem_color4">#9CCC65</color>
+    <color name="led_elem_color5">#FFA726</color>
+    <color name="led_elem_color6">#8D6E63</color>
+    <color name="led_elem_color7">#BDBDBD</color>
+    <color name="led_elem_color8">#FFEE58</color>
 
 </resources>

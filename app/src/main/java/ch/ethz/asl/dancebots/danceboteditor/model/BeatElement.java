@@ -49,20 +49,21 @@ public abstract class BeatElement<T extends MotionType> {
      * Set beat element properties
      * @param choreoStartIdx
      * @param choreoLength
-     * @param color
      * @param motionTypeIdx
      * @param frequencyIdx
      * @param choreoLengthIdx
      */
-    public void setProperties(int choreoStartIdx, int choreoLength, int color, int motionTypeIdx, int frequencyIdx, int choreoLengthIdx) {
+    public void setProperties(int choreoStartIdx, int choreoLength, int motionTypeIdx, int frequencyIdx, int choreoLengthIdx) {
 
         // Set all general beat element properties
         mChoreoStartIdx = choreoStartIdx;
         mChoreoLength = choreoLength;
-        mColor = color;
         mMotionTypeIdx = motionTypeIdx;
         mFrequencyIdx = frequencyIdx;
         mChoreoLengthIdx = choreoLengthIdx;
+
+        // Update color
+        setColor();
     }
 
     /**
@@ -78,6 +79,8 @@ public abstract class BeatElement<T extends MotionType> {
         mFrequencyIdx = elem.getFrequencyIdx();
         mChoreoLengthIdx = elem.getChoreoLengthIdx();
     }
+
+    protected abstract void setColor();
 
     // This method is just for testing purposes and might be removed in future time
     public abstract String getTypeAsString();
@@ -107,7 +110,6 @@ public abstract class BeatElement<T extends MotionType> {
     public int getMotionLength() {
         return mChoreoLength;
     }
-
     public int getBeatPosition() {
         return mBeatPosition;
     }
@@ -132,7 +134,6 @@ public abstract class BeatElement<T extends MotionType> {
     public int getChoreoStartIdx() {
         return mChoreoStartIdx;
     }
-
     public int getChoreoLength() {
         return mChoreoLength;
     }

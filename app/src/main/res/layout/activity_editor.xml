@@ -42,7 +42,7 @@
         android:layout_height="200px"
         android:drawSelectorOnTop="false"
         android:background="@color/motor_list_default_color"
-        android:padding="10px"
+        android:padding="10dp"
         tools:context=".EditorActivity" />
 
     <org.lucasr.twowayview.TwoWayView
@@ -52,7 +52,7 @@
         android:layout_height="200px"
         android:drawSelectorOnTop="false"
         android:background="@color/led_list_default_color"
-        android:padding="10px"
+        android:padding="10dp"
         tools:context=".EditorActivity" />
 
     <SeekBar

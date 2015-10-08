@@ -273,7 +273,7 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
                         int choreoStartIdx = mBeatElement.getBeatPosition();
                         int choreoLength = mDanceBotEditorProjectFile.getChoreoLengthAtIdx(mMenuChoreoLengthIdx);
 
-                        mBeatElement.setProperties(choreoStartIdx, choreoLength, Color.RED, mMenuMotionIdx, mMenuFrequencyIdx, mMenuChoreoLengthIdx);
+                        mBeatElement.setProperties(choreoStartIdx, choreoLength, mMenuMotionIdx, mMenuFrequencyIdx, mMenuChoreoLengthIdx);
 
                         // Save Led/Motor element properties
                         if (mBeatElement.getMotionType().getClass() == LedType.class) { // LED_TYPE
@@ -287,7 +287,7 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
 
                             // Set velocities of motor
                             ((MotorBeatElement) mBeatElement).setVelocityLeftIdx(mMenuVelocityLeftIdx);
-                            ((MotorBeatElement) mBeatElement).setVelocityLeftIdx(mMenuVelocityRightIdx);
+                            ((MotorBeatElement) mBeatElement).setVelocityRightIdx(mMenuVelocityRightIdx);
                         }
 
                         // Notify all corresponding beat elements that belong to this choreography

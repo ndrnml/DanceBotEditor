@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -32,6 +33,7 @@ public class EditorActivity extends Activity {
 
     private static final String LOG_TAG = "EDITOR_ACTIVITY";
     private static final int PICK_SONG_REQUEST = 1;
+
     private DanceBotEditorProjectFile mProjectFile;
     private State mEditorState = State.NEW;
 
@@ -114,7 +116,7 @@ public class EditorActivity extends Activity {
             TwoWayView ledView = (TwoWayView) findViewById(R.id.led_element_list);
             ledView.setAdapter(ledAdapter);
 
-            // TODO remove or change this
+            // TODO remove or change this (THIS WAS ADDED FOR THE LONG CLICK CAPABILITY)
             registerForContextMenu(motorView);
 
             // Set the editor state to decoding (sensitive phase)
