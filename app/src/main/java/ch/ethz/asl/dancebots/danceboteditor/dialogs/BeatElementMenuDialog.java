@@ -42,7 +42,7 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
     private String[] mMenuListVelocities;
     private String[] mMenuChoreoLengths;
     private ArrayList<CheckBox> mCheckBoxes;
-    private int[] mLedLightSwitches;
+    private boolean[] mLedLightSwitches;
     private int mNumCheckBoxes;
     
     private int mMenuMotionIdx;
@@ -75,7 +75,7 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
             // Check box initialization
             mNumCheckBoxes = LedBeatElement.getNumLedLights();
             mCheckBoxes = new ArrayList<>(mNumCheckBoxes);
-            mLedLightSwitches = new int[mNumCheckBoxes];
+            mLedLightSwitches = new boolean[mNumCheckBoxes];
 
         } else if (mBeatElement.getMotionType().getClass() == MotorType.class) { // MOVE_TYPE
 
@@ -142,11 +142,11 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
 
             if (mCheckBoxes.get(i).isChecked()) {
                 // Set light switch on
-                mLedLightSwitches[i] = 1;
+                mLedLightSwitches[i] = true;
                 //Log.v(LOG_TAG, "checkbox: " + i + " is " + mCheckBoxes.get(i).isChecked());
             } else {
                 // Set light switch off
-                mLedLightSwitches[i] = 0;
+                mLedLightSwitches[i] = false;
                 //Log.v(LOG_TAG, "checkbox: " + i + " is " + mCheckBoxes.get(i).isChecked());
             }
         }
@@ -174,6 +174,27 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
         });
     }
 
+    private void buildCheckBoxMenu(boolean[] ledLightSwitches) {
+
+        // Register check boxes
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box1));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box2));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box3));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box4));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box5));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box6));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box7));
+        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box8));
+
+        for (int i = 0; i < mNumCheckBoxes; ++i) {
+
+            if (ledLightSwitches[i]) {
+                mCheckBoxes.get(i).setChecked(true);
+            } else {
+                mCheckBoxes.get(i).setChecked(false);
+            }
+        }
+    }
 
     private void createLedElementMenu(LedBeatElement elem) {
 
@@ -186,15 +207,8 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
         // Add choreography length submenu
         buildSubMenu(R.id.txt_length_default, elem.getChoreoLengthIdx(), mMenuChoreoLengths, MENU_TYPE.CHOREO_LENGTH, "choreo_length_menu");
 
-        // Register check boxes menu
-        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box1));
-        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box2));
-        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box3));
-        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box4));
-        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box5));
-        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box6));
-        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box7));
-        mCheckBoxes.add((CheckBox) mBeatElementMenuView.findViewById(R.id.light_check_box8));
+        // Add a check box menu
+        buildCheckBoxMenu(elem.getLedLightSwitches());
 
         // Hide not relevant menu items
         mBeatElementMenuView.findViewById(R.id.menu_item_velocity_left).setVisibility(View.GONE);

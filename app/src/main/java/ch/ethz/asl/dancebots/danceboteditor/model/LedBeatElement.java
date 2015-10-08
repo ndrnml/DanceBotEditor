@@ -11,7 +11,7 @@ public class LedBeatElement extends BeatElement<LedType> {
 
     private static final int NUM_LED_LIGHTS = 8;
 
-    private int[] mLedLightSwitches; // Its values should be 0 or 1
+    private boolean[] mLedLightSwitches;
 
     public LedBeatElement(Context context, int beatPos, int samplePos, LedType[] types) {
 
@@ -23,11 +23,11 @@ public class LedBeatElement extends BeatElement<LedType> {
 
         // Initialize specific led element default properties
         mColor = mContext.getResources().getColor(R.color.led_list_default_color);
-        mLedLightSwitches = new int[NUM_LED_LIGHTS];
+        mLedLightSwitches = new boolean[NUM_LED_LIGHTS];
 
         // Initialize led light indices to 0
         for (int i = 0; i < NUM_LED_LIGHTS; ++i) {
-            mLedLightSwitches[i] = 0;
+            mLedLightSwitches[i] = false;
         }
 
     }
@@ -40,7 +40,7 @@ public class LedBeatElement extends BeatElement<LedType> {
      * Set properties of led element based on specific input values
      * @param ledLightSwitches
      */
-    public void setLedLightSwitches(int[] ledLightSwitches) {
+    public void setLedLightSwitches(boolean[] ledLightSwitches) {
 
         // Set led element specific values
         mLedLightSwitches = ledLightSwitches;
@@ -59,7 +59,7 @@ public class LedBeatElement extends BeatElement<LedType> {
         return this.getClass().toString();
     }
 
-    public int[] getLedLightSwitches() {
+    public boolean[] getLedLightSwitches() {
         return mLedLightSwitches;
     }
 }
