@@ -2,7 +2,7 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/txt_beat_grid_elem_type"
     android:layout_width="50dp"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:gravity="center_vertical"
     android:padding="10dp"
     android:alpha="1.0"

@@ -100,6 +100,11 @@ public class LedBeatElement extends BeatElement<LedType> {
     }
 
     @Override
+    public boolean hasChoreography() {
+        return mHasChoreography;
+    }
+
+    @Override
     public String getTypeAsString() {
         return this.getClass().toString();
     }

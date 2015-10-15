@@ -107,7 +107,10 @@ public class MotorBeatElement extends BeatElement<MotorType> {
         setVelocityIndices(elem);
     }
 
-
+    @Override
+    public boolean hasChoreography() {
+        return mHasChoreography;
+    }
 
     @Override
     public String getTypeAsString() {

@@ -5,7 +5,7 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="TwoWayView">
+    <style name="HorizontalListView">
         <item name="android:orientation">horizontal</item>
     </style>
 

@@ -2,11 +2,11 @@ package ch.ethz.asl.dancebots.danceboteditor.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,84 +19,86 @@ import ch.ethz.asl.dancebots.danceboteditor.R;
 /**
  * Created by andrin on 28.08.15.
  */
-public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
+public class BeatElementAdapter extends RecyclerView.Adapter<BeatElementAdapter.SimpleViewHolder> {
 
     private ArrayList<BeatElement> mBeatElements;
     private Toast mToast;
 
-    // View lookup cache
-    private static class ViewHolder {
-        TextView name;
+    // Provide a reference to the views for each data item
+    // Complex data items may need more than one view per item, and
+    // you provide access to all the views for a data item in a view holder
+    public static class SimpleViewHolder extends RecyclerView.ViewHolder {
+        // each data item is just a string in this case
+        public TextView mTextView;
+
+        public SimpleViewHolder(TextView v) {
+            super(v);
+            mTextView = v;
+        }
     }
 
-    public BeatElementAdapter(Context context, ArrayList<BeatElement> elems) {
-        super(context, 0, elems);
+    public BeatElementAdapter(ArrayList<BeatElement> elems) {
         mBeatElements = elems;
     }
 
+    // Create new views (invoked by the layout manager)
     @Override
-    public View getView(int position, View convertView, final ViewGroup parent) {
+    public BeatElementAdapter.SimpleViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
 
-        // Get beat grid element for this position
-        final BeatElement elem = getItem(position);
-        final int elemPosition = position;
+        // Create a new view
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.beat_grid_element, parent, false);
 
-        // Check if an existing view is being reused, otherwise inflate the view
-        ViewHolder viewHolder; // view lookup cache stored in tag
+        // Set the view's size, margins, paddings and layout parameters
+        final SimpleViewHolder vh = new SimpleViewHolder((TextView) v);
 
-        if (convertView == null) {
-
-            viewHolder = new ViewHolder();
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-
-            convertView = inflater.inflate(R.layout.beat_grid_element, parent, false);
-            viewHolder.name = (TextView) convertView.findViewById(R.id.txt_beat_grid_elem_type);
-
-            convertView.setTag(viewHolder);
-
-        } else {
-
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-
-        // TODO Ensure long clicks are also registered
-        convertView.setLongClickable(true);
-
-        // Populate the data into the template view using the data object
-        viewHolder.name.setText(elem.getChoreoTag());
-
-        // Stylize list item according to type
-        viewHolder.name.setBackgroundColor(elem.getColor());
-
-        // TODO remove if not needed!
-        mToast = Toast.makeText(getContext(), "", Toast.LENGTH_SHORT);
+        mToast = Toast.makeText(parent.getContext(), "", Toast.LENGTH_SHORT);
         mToast.setGravity(Gravity.CENTER, 0, 0);
 
+        // TODO Ensure long clicks are also registered
+        vh.mTextView.setLongClickable(true);
+
         // Create and attach on click listener
-        viewHolder.name.setOnClickListener(new View.OnClickListener() {
+        vh.mTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Context c = parent.getContext();
                 BeatElementMenuDialog dialog = new BeatElementMenuDialog();
-                dialog.initializeMenu(BeatElementAdapter.this, elem);
+                dialog.initializeMenu(BeatElementAdapter.this, mBeatElements.get(vh.getPosition()));
                 dialog.show(((Activity) c).getFragmentManager(), "element_menu");
             }
         });
 
         // Create and attach on long click listener
-        /*viewHolder.name.setOnLongClickListener(new View.OnLongClickListener() {
+        /*vh.mTextView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
 
-                mToast.setText(elem.getTypeAsString() + ": Item long clicked: " + elemPosition);
+                mToast.setText(": Item long clicked: " + vh.getPosition());
                 mToast.show();
 
                 return true;
             }
-        });
-*/
-        // Return the completed view to render on screen
-        return convertView;
+        });*/
+
+        return vh;
     }
+
+    // Replace the contents of a view (invoked by the layout manager)
+    @Override
+    public void onBindViewHolder(SimpleViewHolder holder, int position) {
+        // - get element from your dataset at this position
+        // - replace the contents of the view with that element
+        // Populate the data into the template view using the data object
+        holder.mTextView.setText(Integer.toString(position)/*mBeatElements.get(position).getChoreoTag()*/);
+
+        // Stylize list item according to type
+        holder.mTextView.setBackgroundColor(mBeatElements.get(position).getColor());
+    }
+
+    @Override
+    public int getItemCount() {
+        return mBeatElements.size();
+    }
+
 }

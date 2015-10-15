@@ -28,7 +28,7 @@ public class ChoreographyManager {
         initBeatElements(beatGrid);
     }
 
-    public void updateChoreography(BeatElement startElem) {
+    public void addChoreography(BeatElement startElem) {
 
         if (startElem.getClass().equals(LedBeatElement.class)) {
 
@@ -38,6 +38,11 @@ public class ChoreographyManager {
 
             updateElements(mMotorBeatElements, startElem);
         }
+    }
+
+    public void updateChoreography(BeatElement mBeatElement) {
+
+        // TODO
     }
 
     private void updateElements(ArrayList<BeatElement> elemList, BeatElement startElem) {

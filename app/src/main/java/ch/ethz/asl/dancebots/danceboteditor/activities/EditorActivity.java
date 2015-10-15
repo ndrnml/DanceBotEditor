@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -13,8 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
-import org.lucasr.twowayview.TwoWayView;
 
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
@@ -105,19 +105,30 @@ public class EditorActivity extends Activity {
              */
 
             // Create the beat adapters
-            BeatElementAdapter motorAdapter = new BeatElementAdapter(EditorActivity.this, mProjectFile.getChoreoManager().mMotorBeatElements);
-            BeatElementAdapter ledAdapter = new BeatElementAdapter(EditorActivity.this, mProjectFile.getChoreoManager().mLedBeatElements);
+            BeatElementAdapter motorAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mMotorBeatElements);
+            BeatElementAdapter ledAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mLedBeatElements);
 
-            // Attach motor adapter to the horizontal ListView
-            TwoWayView motorView = (TwoWayView) findViewById(R.id.motor_element_list);
+            // Initialize and setup linear layout manager
+            LinearLayoutManager motorLayoutManager = new LinearLayoutManager(this);
+            LinearLayoutManager ledLayoutManager = new LinearLayoutManager(this);
+
+            motorLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+            ledLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+
+            // Attach motor adapter and linear layout manager to the horizontal recycler view
+            RecyclerView motorView = (RecyclerView) findViewById(R.id.motor_element_list);
+            motorView.setHasFixedSize(true);
+            motorView.setLayoutManager(motorLayoutManager);
             motorView.setAdapter(motorAdapter);
 
-            // Attach led adapter
-            TwoWayView ledView = (TwoWayView) findViewById(R.id.led_element_list);
+            // Attach led adapter and linear layout manager
+            RecyclerView ledView = (RecyclerView) findViewById(R.id.led_element_list);
+            ledView.setHasFixedSize(true);
+            ledView.setLayoutManager(ledLayoutManager);
             ledView.setAdapter(ledAdapter);
 
             // TODO remove or change this (THIS WAS ADDED FOR THE LONG CLICK CAPABILITY)
-            registerForContextMenu(motorView);
+            //registerForContextMenu(motorView);
 
             // Set the editor state to decoding (sensitive phase)
             mEditorState = State.DECODING;

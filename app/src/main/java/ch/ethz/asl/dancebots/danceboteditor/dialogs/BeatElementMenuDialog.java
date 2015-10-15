@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -269,29 +268,20 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
 
-                        // Save BeatElement properties
-                        int choreoStartIdx = mBeatElement.getBeatPosition();
-                        int choreoLength = mDanceBotEditorProjectFile.getChoreoLengthAtIdx(mMenuChoreoLengthIdx);
+                        if (mBeatElement.hasChoreography()) {
 
-                        mBeatElement.setProperties(choreoStartIdx, choreoLength, mMenuMotionIdx, mMenuFrequencyIdx, mMenuChoreoLengthIdx);
+                            // Update existing choregraphy
+                            mDanceBotEditorProjectFile.getChoreoManager().updateChoreography(mBeatElement);
 
-                        // Save Led/Motor element properties
-                        if (mBeatElement.getMotionType().getClass() == LedType.class) { // LED_TYPE
+                        } else {
 
-                            // Process all check boxes
-                            processCheckBoxes();
-                            // Set led light switches according to selected check boxes
-                            ((LedBeatElement) mBeatElement).setLedLightSwitches(mLedLightSwitches);
+                            // Add a new choreography
+                            storeCollectedMenuData();
 
-                        } else if (mBeatElement.getMotionType().getClass() == MotorType.class) { // MOVE_TYPE
+                            // Notify all corresponding beat elements that belong to this choreography
+                            mDanceBotEditorProjectFile.getChoreoManager().addChoreography(mBeatElement);
 
-                            // Set velocities of motor
-                            ((MotorBeatElement) mBeatElement).setVelocityLeftIdx(mMenuVelocityLeftIdx);
-                            ((MotorBeatElement) mBeatElement).setVelocityRightIdx(mMenuVelocityRightIdx);
                         }
-
-                        // Notify all corresponding beat elements that belong to this choreography
-                        mDanceBotEditorProjectFile.getChoreoManager().updateChoreography(mBeatElement);
 
                         // Notify the list adapter to update the modified list elements
                         mBeatElementAdapter.notifyDataSetChanged();
@@ -304,6 +294,30 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
                 });
 
         return builder.create();
+    }
+
+    private void storeCollectedMenuData() {
+
+        // Save BeatElement properties
+        int choreoStartIdx = mBeatElement.getBeatPosition();
+        int choreoLength = mDanceBotEditorProjectFile.getChoreoLengthAtIdx(mMenuChoreoLengthIdx);
+
+        mBeatElement.setProperties(choreoStartIdx, choreoLength, mMenuMotionIdx, mMenuFrequencyIdx, mMenuChoreoLengthIdx);
+
+        // Save Led/Motor element properties
+        if (mBeatElement.getMotionType().getClass() == LedType.class) { // LED_TYPE
+
+            // Process all check boxes
+            processCheckBoxes();
+            // Set led light switches according to selected check boxes
+            ((LedBeatElement) mBeatElement).setLedLightSwitches(mLedLightSwitches);
+
+        } else if (mBeatElement.getMotionType().getClass() == MotorType.class) { // MOVE_TYPE
+
+            // Set velocities of motor
+            ((MotorBeatElement) mBeatElement).setVelocityLeftIdx(mMenuVelocityLeftIdx);
+            ((MotorBeatElement) mBeatElement).setVelocityRightIdx(mMenuVelocityRightIdx);
+        }
     }
 
 }

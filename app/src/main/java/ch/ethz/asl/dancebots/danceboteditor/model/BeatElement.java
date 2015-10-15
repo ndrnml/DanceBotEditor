@@ -11,6 +11,7 @@ public abstract class BeatElement<T extends MotionType> {
     protected Context mContext;
 
     // Choreography properties of a beat element
+    protected boolean mHasChoreography;
     protected int mChoreoStartIdx;
     protected int mChoreoLength;
     protected int mColor;
@@ -36,7 +37,8 @@ public abstract class BeatElement<T extends MotionType> {
         mBeatPosition = beatPosition;
         mSamplePosition = samplePosition;
 
-        // Default values
+        // Default choreogrpahy values
+        mHasChoreography = false;
         mChoreoStartIdx = -1;
         mChoreoLength = -1;
         mChoreoTag = "";
@@ -64,8 +66,11 @@ public abstract class BeatElement<T extends MotionType> {
         mFrequencyIdx = frequencyIdx;
         mChoreoLengthIdx = choreoLengthIdx;
 
-        // Update color
+        // Set choreography color and choreography tag
         setColorAndTag();
+
+        // Set belongs to choreography
+        mHasChoreography = true;
     }
 
     /**
@@ -80,10 +85,16 @@ public abstract class BeatElement<T extends MotionType> {
         mMotionTypeIdx = elem.getMotionTypeIdx();
         mFrequencyIdx = elem.getFrequencyIdx();
         mChoreoLengthIdx = elem.getChoreoLengthIdx();
+        mChoreoTag = elem.getChoreoTag();
+
+        // Set belongs to choreography
+        mHasChoreography = true;
     }
 
     // This method is just for testing purposes and might be removed in future time
     public abstract String getTypeAsString();
+
+    public abstract boolean hasChoreography();
 
     ///////////
     // SETTERS
