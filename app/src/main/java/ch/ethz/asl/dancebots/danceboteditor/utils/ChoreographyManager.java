@@ -42,25 +42,32 @@ public class ChoreographyManager {
 
     private void updateElements(ArrayList<BeatElement> elemList, BeatElement startElem) {
 
-        int startIdx = startElem.getMotionStartIndex();
-        int choreoLength = startElem.getMotionLength();
+        int startIdx = startElem.getChoreoStartIdx();
+        int choreoLength = startElem.getChoreoLength();
 
-        for (int i = 1; i < choreoLength; ++i) {
+        int length = 1;
+        int nextElemIdx = startIdx + 1;
 
-            int nextElemIdx = startIdx + i;
+        BeatElement nextElem = elemList.get(nextElemIdx);
 
-            // Check that next beat element is not yet assigned to another choreography
-            if (elemList.get(nextElemIdx).getMotionStartIndex() == -1) {
+        // Update element if it does not belong to any choreography and if the current length is
+        // less than the total choreography length
+        while (isNotAssigned(nextElem) && (length < choreoLength)) {
 
-                // Get element
-                BeatElement elem = elemList.get(nextElemIdx);
-                elem.setProperties(startElem);
+            // Copy the element properties
+            nextElem.setProperties(startElem);
 
-            } else {
-                //
-                break;
-            }
+            // Increment the current length
+            length += 1;
+
+            // Increment element
+            nextElemIdx += 1;
+            nextElem = elemList.get(nextElemIdx);
         }
+    }
+
+    private boolean isNotAssigned(BeatElement elem) {
+        return (elem.getChoreoStartIdx() == -1);
     }
 
     /**

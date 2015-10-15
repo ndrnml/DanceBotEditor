@@ -57,31 +57,37 @@ public class MotorBeatElement extends BeatElement<MotorType> {
     }
 
     @Override
-    protected void setColor() {
+    protected void setColorAndTag() {
         switch (mMotionTypes[mMotionTypeIdx]) {
 
             case STRAIGHT:
                 mColor = mContext.getResources().getColor(R.color.motor_elem_color1);
+                mChoreoTag = "S";
                 break;
 
             case SPIN:
                 mColor = mContext.getResources().getColor(R.color.motor_elem_color2);
+                mChoreoTag = "P";
                 break;
 
             case TWIST:
                 mColor = mContext.getResources().getColor(R.color.motor_elem_color3);
+                mChoreoTag = "T";
                 break;
 
             case BACK_AND_FORTH:
                 mColor = mContext.getResources().getColor(R.color.motor_elem_color4);
+                mChoreoTag = "B";
                 break;
 
             case CONSTANT:
                 mColor = mContext.getResources().getColor(R.color.motor_elem_color5);
+                mChoreoTag = "C";
                 break;
 
             case WAIT:
                 mColor = mContext.getResources().getColor(R.color.motor_elem_color6);
+                mChoreoTag = "W";
                 break;
 
             default:
@@ -97,7 +103,7 @@ public class MotorBeatElement extends BeatElement<MotorType> {
         super.setProperties(elem);
 
         // Set motor element specific properties
-        setColor();
+        setColorAndTag();
         setVelocityIndices(elem);
     }
 

@@ -82,54 +82,37 @@ public class DanceBotEditorProjectFile {
         mDBMusicFile = dbMusicFile;
     }
 
-    /**
-     *
-     * @return
-     */
+
+    ///////////
+    // GETTERS
+    ///////////
     public DanceBotMusicFile getDanceBotMusicFile() {
         return mDBMusicFile;
     }
-
-    /**
-     *
-     * @return
-     */
     public BeatGrid getBeatGrid() {
         return mBeatGrid;
     }
-
-    /**
-     *
-     * @return
-     */
     public ChoreographyManager getChoreoManager() {
         return mChoreoManager;
     }
-
     public String[] getMotorStatesStrings() {
         return mMotorStatesStrings;
     }
-
     public String[] getLedStatesStrings() {
         return mLedStatesStrings;
     }
-
     public String[] getMotorFrequenciesStrings() {
         return mMotorFrequenciesStrings;
     }
-
     public String[] getLedFrequenciesStrings() {
         return mLedFrequenciesStrings;
     }
-
     public String[] getVelocitiesStrings() {
         return mVelocitiesStrings;
     }
-
     public String[] getChoreoLengthsStrings() {
         return mChoreoLengthsStrings;
     }
-
     public MotorType[] getMotorStates() {
         return mMotorStates;
     }

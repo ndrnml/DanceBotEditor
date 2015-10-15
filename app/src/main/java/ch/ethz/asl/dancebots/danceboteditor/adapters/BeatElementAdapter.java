@@ -59,15 +59,16 @@ public class BeatElementAdapter extends ArrayAdapter<BeatElement> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        // Ensure long clicks are also registered
+        // TODO Ensure long clicks are also registered
         convertView.setLongClickable(true);
 
         // Populate the data into the template view using the data object
-        viewHolder.name.setText(elem.getBeatPositionAsString());
+        viewHolder.name.setText(elem.getChoreoTag());
 
         // Stylize list item according to type
         viewHolder.name.setBackgroundColor(elem.getColor());
 
+        // TODO remove if not needed!
         mToast = Toast.makeText(getContext(), "", Toast.LENGTH_SHORT);
         mToast.setGravity(Gravity.CENTER, 0, 0);
 

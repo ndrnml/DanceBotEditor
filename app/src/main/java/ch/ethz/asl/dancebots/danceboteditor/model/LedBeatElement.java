@@ -53,28 +53,33 @@ public class LedBeatElement extends BeatElement<LedType> {
     }
 
     @Override
-    protected void setColor() {
+    protected void setColorAndTag() {
 
         switch (mMotionTypes[mMotionTypeIdx]) {
 
             case KNIGHT_RIDER:
                 mColor = mContext.getResources().getColor(R.color.led_elem_color1);
+                mChoreoTag = "K";
                 break;
 
             case RANDOM:
                 mColor = mContext.getResources().getColor(R.color.led_elem_color2);
+                mChoreoTag = "R";
                 break;
 
             case BLINK:
                 mColor = mContext.getResources().getColor(R.color.led_elem_color3);
+                mChoreoTag = "B";
                 break;
 
             case SAME_BLINK:
                 mColor = mContext.getResources().getColor(R.color.led_elem_color4);
+                mChoreoTag = "S";
                 break;
 
             case CONSTANT:
                 mColor = mContext.getResources().getColor(R.color.led_elem_color5);
+                mChoreoTag = "C";
                 break;
 
             default:
@@ -90,7 +95,7 @@ public class LedBeatElement extends BeatElement<LedType> {
         super.setProperties(elem);
 
         // Set led element specific properties
-        setColor();
+        setColorAndTag();
         setLedLightSwitches(elem);
     }
 

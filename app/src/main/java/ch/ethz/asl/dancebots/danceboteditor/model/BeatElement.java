@@ -15,6 +15,7 @@ public abstract class BeatElement<T extends MotionType> {
     protected int mChoreoLength;
     protected int mColor;
     protected T[] mMotionTypes;
+    protected String mChoreoTag;
 
     // Song properties of a beat element
     protected int mBeatPosition;
@@ -38,6 +39,7 @@ public abstract class BeatElement<T extends MotionType> {
         // Default values
         mChoreoStartIdx = -1;
         mChoreoLength = -1;
+        mChoreoTag = "";
 
         // Default menu indices
         mMotionTypeIdx = 0;
@@ -63,7 +65,7 @@ public abstract class BeatElement<T extends MotionType> {
         mChoreoLengthIdx = choreoLengthIdx;
 
         // Update color
-        setColor();
+        setColorAndTag();
     }
 
     /**
@@ -80,14 +82,14 @@ public abstract class BeatElement<T extends MotionType> {
         mChoreoLengthIdx = elem.getChoreoLengthIdx();
     }
 
-    protected abstract void setColor();
-
     // This method is just for testing purposes and might be removed in future time
     public abstract String getTypeAsString();
 
     ///////////
     // SETTERS
     ///////////
+
+    protected abstract void setColorAndTag();
 
     public void setMotionTypeIdx(int idx) {
         mMotionTypeIdx = idx; // TODO Check that idx is a valid number?
@@ -104,10 +106,10 @@ public abstract class BeatElement<T extends MotionType> {
     // GETTERS
     ///////////
 
-    public int getMotionStartIndex() {
+    public int getChoreoStartIdx() {
         return mChoreoStartIdx;
     }
-    public int getMotionLength() {
+    public int getChoreoLength() {
         return mChoreoLength;
     }
     public int getBeatPosition() {
@@ -122,6 +124,9 @@ public abstract class BeatElement<T extends MotionType> {
     public T getMotionType() {
         return mMotionTypes[mMotionTypeIdx];
     }
+    public String getChoreoTag() {
+        return mChoreoTag;
+    }
     public int getMotionTypeIdx() {
         return mMotionTypeIdx;
     }
@@ -131,10 +136,5 @@ public abstract class BeatElement<T extends MotionType> {
     public int getChoreoLengthIdx() {
         return mChoreoLengthIdx;
     }
-    public int getChoreoStartIdx() {
-        return mChoreoStartIdx;
-    }
-    public int getChoreoLength() {
-        return mChoreoLength;
-    }
+
 }
