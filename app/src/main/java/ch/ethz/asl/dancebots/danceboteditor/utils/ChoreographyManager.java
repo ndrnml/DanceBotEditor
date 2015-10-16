@@ -7,7 +7,9 @@ import java.util.ArrayList;
 
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
 
 /**
  * Created by andrin on 31.08.15.
@@ -16,85 +18,38 @@ public class ChoreographyManager {
 
     private static final String LOG_TAG = "CHOREOGRAPHY_MANAGER";
 
-    //TODO -> change to private
-    public ArrayList<BeatElement> mMotorBeatElements;
-    public ArrayList<BeatElement> mLedBeatElements;
+    public Choreography<LedBeatElement> mLedChoregraphy;
+    public Choreography<MotorBeatElement> mMotorChoreography;
 
     public ChoreographyManager(BeatGrid beatGrid) {
 
-        mMotorBeatElements = new ArrayList<>();
-        mLedBeatElements = new ArrayList<>();
-
-        initBeatElements(beatGrid);
+        mLedChoregraphy = new Choreography<>(beatGrid);
+        mMotorChoreography = new Choreography<>(beatGrid);
     }
 
-    public void addChoreography(BeatElement startElem) {
+    public void addSequence(BeatElement mBeatElement) {
 
-        if (startElem.getClass().equals(LedBeatElement.class)) {
+        if (mBeatElement.getMotionType().getClass() == LedType.class) { // LED_TYPE
 
-            updateElements(mLedBeatElements, startElem);
+            mLedChoregraphy.addSequence((LedBeatElement) mBeatElement);
 
-        } else if (startElem.getClass().equals(MotorBeatElement.class)) {
+        } else if (mBeatElement.getMotionType().getClass() == MotorType.class) { // MOVE_TYPE
 
-            updateElements(mMotorBeatElements, startElem);
+            mMotorChoreography.addSequence((MotorBeatElement) mBeatElement);
+
         }
     }
 
-    public void updateChoreography(BeatElement mBeatElement) {
+    public void removeSequence(BeatElement mBeatElement) {
 
-        // TODO
-    }
+        if (mBeatElement.getMotionType().getClass() == LedType.class) { // LED_TYPE
 
-    private void updateElements(ArrayList<BeatElement> elemList, BeatElement startElem) {
+            mLedChoregraphy.removeSequence((LedBeatElement) mBeatElement);
 
-        int startIdx = startElem.getChoreoStartIdx();
-        int choreoLength = startElem.getChoreoLength();
+        } else if (mBeatElement.getMotionType().getClass() == MotorType.class) { // MOVE_TYPE
 
-        int length = 1;
-        int nextElemIdx = startIdx + 1;
+            mMotorChoreography.removeSequence((MotorBeatElement) mBeatElement);
 
-        BeatElement nextElem = elemList.get(nextElemIdx);
-
-        // Update element if it does not belong to any choreography and if the current length is
-        // less than the total choreography length
-        while (isNotAssigned(nextElem) && (length < choreoLength)) {
-
-            // Copy the element properties
-            nextElem.setProperties(startElem);
-
-            // Increment the current length
-            length += 1;
-
-            // Increment element
-            nextElemIdx += 1;
-            nextElem = elemList.get(nextElemIdx);
-        }
-    }
-
-    private boolean isNotAssigned(BeatElement elem) {
-        return (elem.getChoreoStartIdx() == -1);
-    }
-
-    /**
-     * Initialize beat elements after successfully extracting all beats
-     * beatGrid.getBeatBuffer() must be NOT null
-     * @param beatGrid
-     */
-    private void initBeatElements(BeatGrid beatGrid) {
-
-        IntBuffer beatBuffer = beatGrid.getBeatBuffer();
-        int numBeats = beatGrid.getNumOfBeats();
-
-        if (beatBuffer != null && numBeats > 0) {
-            for (int i = 0; i < numBeats; ++i) {
-
-                // TODO CORRECT INITIALIZATION
-                //mMotorBeatElements.add(new MotorBeatElement(i, beatBuffer.get(i), ));
-                //mLedBeatElements.add(new LedBeatElement(i, beatBuffer.get(i)));
-            }
-        } else {
-            // TODO some error?
-            Log.v(LOG_TAG, "Error: " + beatBuffer.toString() + ", Number of beats: " + numBeats);
         }
     }
 

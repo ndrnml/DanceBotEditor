@@ -51,9 +51,10 @@ public class MotorBeatElement extends BeatElement<MotorType> {
     }
 
     public void setVelocityIndices(BeatElement elem) {
+
         // TODO is this cast type safe?
-        mVelocityLeftIdx = ((MotorBeatElement) elem).getVelocityLeftIdx();
-        mVelocityRightIdx = ((MotorBeatElement) elem).getVelocityRightIdx();
+        setVelocityLeftIdx(((MotorBeatElement) elem).getVelocityLeftIdx());
+        setVelocityRightIdx(((MotorBeatElement) elem).getVelocityRightIdx());
     }
 
     @Override
@@ -103,18 +104,12 @@ public class MotorBeatElement extends BeatElement<MotorType> {
         super.setProperties(elem);
 
         // Set motor element specific properties
-        setColorAndTag();
         setVelocityIndices(elem);
     }
 
     @Override
     public boolean hasChoreography() {
         return mHasChoreography;
-    }
-
-    @Override
-    public String getTypeAsString() {
-        return this.getClass().toString();
     }
 
     public int getVelocityLeftIdx() {

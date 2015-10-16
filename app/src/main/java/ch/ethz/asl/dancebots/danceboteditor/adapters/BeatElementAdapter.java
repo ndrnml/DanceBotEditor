@@ -19,9 +19,9 @@ import ch.ethz.asl.dancebots.danceboteditor.R;
 /**
  * Created by andrin on 28.08.15.
  */
-public class BeatElementAdapter extends RecyclerView.Adapter<BeatElementAdapter.SimpleViewHolder> {
+public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adapter<BeatElementAdapter.SimpleViewHolder> {
 
-    private ArrayList<BeatElement> mBeatElements;
+    private ArrayList<T> mBeatElements;
     private Toast mToast;
 
     // Provide a reference to the views for each data item
@@ -37,7 +37,7 @@ public class BeatElementAdapter extends RecyclerView.Adapter<BeatElementAdapter.
         }
     }
 
-    public BeatElementAdapter(ArrayList<BeatElement> elems) {
+    public BeatElementAdapter(ArrayList<T> elems) {
         mBeatElements = elems;
     }
 

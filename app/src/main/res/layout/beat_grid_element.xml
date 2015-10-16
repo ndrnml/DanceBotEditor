@@ -4,6 +4,5 @@
     android:layout_width="50dp"
     android:layout_height="match_parent"
     android:gravity="center_vertical"
-    android:padding="10dp"
     android:alpha="1.0"
     android:background="@drawable/elem_background"/>

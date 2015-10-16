@@ -49,7 +49,8 @@ public class LedBeatElement extends BeatElement<LedType> {
      * @param elem
      */
     public void setLedLightSwitches(BeatElement elem) {
-        mLedLightSwitches = ((LedBeatElement) elem).getLedLightSwitches();
+
+        setLedLightSwitches(((LedBeatElement) elem).getLedLightSwitches());
     }
 
     @Override
@@ -95,18 +96,40 @@ public class LedBeatElement extends BeatElement<LedType> {
         super.setProperties(elem);
 
         // Set led element specific properties
-        setColorAndTag();
         setLedLightSwitches(elem);
+    }
+
+    @Override
+    public boolean isSameChoreography(BeatElement elem) {
+
+        // Check if all beat element choreography properties and led element choreo properties are the same
+        if (super.isSameChoreography(elem) && hasSameSwitches((LedBeatElement) elem))
+        {
+            return true;
+
+        } else {
+
+            return false;
+        }
+    }
+
+    private boolean hasSameSwitches(LedBeatElement elem) {
+
+        boolean[] elemLightSwitches = elem.getLedLightSwitches();
+
+        for (int i = 0; i < elemLightSwitches.length; ++i) {
+
+            if (mLedLightSwitches[i] != elemLightSwitches[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
     public boolean hasChoreography() {
         return mHasChoreography;
-    }
-
-    @Override
-    public String getTypeAsString() {
-        return this.getClass().toString();
     }
 
     public boolean[] getLedLightSwitches() {

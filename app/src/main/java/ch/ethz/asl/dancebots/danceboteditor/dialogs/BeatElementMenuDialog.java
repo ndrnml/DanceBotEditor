@@ -25,14 +25,14 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 /**
  * Created by andrin on 23.09.15.
  */
-public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment {
+public class BeatElementMenuDialog extends DialogFragment {
 
     private static final String LOG_TAG = "BEAT_ELEM_MENU_DIALOG";
 
     public enum MENU_TYPE {MOTION, FREQUENCY, VELOCITY_LEFT, VELOCITY_RIGHT, CHOREO_LENGTH}
 
     private View mBeatElementMenuView;
-    private T mBeatElement;
+    private BeatElement mBeatElement;
     private DanceBotEditorProjectFile mDanceBotEditorProjectFile;
     private BeatElementAdapter mBeatElementAdapter;
 
@@ -55,7 +55,7 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
      * It loads all relevant information (menu lists) for setting up the menu
      * @param elem
      */
-    public void initializeMenu(BeatElementAdapter adapter, T elem) {
+    public void initializeMenu(BeatElementAdapter adapter, BeatElement elem) {
 
         mBeatElementAdapter = adapter;
         mBeatElement = elem;
@@ -233,7 +233,6 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
 
         // Hide irrelevant menu items
         mBeatElementMenuView.findViewById(R.id.menu_item_lights).setVisibility(View.GONE);
-
     }
 
     @Override
@@ -270,8 +269,14 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
 
                         if (mBeatElement.hasChoreography()) {
 
-                            // Update existing choregraphy
-                            mDanceBotEditorProjectFile.getChoreoManager().updateChoreography(mBeatElement);
+                            // Remove existing choreography
+                            mDanceBotEditorProjectFile.getChoreoManager().removeSequence(mBeatElement);
+
+                            // Store new choreography properties
+                            storeCollectedMenuData();
+
+                            // Remove existing choregraphy
+                            mDanceBotEditorProjectFile.getChoreoManager().addSequence(mBeatElement);
 
                         } else {
 
@@ -279,8 +284,7 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
                             storeCollectedMenuData();
 
                             // Notify all corresponding beat elements that belong to this choreography
-                            mDanceBotEditorProjectFile.getChoreoManager().addChoreography(mBeatElement);
-
+                            mDanceBotEditorProjectFile.getChoreoManager().addSequence(mBeatElement);
                         }
 
                         // Notify the list adapter to update the modified list elements
@@ -302,6 +306,7 @@ public class BeatElementMenuDialog<T extends BeatElement> extends DialogFragment
         int choreoStartIdx = mBeatElement.getBeatPosition();
         int choreoLength = mDanceBotEditorProjectFile.getChoreoLengthAtIdx(mMenuChoreoLengthIdx);
 
+        // Set properties according to menu choices
         mBeatElement.setProperties(choreoStartIdx, choreoLength, mMenuMotionIdx, mMenuFrequencyIdx, mMenuChoreoLengthIdx);
 
         // Save Led/Motor element properties

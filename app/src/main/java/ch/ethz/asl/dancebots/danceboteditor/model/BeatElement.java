@@ -49,6 +49,10 @@ public abstract class BeatElement<T extends MotionType> {
         mChoreoLengthIdx = 0;
     }
 
+    public void setDefaultProperties() {
+        // TODO;
+    }
+
     /**
      * Set beat element properties
      * @param choreoStartIdx
@@ -59,18 +63,17 @@ public abstract class BeatElement<T extends MotionType> {
      */
     public void setProperties(int choreoStartIdx, int choreoLength, int motionTypeIdx, int frequencyIdx, int choreoLengthIdx) {
 
-        // Set all general beat element properties
+        // TODO reduce redundancy
+        // Set all choreography properties
         mChoreoStartIdx = choreoStartIdx;
         mChoreoLength = choreoLength;
         mMotionTypeIdx = motionTypeIdx;
         mFrequencyIdx = frequencyIdx;
         mChoreoLengthIdx = choreoLengthIdx;
-
-        // Set choreography color and choreography tag
-        setColorAndTag();
-
-        // Set belongs to choreography
         mHasChoreography = true;
+
+        // Set beat element color and tag
+        setColorAndTag();
     }
 
     /**
@@ -79,20 +82,24 @@ public abstract class BeatElement<T extends MotionType> {
      */
     public void setProperties(BeatElement elem) {
 
-        mChoreoStartIdx = elem.getChoreoStartIdx();
-        mChoreoLength = elem.getChoreoLength();
-        mColor = elem.getColor();
-        mMotionTypeIdx = elem.getMotionTypeIdx();
-        mFrequencyIdx = elem.getFrequencyIdx();
-        mChoreoLengthIdx = elem.getChoreoLengthIdx();
-        mChoreoTag = elem.getChoreoTag();
-
-        // Set belongs to choreography
-        mHasChoreography = true;
+        setProperties(elem.getChoreoStartIdx(), elem.getChoreoLength(), elem.getMotionTypeIdx(), elem.getFrequencyIdx(), elem.getChoreoLengthIdx());
     }
 
-    // This method is just for testing purposes and might be removed in future time
-    public abstract String getTypeAsString();
+    public boolean isSameChoreography(BeatElement elem) {
+
+        if (mChoreoStartIdx != elem.getChoreoStartIdx() ||
+            mChoreoLength != elem.getChoreoLength() ||
+            mMotionTypeIdx != elem.getMotionTypeIdx() ||
+            mFrequencyIdx != elem.getFrequencyIdx() ||
+            mChoreoLengthIdx != elem.getChoreoLengthIdx()) {
+
+            return false;
+
+        } else {
+
+            return true;
+        }
+    }
 
     public abstract boolean hasChoreography();
 
@@ -111,7 +118,6 @@ public abstract class BeatElement<T extends MotionType> {
     public void setChoreoLengthIdx(int idx) {
         mChoreoLengthIdx = idx; // TODO Check that idx is a valid number?
     }
-
 
     ///////////
     // GETTERS
@@ -147,5 +153,4 @@ public abstract class BeatElement<T extends MotionType> {
     public int getChoreoLengthIdx() {
         return mChoreoLengthIdx;
     }
-
 }

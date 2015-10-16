@@ -39,20 +39,18 @@
         android:id="@+id/motor_element_list"
         style="@style/HorizontalListView"
         android:layout_width="wrap_content"
-        android:layout_height="200px"
+        android:layout_height="200dp"
         android:drawSelectorOnTop="false"
-        android:background="@color/motor_list_default_color"
-        android:padding="10dp"
+        android:background="@color/item_border_color"
         tools:context=".EditorActivity" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/led_element_list"
         style="@style/HorizontalListView"
         android:layout_width="wrap_content"
-        android:layout_height="200px"
+        android:layout_height="200dp"
         android:drawSelectorOnTop="false"
-        android:background="@color/led_list_default_color"
-        android:padding="10dp"
+        android:background="@color/item_border_color"
         tools:context=".EditorActivity" />
 
     <SeekBar

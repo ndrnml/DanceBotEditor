@@ -22,6 +22,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
 
 
 public class EditorActivity extends Activity {
@@ -97,16 +98,16 @@ public class EditorActivity extends Activity {
 
             mProjectFile.initChoreography();
             for (int i = 0; i < NUM_BEATS; ++i) {
-                mProjectFile.getChoreoManager().mMotorBeatElements.add(new MotorBeatElement(getApplicationContext(), i, SPACING*i, mProjectFile.getMotorStates()));
-                mProjectFile.getChoreoManager().mLedBeatElements.add(new LedBeatElement(getApplicationContext(), i, SPACING*i, mProjectFile.getLedStates()));
+                mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements.add(new MotorBeatElement(getApplicationContext(), i, SPACING * i, mProjectFile.getMotorStates()));
+                mProjectFile.getChoreoManager().mLedChoregraphy.mBeatElements.add(new LedBeatElement(getApplicationContext(), i, SPACING * i, mProjectFile.getLedStates()));
             }
             /**
              * END DUMMY DATA CONSTRUCTION
              */
 
             // Create the beat adapters
-            BeatElementAdapter motorAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mMotorBeatElements);
-            BeatElementAdapter ledAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mLedBeatElements);
+            BeatElementAdapter motorAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements);
+            BeatElementAdapter ledAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mLedChoregraphy.mBeatElements);
 
             // Initialize and setup linear layout manager
             LinearLayoutManager motorLayoutManager = new LinearLayoutManager(this);
@@ -115,17 +116,22 @@ public class EditorActivity extends Activity {
             motorLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
             ledLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
+            // Get divider drawable
+            Drawable divider = getResources().getDrawable(R.drawable.divider);
+
             // Attach motor adapter and linear layout manager to the horizontal recycler view
             RecyclerView motorView = (RecyclerView) findViewById(R.id.motor_element_list);
             motorView.setHasFixedSize(true);
             motorView.setLayoutManager(motorLayoutManager);
             motorView.setAdapter(motorAdapter);
+            motorView.addItemDecoration(new DividerItemDecoration(divider));
 
             // Attach led adapter and linear layout manager
             RecyclerView ledView = (RecyclerView) findViewById(R.id.led_element_list);
             ledView.setHasFixedSize(true);
             ledView.setLayoutManager(ledLayoutManager);
             ledView.setAdapter(ledAdapter);
+            ledView.addItemDecoration(new DividerItemDecoration(divider));
 
             // TODO remove or change this (THIS WAS ADDED FOR THE LONG CLICK CAPABILITY)
             //registerForContextMenu(motorView);
@@ -163,7 +169,7 @@ public class EditorActivity extends Activity {
 
 
     /**
-     * Song selection activity is resolved here
+     * Song selection in media library activity is resolved here
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -223,7 +229,7 @@ public class EditorActivity extends Activity {
         Log.v(LOG_TAG, "Back button is pressed.");
 
         // Popup alert dialog to confirm users decision
-        //askExit();
+        //askExit(); // TODO uncomment if needed
 
         finish();
     }
