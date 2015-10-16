@@ -27,16 +27,15 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
 
 public class EditorActivity extends Activity {
 
-    // Possible states of the editor
-    public enum State {
-        NEW, OPENING, DECODING, EDITING, ENCODING, SAVED
-    }
-
     private static final String LOG_TAG = "EDITOR_ACTIVITY";
     private static final int PICK_SONG_REQUEST = 1;
 
     private DanceBotEditorProjectFile mProjectFile;
-    private State mEditorState = State.NEW;
+
+    private LinearLayoutManager mMotorLayoutManager;
+    private LinearLayoutManager mLedLayoutManager;
+    private RecyclerView mMotorView;
+    private RecyclerView mLedView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +50,28 @@ public class EditorActivity extends Activity {
         // Project file initialization
         mProjectFile = DanceBotEditorProjectFile.getInstance();
         mProjectFile.initBeatGrid();
+
+        // Initialize and setup linear layout manager
+        mMotorLayoutManager = new LinearLayoutManager(this);
+        mLedLayoutManager = new LinearLayoutManager(this);
+
+        mMotorLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        mLedLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+
+        // Get divider drawable
+        Drawable divider = getResources().getDrawable(R.drawable.divider);
+
+        // Attach motor adapter and linear layout manager to the horizontal recycler view
+        mMotorView = (RecyclerView) findViewById(R.id.motor_element_list);
+        mMotorView.setHasFixedSize(true);
+        mMotorView.setLayoutManager(mMotorLayoutManager);
+        mMotorView.addItemDecoration(new DividerItemDecoration(divider));
+
+        // Attach led adapter and linear layout manager
+        mLedView = (RecyclerView) findViewById(R.id.led_element_list);
+        mLedView.setHasFixedSize(true);
+        mLedView.setLayoutManager(mLedLayoutManager);
+        mLedView.addItemDecoration(new DividerItemDecoration(divider));
     }
 
     @Override
@@ -60,9 +81,7 @@ public class EditorActivity extends Activity {
 
         // TODO: DO all initialization stuff here?
 
-        if (mEditorState == State.NEW) {
-
-            mEditorState = State.OPENING;
+        if (mProjectFile.getEditorState() == DanceBotEditorProjectFile.State.START) {
 
             // Start intent that loads the editor view and starts pick-song-activity
             Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
@@ -79,7 +98,7 @@ public class EditorActivity extends Activity {
         // When a song is selected, start decoding and beat extraction in the background
         // Skip this process, if the beat extraction has already been performed
         // TODO: Check that the beat extraction was performed for the currently selected song
-        if (mProjectFile.musicFileSelected && !mProjectFile.beatExtractionDone) {
+        if (mProjectFile.getEditorState() == DanceBotEditorProjectFile.State.NEW) {
 
             Log.v(LOG_TAG, "resumed EditorActivity with a song loaded");
 
@@ -109,35 +128,17 @@ public class EditorActivity extends Activity {
             BeatElementAdapter motorAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements);
             BeatElementAdapter ledAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mLedChoregraphy.mBeatElements);
 
-            // Initialize and setup linear layout manager
-            LinearLayoutManager motorLayoutManager = new LinearLayoutManager(this);
-            LinearLayoutManager ledLayoutManager = new LinearLayoutManager(this);
+            // Attach apapters
+            mMotorView.setAdapter(motorAdapter);
+            mLedView.setAdapter(ledAdapter);
 
-            motorLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-            ledLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-
-            // Get divider drawable
-            Drawable divider = getResources().getDrawable(R.drawable.divider);
-
-            // Attach motor adapter and linear layout manager to the horizontal recycler view
-            RecyclerView motorView = (RecyclerView) findViewById(R.id.motor_element_list);
-            motorView.setHasFixedSize(true);
-            motorView.setLayoutManager(motorLayoutManager);
-            motorView.setAdapter(motorAdapter);
-            motorView.addItemDecoration(new DividerItemDecoration(divider));
-
-            // Attach led adapter and linear layout manager
-            RecyclerView ledView = (RecyclerView) findViewById(R.id.led_element_list);
-            ledView.setHasFixedSize(true);
-            ledView.setLayoutManager(ledLayoutManager);
-            ledView.setAdapter(ledAdapter);
-            ledView.addItemDecoration(new DividerItemDecoration(divider));
 
             // TODO remove or change this (THIS WAS ADDED FOR THE LONG CLICK CAPABILITY)
-            //registerForContextMenu(motorView);
+            //registerForContextMenu(mMotorView);
 
             // Set the editor state to decoding (sensitive phase)
-            mEditorState = State.DECODING;
+            mProjectFile.setEditorState(DanceBotEditorProjectFile.State.EDITING);
+
         }
     }
 
@@ -161,7 +162,7 @@ public class EditorActivity extends Activity {
         // The activity is no longer visible (it is now "stopped")
 
         // If the editor is currently decoding, editing or encoding ask user to leave
-        if (mEditorState == State.DECODING || mEditorState == State.ENCODING) {
+        if (false/*mEditorState == DanceBotEditorProjectFile.State.DECODING || mEditorState == DanceBotEditorProjectFile.State.ENCODING*/) {
 
             // TODO abort/cancel all async tasks and background threads
         }
@@ -208,13 +209,15 @@ public class EditorActivity extends Activity {
                 TextView selectedSongDuration = (TextView) findViewById(R.id.id_song_duration);
                 selectedSongDuration.setText(mProjectFile.getDanceBotMusicFile().getDurationReadable());
 
+                mProjectFile.setEditorState(DanceBotEditorProjectFile.State.NEW);
+
             } else {
 
                 // resultCode == RESULT_CANCEL
                 Log.v(LOG_TAG, "resultCode != RESULT_OK");
 
                 // TODO finish activity
-                mEditorState = State.NEW;
+                mProjectFile.setEditorState(DanceBotEditorProjectFile.State.EDITING);
                 finish();
 
             }
@@ -247,7 +250,7 @@ public class EditorActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                mEditorState = State.NEW;
+                mProjectFile.setEditorState(DanceBotEditorProjectFile.State.NEW);
                 finish();
             }
         });

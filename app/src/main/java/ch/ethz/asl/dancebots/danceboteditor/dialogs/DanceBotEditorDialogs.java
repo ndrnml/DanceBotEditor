@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.activities.EditorActivity;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 
 /**
  * Created by andrin on 28.08.15.
@@ -19,7 +20,7 @@ public final class DanceBotEditorDialogs {
     /**
      * Exit app only if user select yes
      */
-    public static void showAlertDialogExit(final Activity activity, final EditorActivity.State state) {
+    public static void showAlertDialogExit(final Activity activity, final DanceBotEditorProjectFile.State state) {
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(activity);
 

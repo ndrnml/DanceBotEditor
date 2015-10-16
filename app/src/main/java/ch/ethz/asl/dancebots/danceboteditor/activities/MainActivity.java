@@ -9,6 +9,7 @@ import android.view.View;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.activities.EditorActivity;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 
 
 public class MainActivity extends Activity {
@@ -19,6 +20,9 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize DanceBot specific properties
+        DanceBotEditorProjectFile.getInstance().setEditorState(DanceBotEditorProjectFile.State.START);
     }
 
     @Override

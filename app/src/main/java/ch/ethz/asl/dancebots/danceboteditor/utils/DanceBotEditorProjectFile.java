@@ -10,6 +10,13 @@ import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
  */
 public class DanceBotEditorProjectFile {
 
+    // Possible states of the editor
+    public enum State {
+        START, NEW, EDITING
+    }
+
+    private State mEditorState;
+
     public boolean musicFileSelected = false;
     public boolean beatExtractionDone = false;
     public boolean startedEditing = false;
@@ -82,6 +89,12 @@ public class DanceBotEditorProjectFile {
         mDBMusicFile = dbMusicFile;
     }
 
+    ///////////
+    // SETTERS
+    ///////////
+    public void setEditorState(State s) {
+        mEditorState = s;
+    }
 
     ///////////
     // GETTERS
@@ -121,5 +134,8 @@ public class DanceBotEditorProjectFile {
     }
     public int getChoreoLengthAtIdx(int idx) {
         return mChoreoLengths[idx];
+    }
+    public State getEditorState() {
+        return mEditorState;
     }
 }
