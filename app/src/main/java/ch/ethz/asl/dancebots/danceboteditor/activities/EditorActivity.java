@@ -14,11 +14,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.BeatExtractionHandler;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
@@ -38,6 +40,8 @@ public class EditorActivity extends Activity {
     private RecyclerView mMotorView;
     private RecyclerView mLedView;
 
+    private DanceBotMediaPlayer mMediaPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +52,7 @@ public class EditorActivity extends Activity {
         // TODO: DO all initialization stuff here?
 
         // TODO: initialize dance bot project file, beat grid, music files etc...
+
         // Project file initialization
         mProjectFile = DanceBotEditorProjectFile.getInstance();
         mProjectFile.init(getApplicationContext());
@@ -75,6 +80,10 @@ public class EditorActivity extends Activity {
         mLedView.setHasFixedSize(true);
         mLedView.setLayoutManager(mLedLayoutManager);
         mLedView.addItemDecoration(new DividerItemDecoration(divider));
+
+        // Create new media player instance, be sure to pass the current activity to resolve
+        // all necessary view elements
+        mMediaPlayer = new DanceBotMediaPlayer(this);
     }
 
     @Override
@@ -90,7 +99,6 @@ public class EditorActivity extends Activity {
             Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
             startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
         }
-
     }
 
     @Override
@@ -219,7 +227,11 @@ public class EditorActivity extends Activity {
                 TextView selectedSongDuration = (TextView) findViewById(R.id.id_song_duration);
                 selectedSongDuration.setText(mProjectFile.getDanceBotMusicFile().getDurationReadable());
 
+                // Update Editor activity state
                 mProjectFile.setEditorState(DanceBotEditorProjectFile.State.NEW);
+
+                // Open file in media player
+                mMediaPlayer.openMusicFile(songPath);
 
             } else {
 

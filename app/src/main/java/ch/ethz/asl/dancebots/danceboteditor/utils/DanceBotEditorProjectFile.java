@@ -32,7 +32,7 @@ public class DanceBotEditorProjectFile {
 
     private Context mContext;
     private State mEditorState;
-    private DanceBotMusicFile mDBMusicFile;
+    private DanceBotMusicFile mMusicFile;
     private BeatGrid mBeatGrid;
     private ChoreographyManager mChoreoManager;
 
@@ -124,7 +124,7 @@ public class DanceBotEditorProjectFile {
      * @param dbMusicFile
      */
     public void attachMusicFile(DanceBotMusicFile dbMusicFile) {
-        mDBMusicFile = dbMusicFile;
+        mMusicFile = dbMusicFile;
     }
 
     /**
@@ -188,7 +188,7 @@ public class DanceBotEditorProjectFile {
         return mContext;
     }
     public DanceBotMusicFile getDanceBotMusicFile() {
-        return mDBMusicFile;
+        return mMusicFile;
     }
     public BeatGrid getBeatGrid() {
         return mBeatGrid;
