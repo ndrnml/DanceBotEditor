@@ -202,4 +202,22 @@ public class DanceBotEditorProjectFile {
     public LedTypeSelectionMenu getLedTypeMenu() {
         return mLedTypeMenu;
     }
+    public MotorTypeSelectionMenu getMotorTypeMneu() {
+        return mMotorTypeMenu;
+    }
+    public FloatSelectionMenu getLedFrequencyMenu() {
+        return mLedFrequencyMenu;
+    }
+
+    public FloatSelectionMenu getMotorFrequencyMenu() {
+        return mMotorFrequencyMenu;
+    }
+
+    public IntegerSelectionMenu getVelocityMenu() {
+        return mVelocityMenu;
+    }
+
+    public IntegerSelectionMenu getChoreoLengthMenu() {
+        return mChoreoLengthMenu;
+    }
 }

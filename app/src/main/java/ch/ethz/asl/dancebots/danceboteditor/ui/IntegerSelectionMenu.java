@@ -23,5 +23,16 @@ public class IntegerSelectionMenu {
     public String getStringAt(int idx) {
         return mSelection.get(idx).toString();
     }
+
+    public String[] getStrings() {
+
+        String[] selection = new String[mSelection.size()];
+
+        for (int i = 0; i < mSelection.size(); ++i) {
+            selection[i] = getStringAt(i);
+        }
+
+        return selection;
+    }
 }
 

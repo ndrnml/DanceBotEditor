@@ -18,9 +18,10 @@ import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
 import ch.ethz.asl.dancebots.danceboteditor.ui.FloatSelectionMenu;
+import ch.ethz.asl.dancebots.danceboteditor.ui.IntegerSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.ui.LedTypeSelectionMenu;
+import ch.ethz.asl.dancebots.danceboteditor.ui.MotorTypeSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 
 /**
@@ -39,23 +40,30 @@ public class BeatElementMenuDialog extends DialogFragment {
     private BeatElementAdapter mBeatElementAdapter;
 
     // Menus
-    private LedTypeSelectionMenu mLedTypeSelectionMenu;
-    private FloatSelectionMenu mLedFrequencySelectionMenu;
+    private LedTypeSelectionMenu mLedTypeMenu;
+    private MotorTypeSelectionMenu mMotorTypeMenu;
+    private FloatSelectionMenu mLedFrequencyMenu;
+    private FloatSelectionMenu mMotorFrequencyMenu;
+    private IntegerSelectionMenu mVelocityMenu;
+    private IntegerSelectionMenu mChoreoLengthMenu;
 
+    // Menu list strings
     private String[] mMenuListMotionTypes;
     private String[] mMenuListFrequencies;
     private String[] mMenuListVelocities;
     private String[] mMenuChoreoLengths;
 
+    // Special checkbox menu elements
     private ArrayList<CheckBox> mCheckBoxes;
     private boolean[] mLedLightSwitches;
     private int mNumCheckBoxes;
-    
-    private int mMenuMotionTypeIdx;
-    private int mMenuFrequencyIdx;
-    private int mMenuVelocityLeftIdx;
-    private int mMenuVelocityRightIdx;
-    private int mMenuChoreoLengthIdx;
+
+    // Temporarily store selected menu indices
+    private int mSelectedMotionTypeIdx;
+    private int mSelectedFrequencyIdx;
+    private int mSelectedVelocityLeftIdx;
+    private int mSelectedVelocityRightIdx;
+    private int mSelectedChoreoLengthIdx;
 
     /**
      * Ensure that this method is called directly after instantiation of the menu
@@ -64,22 +72,28 @@ public class BeatElementMenuDialog extends DialogFragment {
      */
     public void initializeMenu(BeatElementAdapter adapter, BeatElement elem) {
 
+        // Contextual information
         mBeatElementAdapter = adapter;
         mBeatElement = elem;
         mDanceBotEditorProjectFile = DanceBotEditorProjectFile.getInstance();
 
+        // Load different menus
+        mLedTypeMenu = mDanceBotEditorProjectFile.getLedTypeMenu();
+        mMotorTypeMenu = mDanceBotEditorProjectFile.getMotorTypeMneu();
+        mLedFrequencyMenu = mDanceBotEditorProjectFile.getLedFrequencyMenu();
+        mMotorFrequencyMenu = mDanceBotEditorProjectFile.getMotorFrequencyMenu();
+        mVelocityMenu = mDanceBotEditorProjectFile.getVelocityMenu();
+        mChoreoLengthMenu = mDanceBotEditorProjectFile.getChoreoLengthMenu();
+
         // Menu list initialization
-        mMenuListVelocities = mDanceBotEditorProjectFile.getVelocitiesStrings();
-        mMenuChoreoLengths = mDanceBotEditorProjectFile.getChoreoLengthsStrings();
+        mMenuListVelocities = mVelocityMenu.getStrings();
+        mMenuChoreoLengths = mChoreoLengthMenu.getStrings();
 
         // Further menu lists based on motion type
         if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE
 
-            // Load led type menu
-            mLedTypeSelectionMenu = mDanceBotEditorProjectFile.getLedTypeMenu();
-
-            mMenuListMotionTypes = mLedTypeSelectionMenu.getStrings();
-            mMenuListFrequencies = mDanceBotEditorProjectFile.getLedFrequenciesStrings();
+            mMenuListMotionTypes = mLedTypeMenu.getStrings();
+            mMenuListFrequencies = mLedFrequencyMenu.getStrings();
 
             // Check box initialization
             mNumCheckBoxes = LedBeatElement.getNumLedLights();
@@ -88,8 +102,8 @@ public class BeatElementMenuDialog extends DialogFragment {
 
         } else if (mBeatElement.getClass() == MotorBeatElement.class) { // MOVE_TYPE
 
-            mMenuListMotionTypes = mDanceBotEditorProjectFile.getMotorStatesStrings();
-            mMenuListFrequencies = mDanceBotEditorProjectFile.getMotorFrequenciesStrings();
+            mMenuListMotionTypes = mMotorTypeMenu.getStrings();
+            mMenuListFrequencies = mMotorFrequencyMenu.getStrings();
 
         } else {
             Log.v(LOG_TAG, "Error doing menu initialization based on beat element type");
@@ -105,35 +119,35 @@ public class BeatElementMenuDialog extends DialogFragment {
 
             case MOTION:
                 // Update motion text view
-                mMenuMotionTypeIdx = newVal;
+                mSelectedMotionTypeIdx = newVal;
                 TextView motionTypeTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_motion_type_default);
                 motionTypeTextView.setText(mMenuListMotionTypes[newVal]);
                 break;
 
             case FREQUENCY:
                 // Update frequency text view
-                mMenuFrequencyIdx = newVal;
+                mSelectedFrequencyIdx = newVal;
                 TextView frequencyTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_frequency_default);
                 frequencyTextView.setText(mMenuListFrequencies[newVal]);
                 break;
 
             case VELOCITY_LEFT:
                 // Update velocity text view
-                mMenuVelocityLeftIdx = newVal;
+                mSelectedVelocityLeftIdx = newVal;
                 TextView velocityLeftTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_velocity_left_default);
                 velocityLeftTextView.setText(mMenuListVelocities[newVal]);
                 break;
 
             case VELOCITY_RIGHT:
                 // Update velocity text view
-                mMenuVelocityRightIdx = newVal;
+                mSelectedVelocityRightIdx = newVal;
                 TextView velocityRightTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_velocity_right_default);
                 velocityRightTextView.setText(mMenuListVelocities[newVal]);
                 break;
 
             case CHOREO_LENGTH:
                 // Update length text view
-                mMenuChoreoLengthIdx = newVal;
+                mSelectedChoreoLengthIdx = newVal;
                 TextView choreoLengthTextView = (TextView) mBeatElementMenuView.findViewById(R.id.txt_length_default);
                 choreoLengthTextView.setText(mMenuChoreoLengths[newVal]);
                 break;
@@ -319,27 +333,27 @@ public class BeatElementMenuDialog extends DialogFragment {
         int choreoStartIdx = mBeatElement.getBeatPosition();
 
         // Get the selected length of the choreography
-        int choreoLength = mDanceBotEditorProjectFile.getChoreoLengthAtIdx(mMenuChoreoLengthIdx);
-
-        // Set general beat element properties according to menu choices
-        mBeatElement.setProperties(choreoStartIdx, choreoLength, mMenuMotionTypeIdx, mMenuFrequencyIdx, mMenuChoreoLengthIdx);
+        int choreoLength = mChoreoLengthMenu.getValAt(mSelectedChoreoLengthIdx);
 
         // Save Led/Motor element properties
         if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE
+
+            // Set general beat element properties according to menu choices
+            mBeatElement.setProperties(choreoStartIdx, choreoLength, mSelectedMotionTypeIdx, mSelectedFrequencyIdx, mSelectedChoreoLengthIdx, mLedTypeMenu.getValAt(mSelectedMotionTypeIdx));
 
             // Process all check boxes
             processCheckBoxes();
             // Set led light switches according to selected check boxes
             ((LedBeatElement) mBeatElement).setLedLightSwitches(mLedLightSwitches);
 
-            // Set motion type of the led beat element
-            mBeatElement.setMotionType(mLedTypeSelectionMenu.getValAt(mMenuMotionTypeIdx));
-
         } else if (mBeatElement.getClass() == MotorBeatElement.class) { // MOVE_TYPE
 
+            // Set general beat element properties according to menu choices
+            mBeatElement.setProperties(choreoStartIdx, choreoLength, mSelectedMotionTypeIdx, mSelectedFrequencyIdx, mSelectedChoreoLengthIdx, mMotorTypeMenu.getValAt(mSelectedMotionTypeIdx));
+
             // Set velocities of motor beat element
-            ((MotorBeatElement) mBeatElement).setVelocityLeftIdx(mMenuVelocityLeftIdx);
-            ((MotorBeatElement) mBeatElement).setVelocityRightIdx(mMenuVelocityRightIdx);
+            ((MotorBeatElement) mBeatElement).setVelocityLeftIdx(mSelectedVelocityLeftIdx);
+            ((MotorBeatElement) mBeatElement).setVelocityRightIdx(mSelectedVelocityRightIdx);
         }
     }
 

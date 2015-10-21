@@ -59,7 +59,7 @@ public abstract class BeatElement {
      * @param frequencyIdx
      * @param choreoLengthIdx
      */
-    public void setProperties(int choreoStartIdx, int choreoLength, int motionTypeIdx, int frequencyIdx, int choreoLengthIdx) {
+    public void setProperties(int choreoStartIdx, int choreoLength, int motionTypeIdx, int frequencyIdx, int choreoLengthIdx, MotionType type) {
 
         // Set all choreography properties
         mChoreoStartIdx = choreoStartIdx;
@@ -68,6 +68,7 @@ public abstract class BeatElement {
         mFrequencyIdx = frequencyIdx;
         mChoreoLengthIdx = choreoLengthIdx;
         mHasChoreography = true;
+        mMotionType = type;
     }
 
     /**
@@ -76,7 +77,7 @@ public abstract class BeatElement {
      */
     public void setProperties(BeatElement elem) {
 
-        setProperties(elem.getChoreoStartIdx(), elem.getChoreoLength(), elem.getMotionTypeIdx(), elem.getFrequencyIdx(), elem.getChoreoLengthIdx());
+        setProperties(elem.getChoreoStartIdx(), elem.getChoreoLength(), elem.getMotionTypeIdx(), elem.getFrequencyIdx(), elem.getChoreoLengthIdx(), elem.getMotionType());
     }
 
     public boolean isSameChoreography(BeatElement elem) {
