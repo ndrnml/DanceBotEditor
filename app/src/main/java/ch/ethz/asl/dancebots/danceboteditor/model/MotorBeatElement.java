@@ -1,33 +1,28 @@
 package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
-import android.util.Log;
-
-import ch.ethz.asl.dancebots.danceboteditor.R;
 
 /**
  * Created by andrin on 04.09.15.
  */
-public class MotorBeatElement extends BeatElement<MotorType> {
+public class MotorBeatElement extends BeatElement {
 
     private static final String LOG_TAG = "MOTOR_BEAT_ELEMENT";
 
     private int mVelocityLeftIdx;
     private int mVelocityRightIdx;
 
-    public MotorBeatElement(Context context, int beatPos, int samplePos, MotorType[] types) {
+    public MotorBeatElement(Context context, int beatPos, int samplePos) {
 
         // Parent constructor call
         super(context, beatPos, samplePos);
 
         // Initialize beat element properties
-        mMotionTypes = types;
+        mMotionType = Type.M_DEFAULT;
 
         // Initialize specific motor element default properties
         mVelocityLeftIdx = 0;
         mVelocityRightIdx = 0;
-        mColor = mContext.getResources().getColor(R.color.motor_list_default_color);
-
     }
 
     /**
@@ -58,46 +53,6 @@ public class MotorBeatElement extends BeatElement<MotorType> {
     }
 
     @Override
-    protected void setColorAndTag() {
-        switch (mMotionTypes[mMotionTypeIdx]) {
-
-            case STRAIGHT:
-                mColor = mContext.getResources().getColor(R.color.motor_elem_color1);
-                mChoreoTag = "S";
-                break;
-
-            case SPIN:
-                mColor = mContext.getResources().getColor(R.color.motor_elem_color2);
-                mChoreoTag = "P";
-                break;
-
-            case TWIST:
-                mColor = mContext.getResources().getColor(R.color.motor_elem_color3);
-                mChoreoTag = "T";
-                break;
-
-            case BACK_AND_FORTH:
-                mColor = mContext.getResources().getColor(R.color.motor_elem_color4);
-                mChoreoTag = "B";
-                break;
-
-            case CONSTANT:
-                mColor = mContext.getResources().getColor(R.color.motor_elem_color5);
-                mChoreoTag = "C";
-                break;
-
-            case WAIT:
-                mColor = mContext.getResources().getColor(R.color.motor_elem_color6);
-                mChoreoTag = "W";
-                break;
-
-            default:
-                Log.e(LOG_TAG, "Error switch: " + mMotionTypes[mMotionTypeIdx]);
-                break;
-        }
-    }
-
-    @Override
     public void setProperties(BeatElement elem) {
 
         // Set general beat element properties
@@ -115,7 +70,6 @@ public class MotorBeatElement extends BeatElement<MotorType> {
     public int getVelocityLeftIdx() {
         return mVelocityLeftIdx;
     }
-
     public int getVelocityRightIdx() {
         return mVelocityRightIdx;
     }

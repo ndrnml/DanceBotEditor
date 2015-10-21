@@ -1,30 +1,26 @@
 package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
-import android.util.Log;
-
-import ch.ethz.asl.dancebots.danceboteditor.R;
 
 /**
  * Created by andrin on 18.09.15.
  */
-public class LedBeatElement extends BeatElement<LedType> {
+public class LedBeatElement extends BeatElement {
 
     private static final String LOG_TAG = "LED_BEAT_ELEMENT";
     private static final int NUM_LED_LIGHTS = 8;
 
     private boolean[] mLedLightSwitches;
 
-    public LedBeatElement(Context context, int beatPos, int samplePos, LedType[] types) {
+    public LedBeatElement(Context context, int beatPos, int samplePos) {
 
         // Parent constructor call
         super(context, beatPos, samplePos);
 
         // Initialize beat element properties
-        mMotionTypes = types;
+        mMotionType = Type.L_DEFAULT;
 
         // Initialize specific led element default properties
-        mColor = mContext.getResources().getColor(R.color.led_list_default_color);
         mLedLightSwitches = new boolean[NUM_LED_LIGHTS];
 
         // Initialize led light indices to 0
@@ -51,42 +47,6 @@ public class LedBeatElement extends BeatElement<LedType> {
     public void setLedLightSwitches(BeatElement elem) {
 
         setLedLightSwitches(((LedBeatElement) elem).getLedLightSwitches());
-    }
-
-    @Override
-    protected void setColorAndTag() {
-
-        switch (mMotionTypes[mMotionTypeIdx]) {
-
-            case KNIGHT_RIDER:
-                mColor = mContext.getResources().getColor(R.color.led_elem_color1);
-                mChoreoTag = "K";
-                break;
-
-            case RANDOM:
-                mColor = mContext.getResources().getColor(R.color.led_elem_color2);
-                mChoreoTag = "R";
-                break;
-
-            case BLINK:
-                mColor = mContext.getResources().getColor(R.color.led_elem_color3);
-                mChoreoTag = "B";
-                break;
-
-            case SAME_BLINK:
-                mColor = mContext.getResources().getColor(R.color.led_elem_color4);
-                mChoreoTag = "S";
-                break;
-
-            case CONSTANT:
-                mColor = mContext.getResources().getColor(R.color.led_elem_color5);
-                mChoreoTag = "C";
-                break;
-
-            default:
-                Log.e(LOG_TAG, "Error switch: " + mMotionTypes[mMotionTypeIdx]);
-                break;
-        }
     }
 
     @Override

@@ -1,9 +1,7 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
+import android.content.Context;
 import android.graphics.Color;
-
-import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
-import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
 
 /**
  * Created by andrin on 09.07.15.
@@ -15,8 +13,6 @@ public class DanceBotEditorProjectFile {
         START, NEW, EDITING
     }
 
-    private State mEditorState;
-
     public boolean musicFileSelected = false;
     public boolean beatExtractionDone = false;
     public boolean startedEditing = false;
@@ -24,13 +20,15 @@ public class DanceBotEditorProjectFile {
     // Singleton instance
     private static DanceBotEditorProjectFile instance = null;
 
+    private Context mContext;
+    private State mEditorState;
     private DanceBotMusicFile mDBMusicFile;
     private BeatGrid mBeatGrid;
     private ChoreographyManager mChoreoManager;
 
     /**
      * MENU STRING UNITS
-     * Make sure the order is the same as in the enum MotionType
+     * Make sure the order is the same as in the motion types
      */
     private String[] mMotorStatesStrings = new String[]{"Geradeaus", "Drehung", "Wippen", "Vor- und Zurück", "Konstant", "Warten"};
     private String[] mLedStatesStrings = new String[]{"Knight Rider", "Zufällig", "Blinken", "SAME_BLINK", "Konstant"};
@@ -42,8 +40,6 @@ public class DanceBotEditorProjectFile {
     /**
      * MENU TYPE UNITS
      */
-    private MotorType[] mMotorStates = MotorType.values(); // Get ENUM values
-    private LedType[] mLedStates = LedType.values(); // Get ENUM values
     private int[] mChoreoLengths = new int[]{1,2,3,4,5,6,7,8,9,10};
     private int[] mMotorColors = new int[]{Color.RED, Color.RED, Color.RED, Color.RED, Color.RED, Color.RED};
     private int[] mLedColors = new int[]{Color.RED, Color.RED, Color.RED, Color.RED, Color.RED};
@@ -78,7 +74,7 @@ public class DanceBotEditorProjectFile {
      * Based on the detected beats, create a new choreography manager
      */
     public void initChoreography() {
-        mChoreoManager = new ChoreographyManager(mBeatGrid);
+        mChoreoManager = new ChoreographyManager(mContext, mBeatGrid);
     }
 
     /**
@@ -95,10 +91,15 @@ public class DanceBotEditorProjectFile {
     public void setEditorState(State s) {
         mEditorState = s;
     }
-
+    public void setContext(Context c) {
+        mContext = c;
+    }
     ///////////
     // GETTERS
     ///////////
+    public Context getContext() {
+        return mContext;
+    }
     public DanceBotMusicFile getDanceBotMusicFile() {
         return mDBMusicFile;
     }
@@ -125,12 +126,6 @@ public class DanceBotEditorProjectFile {
     }
     public String[] getChoreoLengthsStrings() {
         return mChoreoLengthsStrings;
-    }
-    public MotorType[] getMotorStates() {
-        return mMotorStates;
-    }
-    public LedType[] getLedStates() {
-        return mLedStates;
     }
     public int getChoreoLengthAtIdx(int idx) {
         return mChoreoLengths[idx];

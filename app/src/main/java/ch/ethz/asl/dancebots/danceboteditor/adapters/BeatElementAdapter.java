@@ -90,10 +90,10 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         // Populate the data into the template view using the data object
-        holder.mTextView.setText(Integer.toString(position)/*mBeatElements.get(position).getChoreoTag()*/);
+        holder.mTextView.setText(mBeatElements.get(position).getMotionType().getTag());
 
         // Stylize list item according to type
-        holder.mTextView.setBackgroundColor(mBeatElements.get(position).getColor());
+        holder.mTextView.setBackgroundColor(mBeatElements.get(position).getMotionType().getColor());
     }
 
     @Override

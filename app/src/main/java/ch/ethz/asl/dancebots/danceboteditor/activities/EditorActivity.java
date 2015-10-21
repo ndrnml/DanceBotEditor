@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
+import ch.ethz.asl.dancebots.danceboteditor.handlers.BeatExtractionHandler;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
@@ -102,27 +103,35 @@ public class EditorActivity extends Activity {
 
             Log.v(LOG_TAG, "resumed EditorActivity with a song loaded");
 
-            // Perform beat extraction in async task
-            //SoundFileHandlerAsyncTask soundFileHandler = new SoundFileHandlerAsyncTask(EditorActivity.this);
-            //soundFileHandler.execute(mProjectFile);
+            boolean USE_DUMMY_DATA = true;
 
-            /**
-             * DUMMY DATA CONSTRUCTION
-             */
-            int NUM_BEATS = 300;
-            int SAMPLE_RATE = 44100;
-            int DURATION = 180;
-            int TOTAL_SAMPLES = DURATION * SAMPLE_RATE;
-            int SPACING = TOTAL_SAMPLES / NUM_BEATS;
+            if (USE_DUMMY_DATA)
+            {
+                /**
+                 * DUMMY DATA CONSTRUCTION
+                 */
+                int NUM_BEATS = 300;
+                int SAMPLE_RATE = 44100;
+                int DURATION = 180;
+                int TOTAL_SAMPLES = DURATION * SAMPLE_RATE;
+                int SPACING = TOTAL_SAMPLES / NUM_BEATS;
 
-            mProjectFile.initChoreography();
-            for (int i = 0; i < NUM_BEATS; ++i) {
-                mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements.add(new MotorBeatElement(getApplicationContext(), i, SPACING * i, mProjectFile.getMotorStates()));
-                mProjectFile.getChoreoManager().mLedChoregraphy.mBeatElements.add(new LedBeatElement(getApplicationContext(), i, SPACING * i, mProjectFile.getLedStates()));
+                mProjectFile.initChoreography();
+                for (int i = 0; i < NUM_BEATS; ++i) {
+                    mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements.add(new MotorBeatElement(getApplicationContext(), i, SPACING * i));
+                    mProjectFile.getChoreoManager().mLedChoregraphy.mBeatElements.add(new LedBeatElement(getApplicationContext(), i, SPACING * i));
+                }
+                /**
+                 * END DUMMY DATA CONSTRUCTION
+                 */
+
+            } else {
+
+                // Perform beat extraction in async task
+                BeatExtractionHandler beatExtractionHandler = new BeatExtractionHandler(EditorActivity.this);
+                beatExtractionHandler.execute(mProjectFile);
+
             }
-            /**
-             * END DUMMY DATA CONSTRUCTION
-             */
 
             // Create the beat adapters
             BeatElementAdapter motorAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements);
@@ -131,7 +140,6 @@ public class EditorActivity extends Activity {
             // Attach apapters
             mMotorView.setAdapter(motorAdapter);
             mLedView.setAdapter(ledAdapter);
-
 
             // TODO remove or change this (THIS WAS ADDED FOR THE LONG CLICK CAPABILITY)
             //registerForContextMenu(mMotorView);

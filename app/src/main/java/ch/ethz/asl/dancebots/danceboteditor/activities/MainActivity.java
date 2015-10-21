@@ -21,7 +21,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize DanceBot specific properties
+        // Instantiate and initialize the dance bot editor project file
+        // All static variables should be set within the project file
         DanceBotEditorProjectFile.getInstance().setEditorState(DanceBotEditorProjectFile.State.START);
     }
 

@@ -2,35 +2,67 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
 
+import ch.ethz.asl.dancebots.danceboteditor.R;
+
 /**
  * Created by andrin on 28.08.15.
  */
-public abstract class BeatElement<T extends MotionType> {
+public abstract class BeatElement {
+
+    // 'Static' enum types are instantiated with the object
+    public enum Type {
+        L_DEFAULT(mContext.getResources().getColor(R.color.led_list_default_color), ""),
+        L_KNIGHT_RIDER(mContext.getResources().getColor(R.color.led_elem_color1), "K"),
+        L_RANDOM(mContext.getResources().getColor(R.color.led_elem_color2), "R"),
+        L_BLINK(mContext.getResources().getColor(R.color.led_elem_color3), "B"),
+        L_SAME_BLINK(mContext.getResources().getColor(R.color.led_elem_color4), "S"),
+        L_CONSTANT(mContext.getResources().getColor(R.color.led_elem_color5), "C"),
+
+        M_DEFAULT(mContext.getResources().getColor(R.color.motor_list_default_color), ""),
+        M_STRAIGHT(mContext.getResources().getColor(R.color.motor_elem_color1), "S"),
+        M_SPIN(mContext.getResources().getColor(R.color.motor_elem_color2), "P"),
+        M_TWIST(mContext.getResources().getColor(R.color.motor_elem_color3), "T"),
+        M_BACK_AND_FORTH(mContext.getResources().getColor(R.color.motor_elem_color4), "B"),
+        M_CONSTANT(mContext.getResources().getColor(R.color.motor_elem_color5), "C"),
+        M_WAIT(mContext.getResources().getColor(R.color.motor_elem_color6), "W");
+
+        private int mColor;
+        private String mTag;
+
+        Type(int color, String tag) {
+            mColor = color;
+            mTag = tag;
+        }
+
+        public int getColor() {
+            return mColor;
+        }
+
+        public String getTag() {
+            return mTag;
+        }
+    }
 
     // Context properties
-    protected Context mContext;
+    protected static Context mContext;
 
     // Choreography properties of a beat element
     protected boolean mHasChoreography;
     protected int mChoreoStartIdx;
     protected int mChoreoLength;
-    protected int mColor;
-    protected T[] mMotionTypes;
-    protected String mChoreoTag;
+    protected Type mMotionType;
 
     // Song properties of a beat element
     protected int mBeatPosition;
     protected long mSamplePosition;
 
-    // Menu properties of a beat element
+    // Menu property index of a beat element
     protected int mMotionTypeIdx;
     protected int mFrequencyIdx;
     protected int mChoreoLengthIdx;
 
-    // TODO
     public BeatElement(Context context, int beatPosition, long samplePosition) {
 
-        // Context properties
         mContext = context;
 
         // Song properties
@@ -41,7 +73,6 @@ public abstract class BeatElement<T extends MotionType> {
         mHasChoreography = false;
         mChoreoStartIdx = -1;
         mChoreoLength = -1;
-        mChoreoTag = "";
 
         // Default menu indices
         mMotionTypeIdx = 0;
@@ -71,9 +102,6 @@ public abstract class BeatElement<T extends MotionType> {
         mFrequencyIdx = frequencyIdx;
         mChoreoLengthIdx = choreoLengthIdx;
         mHasChoreography = true;
-
-        // Set beat element color and tag
-        setColorAndTag();
     }
 
     /**
@@ -107,8 +135,6 @@ public abstract class BeatElement<T extends MotionType> {
     // SETTERS
     ///////////
 
-    protected abstract void setColorAndTag();
-
     public void setMotionTypeIdx(int idx) {
         mMotionTypeIdx = idx; // TODO Check that idx is a valid number?
     }
@@ -135,15 +161,6 @@ public abstract class BeatElement<T extends MotionType> {
     public String getBeatPositionAsString() {
         return Integer.toString(mBeatPosition);
     }
-    public int getColor() {
-        return mColor;
-    }
-    public T getMotionType() {
-        return mMotionTypes[mMotionTypeIdx];
-    }
-    public String getChoreoTag() {
-        return mChoreoTag;
-    }
     public int getMotionTypeIdx() {
         return mMotionTypeIdx;
     }
@@ -153,4 +170,5 @@ public abstract class BeatElement<T extends MotionType> {
     public int getChoreoLengthIdx() {
         return mChoreoLengthIdx;
     }
+    public Type getMotionType() {return mMotionType;}
 }

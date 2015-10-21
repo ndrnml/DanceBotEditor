@@ -13,7 +13,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 /**
  * Created by andrin on 09.07.15.
  */
-public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFile, Void, Integer> {
+public class BeatExtractionHandler extends AsyncTask<DanceBotEditorProjectFile, Void, Integer> {
 
     /**TODO
      * TODO AsyncTasks don't follow Activity instances' life cycle. If you start an AsyncTask inside an Activity and you rotate the device, the Activity will be destroyed and a new instance will be created. But the AsyncTask will not die. It will go on living until it completes.
@@ -21,17 +21,17 @@ public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFi
      */
     private static final String LOG_TAG = "SOUND_FILE_HANDLER";
 
-    private ProgressDialog dialog;
+    private ProgressDialog mDialog;
 
     /**
      * TODO COmment
      * @param activity
      */
-    public SoundFileHandlerAsyncTask(Activity activity) {
+    public BeatExtractionHandler(Activity activity) {
 
-        dialog = new ProgressDialog(activity);
-        dialog.setCancelable(false);
-        dialog.setCanceledOnTouchOutside(false);
+        mDialog = new ProgressDialog(activity);
+        mDialog.setCancelable(false);
+        mDialog.setCanceledOnTouchOutside(false);
 
     }
 
@@ -95,8 +95,8 @@ public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFi
     protected void onPreExecute() {
         super.onPreExecute();
 
-        dialog.setMessage("doing all the important C++ stuff... please wait, it only takes a few seconds");
-        dialog.show();
+        mDialog.setMessage("doing all the important C++ stuff... please wait, it only takes a few seconds");
+        mDialog.show();
 
         Log.v(LOG_TAG, "PreExecute decoding extracting");
 
@@ -106,8 +106,8 @@ public class SoundFileHandlerAsyncTask extends AsyncTask<DanceBotEditorProjectFi
     protected void onPostExecute(Integer result) {
         super.onPostExecute(result);
 
-        if (dialog.isShowing()) {
-            dialog.dismiss();
+        if (mDialog.isShowing()) {
+            mDialog.dismiss();
         }
 
         if (result == DanceBotError.NO_ERROR)
