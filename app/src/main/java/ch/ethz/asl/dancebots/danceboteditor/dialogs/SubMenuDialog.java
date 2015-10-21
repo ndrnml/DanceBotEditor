@@ -25,13 +25,15 @@ public class SubMenuDialog extends DialogFragment {
     private BeatElementMenuDialog mCallerDialog;
     private BeatElementMenuDialog.MENU_TYPE mMenuType;
     private String[] mMenuList;
+    private int mMenuListIdx;
 
     public void initializeSubMenu(BeatElementMenuDialog dialog,
                                   BeatElementMenuDialog.MENU_TYPE menuType,
-                                  String[] menuList) {
+                                  String[] menuList, int menuListIdx) {
         mCallerDialog = dialog;
         mMenuType = menuType;
         mMenuList = menuList;
+        mMenuListIdx = menuListIdx;
     }
 
     @Override
@@ -55,6 +57,7 @@ public class SubMenuDialog extends DialogFragment {
         numberPicker.setMinValue(0);
         numberPicker.setMaxValue(mMenuList.length - 1);
         numberPicker.setDisplayedValues(mMenuList);
+        numberPicker.setValue(mMenuListIdx);
         numberPicker.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         numberPicker.setOrientation(LinearLayout.VERTICAL);
         numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {

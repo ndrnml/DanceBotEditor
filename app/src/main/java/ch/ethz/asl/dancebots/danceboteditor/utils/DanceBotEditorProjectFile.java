@@ -1,7 +1,17 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.util.Pair;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+
+import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
+import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
+import ch.ethz.asl.dancebots.danceboteditor.ui.FloatSelectionMenu;
+import ch.ethz.asl.dancebots.danceboteditor.ui.IntegerSelectionMenu;
+import ch.ethz.asl.dancebots.danceboteditor.ui.LedTypeSelectionMenu;
+import ch.ethz.asl.dancebots.danceboteditor.ui.MotorTypeSelectionMenu;
 
 /**
  * Created by andrin on 09.07.15.
@@ -27,22 +37,21 @@ public class DanceBotEditorProjectFile {
     private ChoreographyManager mChoreoManager;
 
     /**
-     * MENU STRING UNITS
-     * Make sure the order is the same as in the motion types
+     * TODO
+     * New Menu implementation
      */
-    private String[] mMotorStatesStrings = new String[]{"Geradeaus", "Drehung", "Wippen", "Vor- und Zurück", "Konstant", "Warten"};
-    private String[] mLedStatesStrings = new String[]{"Knight Rider", "Zufällig", "Blinken", "SAME_BLINK", "Konstant"};
-    private String[] mMotorFrequenciesStrings = new String[]{"1/4", "1/3", "1/2", "2/3", "1"};
-    private String[] mLedFrequenciesStrings = new String[]{"1/4", "1/3", "1/2", "2/3", "3/2", "2", "3", "4"};
-    private String[] mVelocitiesStrings = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-    private String[] mChoreoLengthsStrings = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-
-    /**
-     * MENU TYPE UNITS
-     */
-    private int[] mChoreoLengths = new int[]{1,2,3,4,5,6,7,8,9,10};
-    private int[] mMotorColors = new int[]{Color.RED, Color.RED, Color.RED, Color.RED, Color.RED, Color.RED};
-    private int[] mLedColors = new int[]{Color.RED, Color.RED, Color.RED, Color.RED, Color.RED};
+    private final int VELOCITY_MIN = 10;
+    private final int VELOCITY_MAX = 100;
+    private final int VELOCITY_STEP = 10;
+    private final int CHOREO_LENGTH_MIN = 1;
+    private final int CHOREO_LENGTH_MAX = 50;
+    private final int CHOREO_LENGTH_STEP = 1;
+    private LedTypeSelectionMenu mLedTypeMenu;
+    private MotorTypeSelectionMenu mMotorTypeMenu;
+    private FloatSelectionMenu mLedFrequencyMenu;
+    private FloatSelectionMenu mMotorFrequencyMenu;
+    private IntegerSelectionMenu mVelocityMenu;
+    private IntegerSelectionMenu mChoreoLengthMenu;
 
     /**
      * DanceBotEditorProjectFile is treated as Singleton
@@ -64,6 +73,39 @@ public class DanceBotEditorProjectFile {
     }
 
     /**
+     * First init. This one is really important. It sets the application context, which is needed
+     * for a few objects, since some properties are constant encoded.
+     * This is not a pretty solution, but I have no clue how to make it better. I know, I am not a
+     * good programmer yet, but maybe once, I will understand the concepts.
+     */
+    public void init(Context context) {
+        setContext(context);
+    }
+
+    /**
+     * Init menus
+     */
+    public void initSelectionMenus() {
+
+        // Init frequency menus
+        mLedFrequencyMenu = new FloatSelectionMenu(generateLedFrequencies());
+        mMotorFrequencyMenu = new FloatSelectionMenu(generateMotorFrequencies());
+
+        // Init led type menu
+        mLedTypeMenu = new LedTypeSelectionMenu(new ArrayList<>(EnumSet.allOf(LedType.class)));
+
+        // Init motor type menu
+        mMotorTypeMenu = new MotorTypeSelectionMenu(new ArrayList<>(EnumSet.allOf(MotorType.class)));
+
+        // Init velocity menu
+        mVelocityMenu = new IntegerSelectionMenu(generateIntegersInRange(VELOCITY_MIN, VELOCITY_MAX, VELOCITY_STEP));
+
+        // Init choreo length menu
+        mChoreoLengthMenu = new IntegerSelectionMenu(generateIntegersInRange(CHOREO_LENGTH_MIN, CHOREO_LENGTH_MAX, CHOREO_LENGTH_STEP));
+    }
+
+
+    /**
      * Initialize meta container for extracted beats
      */
     public void initBeatGrid() {
@@ -83,6 +125,51 @@ public class DanceBotEditorProjectFile {
      */
     public void attachMusicFile(DanceBotMusicFile dbMusicFile) {
         mDBMusicFile = dbMusicFile;
+    }
+
+    /**
+     * Generate led frequencies
+     */
+    private ArrayList<Pair<Integer,Integer>> generateLedFrequencies() {
+
+        // "1/4", "1/3", "1/2", "2/3", "1"
+        ArrayList<Pair<Integer, Integer>> frequencies = new ArrayList<>();
+        frequencies.add(new Pair<>(1, 4));
+        frequencies.add(new Pair<>(1, 3));
+        frequencies.add(new Pair<>(2, 3));
+        frequencies.add(new Pair<>(1, 1));
+
+        return frequencies;
+    }
+    /**
+     * Generate led frequencies
+     */
+    private ArrayList<Pair<Integer,Integer>> generateMotorFrequencies() {
+
+        // "1/4", "1/3", "1/2", "2/3", "3/2", "2", "3", "4"
+        ArrayList<Pair<Integer, Integer>> frequencies = new ArrayList<>();
+        frequencies.add(new Pair<>(1, 4));
+        frequencies.add(new Pair<>(1, 3));
+        frequencies.add(new Pair<>(1, 2));
+        frequencies.add(new Pair<>(2, 3));
+        frequencies.add(new Pair<>(3, 2));
+        frequencies.add(new Pair<>(2, 1));
+        frequencies.add(new Pair<>(3, 1));
+        frequencies.add(new Pair<>(4, 1));
+
+        return frequencies;
+    }
+
+    private ArrayList<Integer> generateIntegersInRange(int min, int max, int step) {
+
+        ArrayList<Integer> collection = new ArrayList<>();
+
+        int number_of_elements = (max / step);
+        for (int i = 0; i < number_of_elements; ++i) {
+            collection.add(min + (i * step));
+        }
+
+        return collection;
     }
 
     ///////////
@@ -109,28 +196,10 @@ public class DanceBotEditorProjectFile {
     public ChoreographyManager getChoreoManager() {
         return mChoreoManager;
     }
-    public String[] getMotorStatesStrings() {
-        return mMotorStatesStrings;
-    }
-    public String[] getLedStatesStrings() {
-        return mLedStatesStrings;
-    }
-    public String[] getMotorFrequenciesStrings() {
-        return mMotorFrequenciesStrings;
-    }
-    public String[] getLedFrequenciesStrings() {
-        return mLedFrequenciesStrings;
-    }
-    public String[] getVelocitiesStrings() {
-        return mVelocitiesStrings;
-    }
-    public String[] getChoreoLengthsStrings() {
-        return mChoreoLengthsStrings;
-    }
-    public int getChoreoLengthAtIdx(int idx) {
-        return mChoreoLengths[idx];
-    }
     public State getEditorState() {
         return mEditorState;
+    }
+    public LedTypeSelectionMenu getLedTypeMenu() {
+        return mLedTypeMenu;
     }
 }

@@ -3,45 +3,12 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 import android.content.Context;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 
 /**
  * Created by andrin on 28.08.15.
  */
 public abstract class BeatElement {
-
-    // 'Static' enum types are instantiated with the object
-    public enum Type {
-        L_DEFAULT(mContext.getResources().getColor(R.color.led_list_default_color), ""),
-        L_KNIGHT_RIDER(mContext.getResources().getColor(R.color.led_elem_color1), "K"),
-        L_RANDOM(mContext.getResources().getColor(R.color.led_elem_color2), "R"),
-        L_BLINK(mContext.getResources().getColor(R.color.led_elem_color3), "B"),
-        L_SAME_BLINK(mContext.getResources().getColor(R.color.led_elem_color4), "S"),
-        L_CONSTANT(mContext.getResources().getColor(R.color.led_elem_color5), "C"),
-
-        M_DEFAULT(mContext.getResources().getColor(R.color.motor_list_default_color), ""),
-        M_STRAIGHT(mContext.getResources().getColor(R.color.motor_elem_color1), "S"),
-        M_SPIN(mContext.getResources().getColor(R.color.motor_elem_color2), "P"),
-        M_TWIST(mContext.getResources().getColor(R.color.motor_elem_color3), "T"),
-        M_BACK_AND_FORTH(mContext.getResources().getColor(R.color.motor_elem_color4), "B"),
-        M_CONSTANT(mContext.getResources().getColor(R.color.motor_elem_color5), "C"),
-        M_WAIT(mContext.getResources().getColor(R.color.motor_elem_color6), "W");
-
-        private int mColor;
-        private String mTag;
-
-        Type(int color, String tag) {
-            mColor = color;
-            mTag = tag;
-        }
-
-        public int getColor() {
-            return mColor;
-        }
-
-        public String getTag() {
-            return mTag;
-        }
-    }
 
     // Context properties
     protected static Context mContext;
@@ -50,13 +17,13 @@ public abstract class BeatElement {
     protected boolean mHasChoreography;
     protected int mChoreoStartIdx;
     protected int mChoreoLength;
-    protected Type mMotionType;
 
     // Song properties of a beat element
     protected int mBeatPosition;
     protected long mSamplePosition;
 
     // Menu property index of a beat element
+    protected MotionType mMotionType;
     protected int mMotionTypeIdx;
     protected int mFrequencyIdx;
     protected int mChoreoLengthIdx;
@@ -94,7 +61,6 @@ public abstract class BeatElement {
      */
     public void setProperties(int choreoStartIdx, int choreoLength, int motionTypeIdx, int frequencyIdx, int choreoLengthIdx) {
 
-        // TODO reduce redundancy
         // Set all choreography properties
         mChoreoStartIdx = choreoStartIdx;
         mChoreoLength = choreoLength;
@@ -135,6 +101,9 @@ public abstract class BeatElement {
     // SETTERS
     ///////////
 
+    public void setMotionType(MotionType t) {
+        mMotionType = t;
+    }
     public void setMotionTypeIdx(int idx) {
         mMotionTypeIdx = idx; // TODO Check that idx is a valid number?
     }
@@ -170,5 +139,7 @@ public abstract class BeatElement {
     public int getChoreoLengthIdx() {
         return mChoreoLengthIdx;
     }
-    public Type getMotionType() {return mMotionType;}
+    public MotionType getMotionType() {
+        return mMotionType;
+    }
 }

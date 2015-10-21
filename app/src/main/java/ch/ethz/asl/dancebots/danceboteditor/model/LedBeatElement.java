@@ -2,6 +2,8 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
 
+import ch.ethz.asl.dancebots.danceboteditor.R;
+
 /**
  * Created by andrin on 18.09.15.
  */
@@ -18,7 +20,7 @@ public class LedBeatElement extends BeatElement {
         super(context, beatPos, samplePos);
 
         // Initialize beat element properties
-        mMotionType = Type.L_DEFAULT;
+        mMotionType = LedType.DEFAULT;
 
         // Initialize specific led element default properties
         mLedLightSwitches = new boolean[NUM_LED_LIGHTS];

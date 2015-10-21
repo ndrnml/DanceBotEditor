@@ -50,7 +50,9 @@ public class EditorActivity extends Activity {
         // TODO: initialize dance bot project file, beat grid, music files etc...
         // Project file initialization
         mProjectFile = DanceBotEditorProjectFile.getInstance();
+        mProjectFile.init(getApplicationContext());
         mProjectFile.initBeatGrid();
+        mProjectFile.initSelectionMenus();
 
         // Initialize and setup linear layout manager
         mMotorLayoutManager = new LinearLayoutManager(this);
