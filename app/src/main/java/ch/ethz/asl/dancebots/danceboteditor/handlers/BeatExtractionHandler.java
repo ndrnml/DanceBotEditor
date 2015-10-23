@@ -69,6 +69,10 @@ public class BeatExtractionHandler extends AsyncTask<DanceBotEditorProjectFile, 
         params[0].getBeatGrid().setNumOfBeats(NativeGetNumBeatsDetected());
         Log.v(LOG_TAG, "total number of beats detected: " + NativeGetNumBeatsDetected());
 
+        // Save number of beats detected to dance bot music file
+        params[0].getDanceBotMusicFile().setNumberOfBeatsDected(NativeGetNumBeatsDetected());
+        Log.v(LOG_TAG, "store in music file: total number of beats detected: " + NativeGetNumBeatsDetected());
+
         if (err < 0) {
 
             // Error while extracting beats

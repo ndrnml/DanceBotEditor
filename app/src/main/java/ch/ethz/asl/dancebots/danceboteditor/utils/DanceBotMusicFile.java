@@ -14,6 +14,7 @@ public class DanceBotMusicFile {
     private long mNumberOfSamples;
     private int mSampleRate;
     private int mChannels;
+    private int mNumberOfBeatsDetected;
 
     public DanceBotMusicFile(String songTitle, String songArtist, String songPath, int duration) {
 
@@ -23,16 +24,15 @@ public class DanceBotMusicFile {
         mDurationInMiliSeconds = duration;
     }
 
-    /**
-     * TODO
-     * @param rate
-     */
+
     public void setSampleRate(int rate) {
         mSampleRate = rate;
     }
-
     public void setTotalNumberOfSamples(long samples) {
         mNumberOfSamples = samples;
+    }
+    public void setNumberOfBeatsDected(int numBeats) {
+        mNumberOfBeatsDetected = numBeats;
     }
 
     public String getSongPath() {
@@ -50,4 +50,16 @@ public class DanceBotMusicFile {
             return Integer.toString(minutes) + ":" + Integer.toString(seconds);
         }
     }
+    public int getDurationInMiliSecs() {
+        return mDurationInMiliSeconds;
+    }
+    public int getDurationInSecs() {
+        return (mDurationInMiliSeconds / 1000);
+    }
+
+    public int getNumberOfBeatsDetected() {
+        return mNumberOfBeatsDetected;
+    }
+
+
 }

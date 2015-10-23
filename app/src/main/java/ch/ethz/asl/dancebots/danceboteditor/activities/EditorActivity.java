@@ -131,6 +131,8 @@ public class EditorActivity extends Activity {
                     mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements.add(new MotorBeatElement(getApplicationContext(), i, SPACING * i));
                     mProjectFile.getChoreoManager().mLedChoregraphy.mBeatElements.add(new LedBeatElement(getApplicationContext(), i, SPACING * i));
                 }
+
+                mProjectFile.getDanceBotMusicFile().setNumberOfBeatsDected(NUM_BEATS);
                 /**
                  * END DUMMY DATA CONSTRUCTION
                  */
@@ -142,6 +144,9 @@ public class EditorActivity extends Activity {
                 beatExtractionHandler.execute(mProjectFile);
 
             }
+
+            // Prepare music player
+            mMediaPlayer.preparePlayback();
 
             // Create the beat adapters
             BeatElementAdapter motorAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements);
@@ -182,7 +187,7 @@ public class EditorActivity extends Activity {
         // If the editor is currently decoding, editing or encoding ask user to leave
         if (false/*mEditorState == DanceBotEditorProjectFile.State.DECODING || mEditorState == DanceBotEditorProjectFile.State.ENCODING*/) {
 
-            // TODO abort/cancel all async tasks and background threads
+            // TODO abort/cancel all async tasks and background threads IMPORTANT!!!!
         }
     }
 
@@ -231,7 +236,7 @@ public class EditorActivity extends Activity {
                 mProjectFile.setEditorState(DanceBotEditorProjectFile.State.NEW);
 
                 // Open file in media player
-                mMediaPlayer.openMusicFile(songPath);
+                mMediaPlayer.openMusicFile(dbMusicFile);
 
             } else {
 

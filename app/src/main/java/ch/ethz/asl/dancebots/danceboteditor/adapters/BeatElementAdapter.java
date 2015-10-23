@@ -2,6 +2,7 @@ package ch.ethz.asl.dancebots.danceboteditor.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -90,10 +91,14 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         // Populate the data into the template view using the data object
-        holder.mTextView.setText(mBeatElements.get(position).getMotionType().getTag());
+        holder.mTextView.setText(Integer.toString(position)/*mBeatElements.get(position).getMotionType().getTag()*/);
 
-        // Stylize list item according to type
-        holder.mTextView.setBackgroundColor(mBeatElements.get(position).getMotionType().getColor());
+        if (mBeatElements.get(position).getFocus()) {
+            holder.mTextView.setBackgroundColor(Color.RED);
+        } else {
+            // Stylize list item according to type
+            holder.mTextView.setBackgroundColor(mBeatElements.get(position).getMotionType().getColor());
+        }
     }
 
     @Override
@@ -101,4 +106,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         return mBeatElements.size();
     }
 
+    public BeatElement getItem(int position) {
+        return mBeatElements.get(position);
+    }
 }

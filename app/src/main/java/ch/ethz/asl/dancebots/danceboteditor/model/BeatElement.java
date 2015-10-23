@@ -21,6 +21,7 @@ public abstract class BeatElement {
     // Song properties of a beat element
     protected int mBeatPosition;
     protected long mSamplePosition;
+    protected boolean mIsFocused;
 
     // Menu property index of a beat element
     protected MotionType mMotionType;
@@ -35,6 +36,7 @@ public abstract class BeatElement {
         // Song properties
         mBeatPosition = beatPosition;
         mSamplePosition = samplePosition;
+        mIsFocused = false;
 
         // Default choreogrpahy values
         mHasChoreography = false;
@@ -102,6 +104,9 @@ public abstract class BeatElement {
     // SETTERS
     ///////////
 
+    public void setFocus(boolean isFocused) {
+        mIsFocused = isFocused;
+    }
     public void setMotionType(MotionType t) {
         mMotionType = t;
     }
@@ -142,5 +147,8 @@ public abstract class BeatElement {
     }
     public MotionType getMotionType() {
         return mMotionType;
+    }
+    public boolean getFocus() {
+        return mIsFocused;
     }
 }
