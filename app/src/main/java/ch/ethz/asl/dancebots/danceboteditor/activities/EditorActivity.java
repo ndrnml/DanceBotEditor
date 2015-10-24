@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
+import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.BeatExtractionHandler;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
@@ -113,7 +114,8 @@ public class EditorActivity extends Activity {
 
             Log.v(LOG_TAG, "resumed EditorActivity with a song loaded");
 
-            boolean USE_DUMMY_DATA = true;
+            // TODO REMOVE!
+            boolean USE_DUMMY_DATA = false;
 
             if (USE_DUMMY_DATA)
             {
@@ -185,9 +187,11 @@ public class EditorActivity extends Activity {
         // The activity is no longer visible (it is now "stopped")
 
         // If the editor is currently decoding, editing or encoding ask user to leave
-        if (false/*mEditorState == DanceBotEditorProjectFile.State.DECODING || mEditorState == DanceBotEditorProjectFile.State.ENCODING*/) {
+        if (true/*mEditorState == DanceBotEditorProjectFile.State.DECODING || mEditorState == DanceBotEditorProjectFile.State.ENCODING*/) {
 
             // TODO abort/cancel all async tasks and background threads IMPORTANT!!!!
+            //AutomaticScrollHandler ah = new AutomaticScrollHandler();
+            //ah.stopListening();
         }
     }
 
@@ -334,5 +338,6 @@ public class EditorActivity extends Activity {
     static {
         System.loadLibrary("mpg123");
         System.loadLibrary("NativeSoundHandler");
+        Log.d(LOG_TAG, "Loaded native library: mpg123, NativeSoundHandler.");
     }
 }

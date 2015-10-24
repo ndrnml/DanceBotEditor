@@ -8,6 +8,8 @@ import android.os.Handler;
  */
 public class AutomaticScrollHandler implements Runnable {
 
+    // TODO FINISH THIS CLASS, make use of stopListening
+
     private Handler mScrollHandler = new Handler();
 
     public AutomaticScrollHandler() {

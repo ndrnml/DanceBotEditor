@@ -75,10 +75,14 @@ public class BeatExtractionHandler extends AsyncTask<DanceBotEditorProjectFile, 
 
         if (err < 0) {
 
+            Log.v(LOG_TAG, "Error while extracting beats");
+
             // Error while extracting beats
             return DanceBotError.BEAT_DETECTION_ERR;
 
         } else {
+
+            Log.v(LOG_TAG, "Successfully decoded and beats extracted");
 
             // Successfully decoded and beats extracted
             params[0].beatExtractionDone = true;
@@ -117,6 +121,7 @@ public class BeatExtractionHandler extends AsyncTask<DanceBotEditorProjectFile, 
         if (result == DanceBotError.NO_ERROR)
         {
             // TODO: successfully executed async task
+            // TODO set adapters for editor activity
         }
 
         Log.v(LOG_TAG, "PostExecute decoding extracting");
