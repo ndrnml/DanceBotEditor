@@ -9,7 +9,8 @@ static const char* LOG_TAG = "NATIVE_MP3_DECODER";
  * TODO comment
  */
 Mp3Decoder::Mp3Decoder() :
-    m_mh(NULL)
+    m_mh(NULL),
+    m_snd_file(NULL)
 {}
 
 /**
@@ -18,10 +19,13 @@ Mp3Decoder::Mp3Decoder() :
 int Mp3Decoder::init(SoundFile* snd_file)
 {
 
+    // Assign new sound file
+    m_snd_file = snd_file;
+
     // Initialize mpg123 library
     mpg123_init();
 
-    if (openFile(snd_file) != MPG123_OK)
+    if (openFile() != MPG123_OK)
     {
         __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Error: could not open music file.");
         cleanup();
@@ -32,7 +36,7 @@ int Mp3Decoder::init(SoundFile* snd_file)
 /**
  * TODO
  */
-int Mp3Decoder::openFile(SoundFile* snd_file)
+int Mp3Decoder::openFile()
 {
     // Error code
     int err = MPG123_OK;
@@ -49,9 +53,9 @@ int Mp3Decoder::openFile(SoundFile* snd_file)
 
     if (err == MPG123_OK && m_mh != NULL)
     {
-        __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Sound file path: %s", snd_file->file_path);
+        __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Sound file path: %s", m_snd_file->file_path);
 
-        err = mpg123_open(m_mh, snd_file->file_path);
+        err = mpg123_open(m_mh, m_snd_file->file_path);
 
         if (err != MPG123_OK)
         {
@@ -89,7 +93,7 @@ int Mp3Decoder::openFile(SoundFile* snd_file)
 
         // TODO: if sound file init fails, what to do?
         // Everything was properly loaded with mpg123. Initialize sound file
-        snd_file->init(channels, rate, num_samples, encoding, buffer_size);
+        m_snd_file->init(channels, rate, num_samples, encoding, buffer_size);
 
     }
     else
@@ -105,38 +109,38 @@ int Mp3Decoder::openFile(SoundFile* snd_file)
 /**
  * TODO: The hole method is fixed to short encoding
  */
-int Mp3Decoder::decode(SoundFile* snd_file) {
+int Mp3Decoder::decode() {
 
     // Load pcm buffer
-    short* dest = snd_file->pcm_buffer;
+    short* dest = m_snd_file->pcm_buffer;
 
     int err = MPG123_OK;
 
     // TODO: casting? int to long
-    long total_samples = snd_file->num_samples * snd_file->channels;
+    long total_samples = m_snd_file->num_samples * m_snd_file->channels;
 
-    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "mp3 number of samples: %li", snd_file->num_samples);
+    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "mp3 number of samples: %li", m_snd_file->num_samples);
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "total number of samples to process: %li", total_samples);
 
     int idx = 0;
     // TODO: For some songs processed number of samples does not match expected number to process
     while (idx != total_samples && err == MPG123_OK)
     {
-        if (snd_file->left_samples <= 0)
+        if (m_snd_file->left_samples <= 0)
         {
             size_t done = 0;
-            err = mpg123_read( m_mh, snd_file->buffer, snd_file->buffer_size, &done );
+            err = mpg123_read( m_mh, m_snd_file->buffer, m_snd_file->buffer_size, &done );
 
             // TODO: this is fixed to short encoding (MPG123_ENC_SIGNED_16)
-            snd_file->left_samples = done / sizeof(short);
-            snd_file->offset = 0;
+            m_snd_file->left_samples = done / sizeof(short);
+            m_snd_file->offset = 0;
 
         }
         else
         {
-            short* src = ((short*)snd_file->buffer) + snd_file->offset;
+            short* src = ((short*)m_snd_file->buffer) + m_snd_file->offset;
 
-            for( ; idx < total_samples && snd_file->offset < snd_file->buffer_size / sizeof(short); snd_file->left_samples--, snd_file->offset++, dest++, src++, idx++ )
+            for( ; idx < total_samples && m_snd_file->offset < m_snd_file->buffer_size / sizeof(short); m_snd_file->left_samples--, m_snd_file->offset++, dest++, src++, idx++ )
             {
                 *dest = *src;
             }

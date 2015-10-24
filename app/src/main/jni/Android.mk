@@ -16,7 +16,7 @@ LOCAL_SRC_FILES := NativeSoundHandler.cpp \
                    Mp3Decoder.cpp \
                    BeatExtractor.cpp
 
-LOCAL_SHARED_LIBRARIES := mpg123
+LOCAL_SHARED_LIBRARIES := mpg123 mp3lame
 
 LOCAL_STATIC_LIBRARIES := vamp qm
 
@@ -31,3 +31,4 @@ include $(ZPATH)/mpg123/Android.mk
 include $(ZPATH)/vamp/Android.mk
 include $(ZPATH)/qm-dsp/Android.mk
 include $(ZPATH)/qm-vamp/Android.mk
+include $(ZPATH)/mp3lame/Android.mk

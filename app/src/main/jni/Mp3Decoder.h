@@ -13,11 +13,13 @@ public:
     ~Mp3Decoder() {};
 
     int init(SoundFile* snd_file);
-    int decode(SoundFile* snd_file);
+    int decode();
 
 private:
 
-    int openFile(SoundFile* snd_file);
+    SoundFile* m_snd_file;
+
+    int openFile();
     void cleanup();
 
     mpg123_handle* m_mh;

@@ -45,7 +45,7 @@ int NativeSoundHandler::initAndDecodeSoundFile(const char* music_file_path)
     }
 
     // Decode sound file to PCM
-    err = m_mp3_decoder.decode(m_sound_file);
+    err = m_mp3_decoder.decode();
 
     if (err < 0)
     {
@@ -124,11 +124,11 @@ int NativeSoundHandler::getNumberOfBeatsDetected()
  * Make C++ functions unique and visible to C
  */
 extern "C" {
-    JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandlerAsyncTask_NativeSoundHandlerInit(JNIEnv *env, jobject self, jstring musicFilePath);
-    JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandlerAsyncTask_NativeExtractBeats(JNIEnv *env, jobject self, jobject intBuffer, jint intBufferSize);
-    JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandlerAsyncTask_NativeGetSampleRate(JNIEnv *env, jobject self);
-    JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandlerAsyncTask_NativeGetNumberOfSamples(JNIEnv *env, jobject self);
-    JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandlerAsyncTask_NativeGetNumBeatsDetected(JNIEnv *env, jobject self);
+    JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatExtractionHandler_NativeSoundHandlerInit(JNIEnv *env, jobject self, jstring musicFilePath);
+    JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatExtractionHandler_NativeExtractBeats(JNIEnv *env, jobject self, jobject intBuffer, jint intBufferSize);
+    JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatExtractionHandler_NativeGetSampleRate(JNIEnv *env, jobject self);
+    JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatExtractionHandler_NativeGetNumberOfSamples(JNIEnv *env, jobject self);
+    JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatExtractionHandler_NativeGetNumBeatsDetected(JNIEnv *env, jobject self);
 
     //JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_EditorActivity_NativeEncodeToMP3(JNIEnv *env, jobject self, jobject byteBuffer, jobject params);
     //JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_EditorActivity_NativeCleanUpSoundHandler(JNIEnv *env, jobject self);
@@ -137,7 +137,7 @@ extern "C" {
 /**
  * Initialize static sound handler
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandlerAsyncTask_NativeSoundHandlerInit(JNIEnv *env, jobject self, jstring musicFilePath)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatExtractionHandler_NativeSoundHandlerInit(JNIEnv *env, jobject self, jstring musicFilePath)
 {
     // Retrieve absolute file path
 	const char* music_file_path = env->GetStringUTFChars(musicFilePath, JNI_FALSE);
@@ -155,7 +155,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandle
 /**
  * The decoded music file data is only temporarily available and will be deleted after the function call TODO: is that so?
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandlerAsyncTask_NativeExtractBeats(JNIEnv *env, jobject self, jobject intBuffer, jint intBufferSize)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatExtractionHandler_NativeExtractBeats(JNIEnv *env, jobject self, jobject intBuffer, jint intBufferSize)
 {
 
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "enters NativeExtractBeats");
@@ -175,7 +175,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandle
 /**
  * TODO
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandlerAsyncTask_NativeGetSampleRate(JNIEnv *env, jobject instance)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatExtractionHandler_NativeGetSampleRate(JNIEnv *env, jobject instance)
 {
     int sampleRate = soundHandler.getSampleRate();
     return sampleRate;
@@ -184,7 +184,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandle
 /**
  * TODO
  */
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandlerAsyncTask_NativeGetNumberOfSamples(JNIEnv *env, jobject instance)
+JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatExtractionHandler_NativeGetNumberOfSamples(JNIEnv *env, jobject instance)
 {
     long numSamples = soundHandler.getNumberOfSamples();
     return numSamples;
@@ -193,7 +193,7 @@ JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandl
 /**
  * TODO
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_SoundFileHandlerAsyncTask_NativeGetNumBeatsDetected(JNIEnv *env, jobject instance)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatExtractionHandler_NativeGetNumBeatsDetected(JNIEnv *env, jobject instance)
 {
     int numBeats = soundHandler.getNumberOfBeatsDetected();
     return numBeats;
