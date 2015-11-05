@@ -1,16 +1,17 @@
 #ifndef BEAT_EXTRACTOR_H_
 #define BEAT_EXTRACTOR_H_
 
-class BeatExtractor {
+#include <jni.h>
 
-public:
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-    int extractBeats(SoundFile* sound_file, int* beat_buffer, int beat_buffer_size);
-    int getNumBeatsDetected();
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_extractBeats
+        (JNIEnv *env, jobject self, jlong soundFileHandle, jobject intBuffer, jint intBufferSize);
 
-private:
-
-    int m_total_beats_detected;
-};
+#ifdef __cplusplus
+}
+#endif
 
 #endif

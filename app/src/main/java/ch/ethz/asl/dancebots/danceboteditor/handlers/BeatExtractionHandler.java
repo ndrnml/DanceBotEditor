@@ -11,6 +11,7 @@ import java.nio.IntBuffer;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.activities.EditorActivity;
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
+import ch.ethz.asl.dancebots.danceboteditor.utils.BeatExtractor;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
@@ -25,7 +26,7 @@ public class BeatExtractionHandler extends AsyncTask<DanceBotEditorProjectFile, 
      * TODO AsyncTasks don't follow Activity instances' life cycle. If you start an AsyncTask inside an Activity and you rotate the device, the Activity will be destroyed and a new instance will be created. But the AsyncTask will not die. It will go on living until it completes.
      * TODO And when it completes, the AsyncTask won't update the UI of the new Activity. Indeed it updates the former instance of the activity that is not displayed anymore. This can lead to an Exception of the type java.lang.IllegalArgumentException: View not attached to window manager if you use, for instance, findViewById to retrieve a view inside the Activity.
      */
-    private static final String LOG_TAG = "SOUND_FILE_HANDLER";
+    private static final String LOG_TAG = "BEAT_EXTRACTION_HANDLER";
 
     private Activity mActivity;
     private RecyclerView mMotorView;
@@ -68,36 +69,33 @@ public class BeatExtractionHandler extends AsyncTask<DanceBotEditorProjectFile, 
 
         int result = mp3Decoder.decode();
 
-        if (result < 0) {
-
+        if (result <= 0) {
             // Error while decoding
             return DanceBotError.DECODING_ERR;
         }
 
-        /*
+        long soundFileHandle = mp3Decoder.getHandle();
+
+        // Extract beats
+        result = BeatExtractor.extract(soundFileHandle, params[0].getBeatGrid().getBeatBuffer(), params[0].getBeatGrid().getBeatBuffer().capacity());
+
         // Extract sample rate from decoded file
-        params[0].getDanceBotMusicFile().setSampleRate(NativeGetSampleRate());
-        Log.v(LOG_TAG, "sample rate: " + NativeGetSampleRate());
+        params[0].getDanceBotMusicFile().setSampleRate(mp3Decoder.getSampleRate());
+        Log.v(LOG_TAG, "sample rate: " + mp3Decoder.getSampleRate());
 
         // Extract total number of samples from decoded file
-        params[0].getDanceBotMusicFile().setTotalNumberOfSamples(NativeGetNumberOfSamples());
-        Log.v(LOG_TAG, "total number of samples: " + NativeGetNumberOfSamples());
-
-        // Then extract beats and return to previous activity
-        err = NativeExtractBeats(params[0].getBeatGrid().getBeatBuffer(), params[0].getBeatGrid().getBeatBuffer().capacity());
-        Log.v(LOG_TAG, "error code NativeExtractBeats: " + err);
+        params[0].getDanceBotMusicFile().setTotalNumberOfSamples(mp3Decoder.getNumberOfSamples());
+        Log.v(LOG_TAG, "total number of samples: " + mp3Decoder.getNumberOfSamples());
 
         // Extract total number of beats detected from selected file
-        params[0].getBeatGrid().setNumOfBeats(NativeGetNumBeatsDetected());
-        Log.v(LOG_TAG, "total number of beats detected: " + NativeGetNumBeatsDetected());
+        params[0].getBeatGrid().setNumOfBeats(mp3Decoder.getNumerOfBeatsDetected());
+        Log.v(LOG_TAG, "total number of beats detected: " + mp3Decoder.getNumerOfBeatsDetected());
 
         // Save number of beats detected to dance bot music file
-        params[0].getDanceBotMusicFile().setNumberOfBeatsDected(NativeGetNumBeatsDetected());
-        Log.v(LOG_TAG, "store in music file: total number of beats detected: " + NativeGetNumBeatsDetected());
+        params[0].getDanceBotMusicFile().setNumberOfBeatsDected(mp3Decoder.getNumerOfBeatsDetected());
+        Log.v(LOG_TAG, "store in music file: total number of beats detected: " + mp3Decoder.getNumerOfBeatsDetected());
 
-        */
-
-        if (result < 0) {
+        if (result <= 0) {
 
             Log.v(LOG_TAG, "Error while extracting beats");
 
@@ -153,6 +151,9 @@ public class BeatExtractionHandler extends AsyncTask<DanceBotEditorProjectFile, 
             // Attach apapters
             mMotorView.setAdapter(motorAdapter);
             mLedView.setAdapter(ledAdapter);
+
+            motorAdapter.notifyDataSetChanged();
+            ledAdapter.notifyDataSetChanged();
         }
 
         Log.v(LOG_TAG, "PostExecute decoding extracting");

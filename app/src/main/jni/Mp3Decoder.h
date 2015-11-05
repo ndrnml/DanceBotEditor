@@ -11,13 +11,9 @@ class Mp3Decoder {
 public:
 
     Mp3Decoder();
-    ~Mp3Decoder() {};
-
-    void cleanup();
+    ~Mp3Decoder();
 
     mpg123_handle* m_mh;
-    SoundFile* m_snd_file;
-
 };
 
 #ifdef __cplusplus

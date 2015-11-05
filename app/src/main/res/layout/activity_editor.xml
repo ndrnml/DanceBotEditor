@@ -1,9 +1,15 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:id="@+id/scroll"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
     tools:context="ch.ethz.asl.dancebots.danceboteditor.activities.EditorActivity" >
+
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <!-- TODO: Maybe better to make table view -->
     <TextView
@@ -35,50 +41,68 @@
         android:layout_height="wrap_content"
         android:id="@+id/id_song_duration" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/motor_element_list"
-        style="@style/HorizontalListView"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:drawSelectorOnTop="false"
-        android:background="@color/item_border_color"
-        tools:context=".EditorActivity" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/beat_element_lists">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/led_element_list"
-        style="@style/HorizontalListView"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:drawSelectorOnTop="false"
-        android:background="@color/item_border_color"
-        tools:context=".EditorActivity" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/motor_element_list"
+            style="@style/HorizontalListView"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:drawSelectorOnTop="true"
+            android:background="@color/item_border_color"
+            android:scrollbarAlwaysDrawHorizontalTrack="true"
+            android:scrollbars="horizontal"
+            tools:context=".EditorActivity" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/led_element_list"
+            style="@style/HorizontalListView"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:drawSelectorOnTop="true"
+            android:background="@color/item_border_color"
+            tools:context=".EditorActivity" />
+    </LinearLayout>
 
     <SeekBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/seekBar" />
+        android:id="@+id/seekbar_media_player" />
 
-    <LinearLayout
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/textView2"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/textView"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+
+
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Play"
-            android:id="@+id/btn_play" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pause"
-            android:id="@+id/btn_pause"
-            android:layout_gravity="center_horizontal"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/btn_play" />
-
-    </LinearLayout>
-
+        android:text="Play"
+        android:id="@+id/btn_play"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
+
+
+</ScrollView>

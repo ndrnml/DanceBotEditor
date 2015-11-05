@@ -1,6 +1,7 @@
 #ifndef SOUND_FILE_H_
 #define SOUND_FILE_H_
 
+#include <jni.h>
 #include <stdlib.h>
 
 // TODO: replace by SNDFILE
@@ -15,6 +16,7 @@ public:
     int prepareForBeatExtraction();
 
     const char* file_path;
+    int number_beats_detected;
     int channels;
     long rate;
     long num_samples;
@@ -27,4 +29,20 @@ public:
     short* music_buffer;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getSampleRate
+        (JNIEnv *env, jobject self, jlong sound_file_handle);
+
+JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getNumberOfSamples
+        (JNIEnv *env, jobject self, jlong sound_file_handle);
+
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getNumBeatsDetected
+        (JNIEnv *env, jobject self, jlong sound_file_handle);
+
+#ifdef __cplusplus
+}
+#endif
 #endif

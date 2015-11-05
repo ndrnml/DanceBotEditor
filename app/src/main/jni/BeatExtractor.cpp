@@ -10,9 +10,27 @@ static const char* LOG_TAG = "NATIVE_BEAT_EXTRACTOR";
 /**
  * TODO
  */
-int BeatExtractor::extractBeats(SoundFile* sound_file, int* beat_buffer, int beat_buffer_size)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_extractBeats(JNIEnv *env, jobject self, jlong soundFileHandle, jobject intBuffer, jint intBufferSize)
 {
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "start BeatExtractor::extractBeats");
+
+    // Get starting address of int buffer where the extracted beats will be stored
+    int* beat_buffer = (int*)env->GetDirectBufferAddress(intBuffer);
+
+    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "beat int buffer assigned");
+
+    // Pass the length of the fixed size beat buffer (int buffer)
+    int beat_buffer_size = intBufferSize;
+
+    // TODO Is this safe todo? Do we have to check for null?
+    if (soundFileHandle == 0) {
+        // If sound file handle is NULL return zero beat detected
+        return 0;
+    }
+    // Cast sound file handle pointer
+    SoundFile *sound_file = (SoundFile *) soundFileHandle;
+
+    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Sound file handle: %p", sound_file);
 
     // Prepare sound file for beat extraction
     sound_file->prepareForBeatExtraction();
@@ -110,6 +128,10 @@ int BeatExtractor::extractBeats(SoundFile* sound_file, int* beat_buffer, int bea
             //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "beat at: %i", display_frame);
             //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "beat at: %i", beat_buffer[number_of_beats_detected-1]);
 		}
+
+        if ((i % 200000) == 0) {
+            __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "processed samples: %d", i);
+        }
 	}
 
     Vamp::Plugin::FeatureSet features = beat_tracker.getRemainingFeatures();
@@ -141,17 +163,8 @@ int BeatExtractor::extractBeats(SoundFile* sound_file, int* beat_buffer, int bea
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "number of beats detected: %i", number_of_beats_detected);
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "beat extraction finished");
 
-    // Store the total number of beats detected
-    m_total_beats_detected = number_of_beats_detected;
+    // Store the total number of beats detected in sound file
+    sound_file->number_beats_detected = number_of_beats_detected;
 
     return number_of_beats_detected;
-}
-
-
-/**
- * TODO comment
- */
-int BeatExtractor::getNumBeatsDetected()
-{
-    return m_total_beats_detected;
 }
