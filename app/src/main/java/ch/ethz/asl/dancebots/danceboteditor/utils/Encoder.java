@@ -332,8 +332,4 @@ public class Encoder {
      */
     private native static void close(int instanceIndex);
 
-    static {
-        System.loadLibrary("mp3lame");
-        Log.d(LOG_TAG, "Loaded native library: mp3lame.");
-    }
 }

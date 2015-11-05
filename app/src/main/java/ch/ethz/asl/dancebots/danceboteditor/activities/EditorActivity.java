@@ -142,21 +142,13 @@ public class EditorActivity extends Activity {
             } else {
 
                 // Perform beat extraction in async task
-                BeatExtractionHandler beatExtractionHandler = new BeatExtractionHandler(EditorActivity.this);
+                BeatExtractionHandler beatExtractionHandler = new BeatExtractionHandler(EditorActivity.this, mMotorView, mLedView);
                 beatExtractionHandler.execute(mProjectFile);
 
             }
 
             // Prepare music player
             mMediaPlayer.preparePlayback();
-
-            // Create the beat adapters
-            BeatElementAdapter motorAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements);
-            BeatElementAdapter ledAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mLedChoregraphy.mBeatElements);
-
-            // Attach apapters
-            mMotorView.setAdapter(motorAdapter);
-            mLedView.setAdapter(ledAdapter);
 
             // TODO remove or change this (THIS WAS ADDED FOR THE LONG CLICK CAPABILITY)
             //registerForContextMenu(mMotorView);
@@ -165,6 +157,17 @@ public class EditorActivity extends Activity {
             mProjectFile.setEditorState(DanceBotEditorProjectFile.State.EDITING);
 
         }
+    }
+
+    public void refreshViewData() {
+
+        // Create the beat adapters
+        BeatElementAdapter motorAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements);
+        BeatElementAdapter ledAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mLedChoregraphy.mBeatElements);
+
+        // Attach apapters
+        mMotorView.setAdapter(motorAdapter);
+        mLedView.setAdapter(ledAdapter);
     }
 
     @Override
@@ -329,15 +332,4 @@ public class EditorActivity extends Activity {
         }
     }
 
-
-    /**
-     *
-     * LOAD NATIVE LIBRARIES AND FUNCTIONS
-     */
-
-    static {
-        System.loadLibrary("mpg123");
-        System.loadLibrary("NativeSoundHandler");
-        Log.d(LOG_TAG, "Loaded native library: mpg123, NativeSoundHandler.");
-    }
 }

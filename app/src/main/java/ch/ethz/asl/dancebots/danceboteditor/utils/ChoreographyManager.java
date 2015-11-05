@@ -71,7 +71,6 @@ public class ChoreographyManager {
 
         if (beatBuffer != null && numBeats > 0) {
             for (int i = 0; i < numBeats; ++i) {
-
                 mLedChoregraphy.addBeatElement(new LedBeatElement(mContext, i, beatBuffer.get(i)));
             }
         } else {
@@ -87,7 +86,6 @@ public class ChoreographyManager {
 
         if (beatBuffer != null && numBeats > 0) {
             for (int i = 0; i < numBeats; ++i) {
-
                 mMotorChoreography.addBeatElement(new MotorBeatElement(mContext, i, beatBuffer.get(i)));
             }
         } else {

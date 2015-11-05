@@ -8,6 +8,8 @@ public interface DanceBotError {
     // No errors
     int NO_ERROR = -1;
 
+    int MPG123_OK = 0;
+
     // Errors
     int DECODING_ERR = 1;
     int BEAT_DETECTION_ERR = 2;

@@ -3,12 +3,18 @@ package ch.ethz.asl.dancebots.danceboteditor.handlers;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import java.nio.IntBuffer;
 
+import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.activities.EditorActivity;
+import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
+import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
+import ch.ethz.asl.dancebots.danceboteditor.utils.NativeSoundHandler;
 
 /**
  * Created by andrin on 09.07.15.
@@ -21,13 +27,22 @@ public class BeatExtractionHandler extends AsyncTask<DanceBotEditorProjectFile, 
      */
     private static final String LOG_TAG = "SOUND_FILE_HANDLER";
 
+    private Activity mActivity;
+    private RecyclerView mMotorView;
+    private RecyclerView mLedView;
+
     private ProgressDialog mDialog;
 
     /**
      * TODO COmment
      * @param activity
      */
-    public BeatExtractionHandler(Activity activity) {
+    public BeatExtractionHandler(Activity activity, RecyclerView motorView, RecyclerView ledView) {
+
+        mActivity = activity;
+
+        mMotorView = motorView;
+        mLedView = ledView;
 
         mDialog = new ProgressDialog(activity);
         mDialog.setCancelable(false);
@@ -44,15 +59,22 @@ public class BeatExtractionHandler extends AsyncTask<DanceBotEditorProjectFile, 
     protected Integer doInBackground(DanceBotEditorProjectFile... params) {
 
         // First open sound file and decode it
-        int err = NativeSoundHandlerInit(params[0].getDanceBotMusicFile().getSongPath());
-        Log.v(LOG_TAG, "error code NativeSoundHandlerInit: " + err);
+        //int err = NativeSoundHandler.getInstance().init(params[0].getDanceBotMusicFile().getSongPath());
+        //Log.v(LOG_TAG, "error code NativeSoundHandlerInit: " + err);
 
-        if (err < 0) {
+        Decoder mp3Decoder = new Decoder();
+
+        mp3Decoder.openFile(params[0].getDanceBotMusicFile().getSongPath());
+
+        int result = mp3Decoder.decode();
+
+        if (result < 0) {
 
             // Error while decoding
             return DanceBotError.DECODING_ERR;
         }
 
+        /*
         // Extract sample rate from decoded file
         params[0].getDanceBotMusicFile().setSampleRate(NativeGetSampleRate());
         Log.v(LOG_TAG, "sample rate: " + NativeGetSampleRate());
@@ -73,7 +95,9 @@ public class BeatExtractionHandler extends AsyncTask<DanceBotEditorProjectFile, 
         params[0].getDanceBotMusicFile().setNumberOfBeatsDected(NativeGetNumBeatsDetected());
         Log.v(LOG_TAG, "store in music file: total number of beats detected: " + NativeGetNumBeatsDetected());
 
-        if (err < 0) {
+        */
+
+        if (result < 0) {
 
             Log.v(LOG_TAG, "Error while extracting beats");
 
@@ -122,23 +146,16 @@ public class BeatExtractionHandler extends AsyncTask<DanceBotEditorProjectFile, 
         {
             // TODO: successfully executed async task
             // TODO set adapters for editor activity
+            // Create the beat adapters
+            BeatElementAdapter motorAdapter = new BeatElementAdapter(DanceBotEditorProjectFile.getInstance().getChoreoManager().mMotorChoreography.mBeatElements);
+            BeatElementAdapter ledAdapter = new BeatElementAdapter(DanceBotEditorProjectFile.getInstance().getChoreoManager().mLedChoregraphy.mBeatElements);
+
+            // Attach apapters
+            mMotorView.setAdapter(motorAdapter);
+            mLedView.setAdapter(ledAdapter);
         }
 
         Log.v(LOG_TAG, "PostExecute decoding extracting");
     }
 
-    /**
-     *
-     * LOAD NATIVE LIBRARIES AND FUNCTIONS
-     */
-    // Initialize native sound handler from selected music file
-    private native int NativeSoundHandlerInit(String musicFilePath);
-    // TODO comment
-    private native int NativeExtractBeats(IntBuffer intBuffer, int intBufferSize);
-    // Get sample rate from selected song
-    private native int NativeGetSampleRate();
-    // Get total number of samples from selected song
-    private native long NativeGetNumberOfSamples();
-    // Get total number of beats detected from selected song
-    private native int NativeGetNumBeatsDetected();
 }

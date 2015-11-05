@@ -3,6 +3,7 @@ package ch.ethz.asl.dancebots.danceboteditor.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -84,4 +85,14 @@ public class MainActivity extends Activity {
         startActivity(editorIntent);
     }
 
+
+    /**
+     *
+     * LOAD NATIVE LIBRARIES AND FUNCTIONS
+     */
+
+    static {
+        System.loadLibrary("dancebot_module");
+        Log.d(LOG_TAG, "Loaded native library: dancebot_module.");
+    }
 }

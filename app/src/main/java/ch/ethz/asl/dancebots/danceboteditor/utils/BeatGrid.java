@@ -12,6 +12,7 @@ public class BeatGrid {
 
     private final int MAX_EXPECTED_BEATS = 1000;
 
+    // Chose int (32 bit) buffer because two channels (16 bit) are decoded
     private IntBuffer mBeatBuffer;
     private int mNumberOfBeats;
 
@@ -21,13 +22,14 @@ public class BeatGrid {
      */
     public BeatGrid() {
 
-        // Initialize int buffer which is used to store the beat grid information
+        // Initialize int buffer, which is later used to store the beat grid information
         initBeatBuffer();
     }
 
     /**
      * This beat buffer data structure is needed for the communication between native and java code
      * All later computations will NOT be made on the IntBuffer data structure
+     * IntBuffer contains 32-bit ints to store 2 channels of 16-bit
      */
     private void initBeatBuffer() {
 

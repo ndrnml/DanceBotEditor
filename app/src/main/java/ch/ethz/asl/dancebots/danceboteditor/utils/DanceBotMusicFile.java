@@ -1,5 +1,6 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 /**
@@ -15,6 +16,7 @@ public class DanceBotMusicFile {
     private int mSampleRate;
     private int mChannels;
     private int mNumberOfBeatsDetected;
+    private ByteBuffer mMP3Buffer;
 
     public DanceBotMusicFile(String songTitle, String songArtist, String songPath, int duration) {
 
