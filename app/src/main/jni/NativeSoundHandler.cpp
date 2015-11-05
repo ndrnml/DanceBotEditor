@@ -25,27 +25,40 @@ NativeSoundHandler::~NativeSoundHandler()
 /**
  * Initialize sound handler based on (new) file
  */
-int NativeSoundHandler::initAndDecodeSoundFile(const char* music_file_path)
+int NativeSoundHandler::initSoundFile(const char* music_file_path)
 {
 	__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "initialize native sound handler...");
 
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "path to sound file: %s", music_file_path);
 
-    // TODO: SNDFILE Create new music file
-    m_sound_file = new SoundFile(music_file_path);
+    // Create new music file
+    if (m_sound_file == NULL)
+    {
+        m_sound_file = new SoundFile(music_file_path);
+    }
+    else
+    {
+        // TODO: Felix fragen
+        delete m_sound_file;
+
+        m_sound_file = new SoundFile(music_file_path);
+    }
 
     // Create new decoder object and initialize it
     // The music file gets decoded to PCM and then passed to the beat extraction
     //m_mp3_decoder = Mp3Decoder();
-    int err = m_mp3_decoder.init(m_sound_file);
+    int err = m_mp3_decoder.load(m_sound_file);
 
     if (err < 0)
     {
         return ERROR;
     }
+}
+
+int NativeSoundHandler::decode() {
 
     // Decode sound file to PCM
-    err = m_mp3_decoder.decode();
+    int err = m_mp3_decoder.decode();
 
     if (err < 0)
     {
@@ -142,7 +155,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatEx
     // Retrieve absolute file path
 	const char* music_file_path = env->GetStringUTFChars(musicFilePath, JNI_FALSE);
 
-    int err = soundHandler.initAndDecodeSoundFile(music_file_path);
+    int err = soundHandler.initSoundFile(music_file_path);
 
     // TODO Not sure if this is necessary
     //javaEnvironment->ReleaseStringUTFChars(musicFilePath, music_file_path);
@@ -172,23 +185,6 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatEx
     return err;
 }
 
-/**
- * TODO
- */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatExtractionHandler_NativeGetSampleRate(JNIEnv *env, jobject instance)
-{
-    int sampleRate = soundHandler.getSampleRate();
-    return sampleRate;
-}
-
-/**
- * TODO
- */
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_handlers_BeatExtractionHandler_NativeGetNumberOfSamples(JNIEnv *env, jobject instance)
-{
-    long numSamples = soundHandler.getNumberOfSamples();
-    return numSamples;
-}
 
 /**
  * TODO
@@ -238,3 +234,27 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_EditorActivity_
     return NO_ERROR;
 }
 */
+
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_load(JNIEnv *env, jobject self, jstring path_to_file) {
+
+    // TODO
+}
+
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_decode(JNIEnv *env, jobject self) {
+
+    // Decode the loaded music file into
+    // m_snd_file->pcm_buffer
+    return soundHandler.decode();
+}
+
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_sampleRate(JNIEnv *env, jobject self) {
+
+    int sampleRate = soundHandler.getSampleRate();
+    return sampleRate;
+}
+
+JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_numberOfSamples(JNIEnv *env, jobject self) {
+
+    long numSamples = soundHandler.getNumberOfSamples();
+    return numSamples;
+}

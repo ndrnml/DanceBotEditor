@@ -9,10 +9,9 @@
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := NativeSoundHandler
+LOCAL_MODULE := dancebot_module
 
-LOCAL_SRC_FILES := NativeSoundHandler.cpp \
-                   SoundFile.cpp \
+LOCAL_SRC_FILES := SoundFile.cpp \
                    Mp3Decoder.cpp \
                    BeatExtractor.cpp
 

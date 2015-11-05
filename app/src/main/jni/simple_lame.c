@@ -84,6 +84,7 @@ jint simple_lame_lib_encode(
         JNIEnv* env, lame_global_flags* glf,
         jshortArray buffer_l, jshortArray buffer_r,
         jint samples, jbyteArray mp3buf) {
+
     jshort* j_buffer_l = (*env)->GetShortArrayElements(env, buffer_l, NULL);
 
     jshort* j_buffer_r = (*env)->GetShortArrayElements(env, buffer_r, NULL);
@@ -104,6 +105,7 @@ jint simple_lame_lib_encode(
 jint simple_lame_lib_encodeBufferInterleaved(
         JNIEnv* env, lame_global_flags* glf,
         jshortArray pcm, jint samples, jbyteArray mp3buf) {
+
     jshort* j_pcm = (*env)->GetShortArrayElements(env, pcm, NULL);
 
     const jsize mp3buf_size = (*env)->GetArrayLength(env, mp3buf);
@@ -121,6 +123,7 @@ jint simple_lame_lib_encodeBufferInterleaved(
 jint simple_lame_lib_flush(
         JNIEnv* env, lame_global_flags* glf,
         jbyteArray mp3buf) {
+
     const jsize mp3buf_size = (*env)->GetArrayLength(env, mp3buf);
     jbyte* j_mp3buf = (*env)->GetByteArrayElements(env, mp3buf, NULL);
 

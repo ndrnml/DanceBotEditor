@@ -15,11 +15,11 @@ class NativeSoundHandler {
 
 public:
 
-    // TODO: why do i need this?
     NativeSoundHandler();
     ~NativeSoundHandler();
 
-    int initAndDecodeSoundFile(const char* file_path);
+    int initSoundFile(const char* file_path);
+    int decode();
     int extractBeats(int* beat_buffer, int beat_buffer_size);
 
     int getSampleRate();
@@ -34,5 +34,24 @@ private:
     BeatExtractor m_beat_extractor;
 
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_load
+        (JNIEnv *env, jobject self, jstring path_to_file);
+
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_decode
+        (JNIEnv *env, jobject self);
+
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_sampleRate
+        (JNIEnv *env, jobject self);
+
+JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_numberOfSamples
+        (JNIEnv *env, jobject self);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
