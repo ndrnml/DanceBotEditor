@@ -13,6 +13,8 @@ LOCAL_MODULE := dancebot_module
 
 LOCAL_SRC_FILES := SoundFile.cpp \
                    Mp3Decoder.cpp \
+                   simple_lame.c \
+                   Mp3Encoder.cpp \
                    BeatExtractor.cpp
 
 LOCAL_SHARED_LIBRARIES := mpg123 mp3lame

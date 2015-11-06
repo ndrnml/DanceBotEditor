@@ -7,12 +7,14 @@ import android.support.v7.widget.RecyclerView;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
+import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
 
 /**
  * Created by andrin on 24.10.15.
  */
+// TODO Can you make this class a bit more dynamic? With lists e.g.?
 public class HorizontalRecyclerViews {
 
     private Activity mActivity;
@@ -54,14 +56,18 @@ public class HorizontalRecyclerViews {
         mLedView.addItemDecoration(new DividerItemDecoration(divider));
     }
 
-    public void setAdapters() {
+    public void addView(RecyclerView v) {
+        // TODO
+    }
 
-        // Create the beat adapters
-        BeatElementAdapter motorAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements);
-        BeatElementAdapter ledAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mLedChoregraphy.mBeatElements);
+    public void setAdapters(BeatElementAdapter motorAdapter, BeatElementAdapter ledAdapter) {
 
-        // Attach apapters
+        // Attach adapters
         mMotorView.setAdapter(motorAdapter);
         mLedView.setAdapter(ledAdapter);
+
+        // Notify adapters that list content changed
+        motorAdapter.notifyDataSetChanged();
+        ledAdapter.notifyDataSetChanged();
     }
 }

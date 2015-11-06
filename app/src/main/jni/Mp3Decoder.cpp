@@ -117,6 +117,7 @@ JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_
     return 0;
 }
 
+
 /**
  * TODO: The hole method is fixed to short encoding
  */
@@ -164,6 +165,11 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_d
 
     if (err == MPG123_DONE)
     {
+
+        // Interleave left and right channel
+        sound_file->interleaveChannels();
+
+
         __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "processed: %i samples", idx);
         __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "processed: %u bytes", idx * sizeof(short));
 
@@ -175,6 +181,29 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_d
 
         return 0;
     }
+}
+
+
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_transfer(JNIEnv *env, jobject self, jlong sound_file_handle, jshortArray pcm)
+{
+
+    SoundFile *sound_file = (SoundFile *)sound_file_handle;
+
+    jshort* j_pcm = env->GetShortArrayElements(pcm, NULL);
+
+    long num_samples = sound_file->num_samples;
+
+    int idx;
+
+    for (idx = 0; idx < num_samples; ++idx)
+    {
+        j_pcm[idx] = sound_file->music_buffer[idx];
+    }
+    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Transferred all samples");
+
+    env->ReleaseShortArrayElements(pcm, j_pcm, 0);
+
+    return idx;
 }
 
 /**

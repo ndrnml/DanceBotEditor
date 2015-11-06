@@ -35,6 +35,7 @@ public class DanceBotEditorProjectFile {
     private DanceBotMusicFile mMusicFile;
     private BeatGrid mBeatGrid;
     private ChoreographyManager mChoreoManager;
+    private DanceBotMediaPlayer mMediaPlayer;
 
     /**
      * TODO
@@ -125,6 +126,10 @@ public class DanceBotEditorProjectFile {
      */
     public void attachMusicFile(DanceBotMusicFile dbMusicFile) {
         mMusicFile = dbMusicFile;
+    }
+
+    public void attachMediaPlayer(DanceBotMediaPlayer mediaPlayer) {
+        mMediaPlayer = mediaPlayer;
     }
 
     /**
@@ -219,5 +224,8 @@ public class DanceBotEditorProjectFile {
 
     public IntegerSelectionMenu getChoreoLengthMenu() {
         return mChoreoLengthMenu;
+    }
+    public DanceBotMediaPlayer getMediaPlayer() {
+        return mMediaPlayer;
     }
 }

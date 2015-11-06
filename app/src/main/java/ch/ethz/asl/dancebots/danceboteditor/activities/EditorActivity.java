@@ -4,44 +4,34 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
-import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
-import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.BeatExtractionHandler;
+import ch.ethz.asl.dancebots.danceboteditor.handlers.SaveMP3Handler;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
+import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 
 public class EditorActivity extends Activity {
 
     private static final String LOG_TAG = "EDITOR_ACTIVITY";
+
     private static final int PICK_SONG_REQUEST = 1;
 
     private DanceBotEditorProjectFile mProjectFile;
-
-    private LinearLayoutManager mMotorLayoutManager;
-    private LinearLayoutManager mLedLayoutManager;
-    private RecyclerView mMotorView;
-    private RecyclerView mLedView;
-
-    private DanceBotMediaPlayer mMediaPlayer;
+    private HorizontalRecyclerViews mBeatElementViews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,31 +50,12 @@ public class EditorActivity extends Activity {
         mProjectFile.initBeatGrid();
         mProjectFile.initSelectionMenus();
 
-        // Initialize and setup linear layout manager
-        mMotorLayoutManager = new LinearLayoutManager(this);
-        mLedLayoutManager = new LinearLayoutManager(this);
-
-        mMotorLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        mLedLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-
-        // Get divider drawable
-        Drawable divider = getResources().getDrawable(R.drawable.divider);
-
-        // Attach motor adapter and linear layout manager to the horizontal recycler view
-        mMotorView = (RecyclerView) findViewById(R.id.motor_element_list);
-        mMotorView.setHasFixedSize(true);
-        mMotorView.setLayoutManager(mMotorLayoutManager);
-        mMotorView.addItemDecoration(new DividerItemDecoration(divider));
-
-        // Attach led adapter and linear layout manager
-        mLedView = (RecyclerView) findViewById(R.id.led_element_list);
-        mLedView.setHasFixedSize(true);
-        mLedView.setLayoutManager(mLedLayoutManager);
-        mLedView.addItemDecoration(new DividerItemDecoration(divider));
+        // Initialize and setup recycler beat element views
+        mBeatElementViews = new HorizontalRecyclerViews(EditorActivity.this);
 
         // Create new media player instance, be sure to pass the current activity to resolve
         // all necessary view elements
-        mMediaPlayer = new DanceBotMediaPlayer(this);
+        mProjectFile.attachMediaPlayer(new DanceBotMediaPlayer(this));
     }
 
     @Override
@@ -142,13 +113,9 @@ public class EditorActivity extends Activity {
             } else {
 
                 // Perform beat extraction in async task
-                BeatExtractionHandler beatExtractionHandler = new BeatExtractionHandler(EditorActivity.this, mMotorView, mLedView);
-                beatExtractionHandler.execute(mProjectFile);
-
+                BeatExtractionHandler beatExtractionHandler = new BeatExtractionHandler(EditorActivity.this, mBeatElementViews);
+                beatExtractionHandler.execute(0);
             }
-
-            // Prepare music player
-            mMediaPlayer.preparePlayback();
 
             // TODO remove or change this (THIS WAS ADDED FOR THE LONG CLICK CAPABILITY)
             //registerForContextMenu(mMotorView);
@@ -159,16 +126,6 @@ public class EditorActivity extends Activity {
         }
     }
 
-    public void refreshViewData() {
-
-        // Create the beat adapters
-        BeatElementAdapter motorAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements);
-        BeatElementAdapter ledAdapter = new BeatElementAdapter(mProjectFile.getChoreoManager().mLedChoregraphy.mBeatElements);
-
-        // Attach apapters
-        mMotorView.setAdapter(motorAdapter);
-        mLedView.setAdapter(ledAdapter);
-    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -243,7 +200,7 @@ public class EditorActivity extends Activity {
                 mProjectFile.setEditorState(DanceBotEditorProjectFile.State.NEW);
 
                 // Open file in media player
-                mMediaPlayer.openMusicFile(dbMusicFile);
+                mProjectFile.getMediaPlayer().openMusicFile(dbMusicFile);
 
             } else {
 
@@ -324,6 +281,9 @@ public class EditorActivity extends Activity {
                 return true;
 
             case R.id.editor_action_save:
+
+                SaveMP3Handler sv = new SaveMP3Handler(EditorActivity.this);
+                sv.execute(mProjectFile);
 
                 return true;
 

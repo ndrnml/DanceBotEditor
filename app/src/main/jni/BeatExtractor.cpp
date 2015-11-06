@@ -32,9 +32,6 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
 
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Sound file handle: %p", sound_file);
 
-    // Prepare sound file for beat extraction
-    sound_file->prepareForBeatExtraction();
-
     // Get information from sound file
     long num_samples = sound_file->num_samples;
     long sample_rate = sound_file->rate;

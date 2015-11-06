@@ -13,7 +13,8 @@ lame_global_flags* simple_lame_lib_init(
         jint inSamplerate, jint outChannel,
         jint outSamplerate, jint outBitrate, jint quality,
         jstring id3tagTitle, jstring id3tagArtist, jstring id3tagAlbum,
-        jstring id3tagYear, jstring id3tagComment) {
+        jstring id3tagYear, jstring id3tagComment)
+{
     if (local_log) {
         __android_log_print(ANDROID_LOG_VERBOSE, TAG, "Start lame init.");
     }
@@ -136,6 +137,7 @@ jint simple_lame_lib_flush(
 
 void simple_lame_lib_close(
         lame_global_flags* glf) {
+
     lame_close(glf);
     glf = NULL;
 
@@ -145,6 +147,7 @@ void simple_lame_lib_close(
 }
 
 void simple_lame_lib_log(
+
         jboolean on) {
     local_log = on;
 }

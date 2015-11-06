@@ -9,7 +9,7 @@ public class Decoder {
 
     private static final String LOG_TAG = "DECODER";
 
-    private long mSoundFileHandle;
+    private static long mSoundFileHandle; // TODO: I don't think static is what we want here?!
 
     public Decoder()
     {
@@ -39,6 +39,11 @@ public class Decoder {
         return decode(mSoundFileHandle);
     }
 
+    // TODO: making this method static is reeeeeally dangerous. What if mSoundFileHandle is not yet initialized?
+    public static int transfer(short[] pcm_buffer) {
+        return transfer(mSoundFileHandle, pcm_buffer);
+    }
+
     public void dispose()
     {
         if(mSoundFileHandle != 0)
@@ -48,6 +53,15 @@ public class Decoder {
         }
     }
 
+    /* TODO: IS THIS CALL SAFE?
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        dispose();
+    }
+    */
+
+    // TODO should this method be static, if mSoundFileHandle is static?
     public long getHandle() {
         return mSoundFileHandle;
     }
@@ -69,12 +83,15 @@ public class Decoder {
     private native static long open(String filePath);
     // Decode the currently opened music file
     private native static int decode(long soundFileHandle);
+    private native static int transfer(long soundFileHandle, short[] pcm_buffer);
+
+    // Delete native sound file
+    private native static int delete(long mSoundFileHandle);
+
     // Get sample rate from selected song
     private native static long getSampleRate(long soundFileHandle);
     // Get total number of samples from selected song
     private native static long getNumberOfSamples(long soundFileHandle);
     // Get total number of beats detected from selected song
     private native static int getNumBeatsDetected(long soundFileHandle);
-    // Delete all native objects
-    private native static int delete(long mSoundFileHandle);
 }

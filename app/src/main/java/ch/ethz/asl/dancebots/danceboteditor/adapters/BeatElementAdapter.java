@@ -93,7 +93,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         // Populate the data into the template view using the data object
         holder.mTextView.setText(Integer.toString(position)/*mBeatElements.get(position).getMotionType().getTag()*/);
 
-        if (mBeatElements.get(position).getFocus()) {
+        if (mBeatElements.get(position).getFocus()) { // TODO remove, if not needed
             holder.mTextView.setBackgroundColor(Color.RED);
         } else {
             // Stylize list item according to type

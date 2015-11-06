@@ -58,10 +58,10 @@ public class DanceBotMusicFile {
     public int getDurationInSecs() {
         return (mDurationInMiliSeconds / 1000);
     }
-
     public int getNumberOfBeatsDetected() {
         return mNumberOfBeatsDetected;
     }
-
-
+    public long getNumberOfSamples() {
+        return mNumberOfSamples;
+    }
 }

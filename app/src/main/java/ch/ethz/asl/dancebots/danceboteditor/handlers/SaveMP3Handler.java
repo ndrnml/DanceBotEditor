@@ -4,10 +4,16 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
+import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
+import ch.ethz.asl.dancebots.danceboteditor.utils.Encoder;
 
 /**
  * Created by andrin on 19.10.15.
@@ -31,7 +37,37 @@ public class SaveMP3Handler extends AsyncTask<DanceBotEditorProjectFile, Void, I
 
     @Override
     protected Integer doInBackground(DanceBotEditorProjectFile... params) {
-        return null;
+
+        long numSamples = DanceBotEditorProjectFile.getInstance().getDanceBotMusicFile().getNumberOfSamples();
+        short[] pcm_l = new short[(int)numSamples];
+        short[] pcm_r = new short[(int)numSamples];
+
+        int result = Decoder.transfer(pcm_l);
+        result = Decoder.transfer(pcm_r);
+
+        byte[] mp3buf = new byte[(int)(1.25 * numSamples + 7200)];
+
+        Encoder encoder = new Encoder.Builder(44100, 2, 44100, 128).create();
+        result = encoder.encode(pcm_l, pcm_r, (int)numSamples, mp3buf);
+        result = encoder.flush(mp3buf);
+
+        File mp3File = new File(Environment.getExternalStorageDirectory(), "FOO.mp3");
+
+        Log.v(LOG_TAG, "Store mp3 file: " + mp3File.getAbsolutePath());
+
+        if (mp3File.exists()) {
+            mp3File.delete();
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(mp3File.getPath());
+            fos.write(mp3buf);
+            fos.close();
+        }
+        catch (java.io.IOException e) {
+            Log.e("PictureDemo", "Exception in photoCallback", e);
+        }
+
+        return DanceBotError.NO_ERROR;
     }
 
     /**
@@ -42,7 +78,7 @@ public class SaveMP3Handler extends AsyncTask<DanceBotEditorProjectFile, Void, I
     protected void onPreExecute() {
         super.onPreExecute();
 
-        mDialog.setMessage("saving...");
+        mDialog.setMessage("Converting saving and a bunch of other methods...");
         mDialog.show();
 
         Log.v(LOG_TAG, "PreExecute decoding extracting");

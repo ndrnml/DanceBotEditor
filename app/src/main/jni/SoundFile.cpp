@@ -58,7 +58,7 @@ int SoundFile::init(int channels_, long rate_, long num_samples_, int encoding_,
     return 0;
 }
 
-int SoundFile::prepareForBeatExtraction()
+int SoundFile::interleaveChannels()
 {
 
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "music_buffer: %p", music_buffer);
