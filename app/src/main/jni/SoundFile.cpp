@@ -61,8 +61,8 @@ int SoundFile::init(int channels_, long rate_, long num_samples_, int encoding_,
 int SoundFile::interleaveChannels()
 {
 
-    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "music_buffer: %p", music_buffer);
-    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "channels: %d", channels);
+    //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "music_buffer: %p", music_buffer);
+    //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "channels: %d", channels);
 
     // TODO: What if channels == 1?
     // Check if music buffer was initialized properly
@@ -73,9 +73,9 @@ int SoundFile::interleaveChannels()
             // TODO: is this possible with short?
             music_buffer[i] = (pcm_buffer[2*i] + pcm_buffer[2*i + 1]) / 2;
 
-            if (i % 200000 == 0) {
+            /*if (i % 200000 == 0) {
                 __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "sample: %d", i);
-            }
+            }*/
         }
 
         __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "interpolated left and right pcm channels");
@@ -105,7 +105,7 @@ JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_
     return sound_file->num_samples;
 }
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getNumBeatsDetected(JNIEnv *env, jobject self, jlong sound_file_handle)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_getNumBeatsDetected(JNIEnv *env, jobject self, jlong sound_file_handle)
 {
     SoundFile *sound_file = (SoundFile *)sound_file_handle;
 

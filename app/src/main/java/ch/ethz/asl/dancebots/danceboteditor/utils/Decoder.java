@@ -73,7 +73,7 @@ public class Decoder {
         return getNumberOfSamples(mSoundFileHandle);
     }
 
-    public int getNumerOfBeatsDetected() {
+    public int getNumberOfBeatsDetected() {
         return getNumBeatsDetected(mSoundFileHandle);
     }
 

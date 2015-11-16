@@ -21,6 +21,21 @@ public class BeatExtractor {
         return extractBeats(handle, buffer, bufferSize);
     }
 
+    public static int extract(long handle, IntBuffer buffer, long startSample, long endSample) {
+        return extract(handle, buffer, buffer.capacity(), startSample, endSample);
+    }
+
+    public static int getNumberOfBeatsDetected(long handle) {
+        return getNumBeatsDetected(handle);
+    }
+
+
     // Native call to vamp plugin: queen marry beat detection
     private native static int extractBeats(long handle, IntBuffer intBuffer, int intBufferSize);
+
+    private native static int extract(long handle, IntBuffer intBuffer, int intBufferSize, long startSample, long endSample);
+
+    // Get total number of beats detected from selected song
+    private native static int getNumBeatsDetected(long soundFileHandle);
+
 }

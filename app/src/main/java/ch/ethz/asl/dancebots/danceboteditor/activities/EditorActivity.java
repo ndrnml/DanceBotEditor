@@ -13,8 +13,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import ch.ethz.asl.dancebots.danceboteditor.handlers.BeatExtractionHandler;
+import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundProcessingTask;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SaveMP3Handler;
+import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
@@ -113,8 +114,14 @@ public class EditorActivity extends Activity {
             } else {
 
                 // Perform beat extraction in async task
-                BeatExtractionHandler beatExtractionHandler = new BeatExtractionHandler(EditorActivity.this, mBeatElementViews);
-                beatExtractionHandler.execute(0);
+                if (false) {
+                    SoundProcessingTask soundProcessingTask = new SoundProcessingTask(EditorActivity.this, mBeatElementViews);
+                    soundProcessingTask.execute(0);
+
+                } else {
+
+                    SoundManager.startDecoding(null, 3);
+                }
             }
 
             // TODO remove or change this (THIS WAS ADDED FOR THE LONG CLICK CAPABILITY)

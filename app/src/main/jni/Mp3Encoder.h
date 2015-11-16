@@ -12,19 +12,19 @@ extern "C" {
 #endif
 
 JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Encoder_init
-        (JNIEnv *, jclass, jint, jint, jint, jint, jint, jstring, jstring, jstring, jstring, jstring);
+        (JNIEnv*, jclass, jint, jint, jint, jint, jint, jstring, jstring, jstring, jstring, jstring);
 
 JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Encoder_encode
-        (JNIEnv *, jclass, jint, jshortArray, jshortArray, jint, jbyteArray);
+        (JNIEnv*, jclass, jint, jshortArray, jshortArray, jint, jbyteArray);
 
 JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Encoder_encodeBufferInterleaved
-        (JNIEnv *, jclass, jint, jshortArray, jint, jbyteArray);
+        (JNIEnv*, jclass, jint, jshortArray, jint, jbyteArray);
 
 JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Encoder_flush
-        (JNIEnv *, jclass, jint, jbyteArray);
+        (JNIEnv*, jclass, jint, jbyteArray);
 
 JNIEXPORT void JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Encoder_close
-        (JNIEnv *, jclass, jint);
+        (JNIEnv*, jclass, jint);
 
 #ifdef __cplusplus
 }

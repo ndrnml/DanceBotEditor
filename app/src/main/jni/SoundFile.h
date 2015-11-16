@@ -5,6 +5,9 @@
 #include <stdlib.h>
 
 // TODO: replace by SNDFILE
+/**
+ * This class is NOT Thread safe
+ */
 class SoundFile {
 
 public:
@@ -15,8 +18,13 @@ public:
     int init(int channels_, long rate_, long num_samples_, int encoding_, size_t buffer_size_);
     int interleaveChannels();
 
+    // Absolute path to the sound file
     const char* file_path;
+
+    // The number of beats detected by one or multiple threads
     int number_beats_detected;
+
+    // Other fields TODO: COMMMMEENT!!!!!!
     int channels;
     long rate;
     long num_samples;
@@ -34,13 +42,13 @@ extern "C" {
 #endif
 
 JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getSampleRate
-        (JNIEnv *env, jobject self, jlong sound_file_handle);
+        (JNIEnv*, jobject, jlong);
 
 JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getNumberOfSamples
-        (JNIEnv *env, jobject self, jlong sound_file_handle);
+        (JNIEnv*, jobject, jlong);
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getNumBeatsDetected
-        (JNIEnv *env, jobject self, jlong sound_file_handle);
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_getNumBeatsDetected
+        (JNIEnv*, jobject, jlong);
 
 #ifdef __cplusplus
 }

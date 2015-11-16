@@ -21,19 +21,19 @@ extern "C" {
 #endif
 
 JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_initialize
-        (JNIEnv *, jobject);
+        (JNIEnv*, jobject);
 
 JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_open
-        (JNIEnv *, jobject self, jstring);
+        (JNIEnv*, jobject self, jstring);
 
 JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_decode
-        (JNIEnv *, jobject, jlong);
+        (JNIEnv*, jobject, jlong);
 
 JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_transfer
-        (JNIEnv *, jobject, jlong, jshortArray);
+        (JNIEnv*, jobject, jlong, jshortArray);
 
 JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_delete
-        (JNIEnv *, jobject, jlong);
+        (JNIEnv*, jobject, jlong);
 
 #ifdef __cplusplus
 }

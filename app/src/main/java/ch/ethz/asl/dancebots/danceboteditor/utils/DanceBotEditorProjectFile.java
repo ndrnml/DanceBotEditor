@@ -180,6 +180,9 @@ public class DanceBotEditorProjectFile {
     ///////////
     // SETTERS
     ///////////
+    // TODO
+    // TODO: make beatgrid, choreography setters
+    // TODO
     public void setEditorState(State s) {
         mEditorState = s;
     }

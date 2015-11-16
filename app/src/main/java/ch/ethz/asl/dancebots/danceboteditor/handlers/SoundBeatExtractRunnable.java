@@ -181,7 +181,7 @@ public class SoundBeatExtractRunnable implements Runnable {
 
                 // Set feedback to the SoundTask that this Thread finished execution
                 mSoundTask.setBeatExtractionRunnableStatus(mThreadId, true);
-                mSoundTask.setBeatBuffer(mThreadId, mBeatBuffer);
+                //mSoundTask.setBeatBuffer(mThreadId, mBeatBuffer);
             }
 
         } catch (InterruptedException e1) {

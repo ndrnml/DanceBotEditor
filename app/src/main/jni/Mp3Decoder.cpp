@@ -92,8 +92,8 @@ JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_
                 // Everything was properly loaded with mpg123. Initialize sound file
                 sound_file->init(channels, rate, num_samples, encoding, buffer_size);
 
-                __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "return sound file pointer: %p",
-                                    sound_file);
+                //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "return sound file pointer: %p",
+                //                    sound_file);
                 return (jlong) sound_file;
 
             } else {
