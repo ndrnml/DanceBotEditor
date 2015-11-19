@@ -29,6 +29,9 @@ public class BeatExtractor {
         return getNumBeatsDetected(handle);
     }
 
+    public static int getNumberOfProcessedSamples(long handle) {
+        return getNumSamplesProcessed(handle);
+    }
 
     // Native call to vamp plugin: queen marry beat detection
     private native static int extractBeats(long handle, IntBuffer intBuffer, int intBufferSize);
@@ -38,4 +41,5 @@ public class BeatExtractor {
     // Get total number of beats detected from selected song
     private native static int getNumBeatsDetected(long soundFileHandle);
 
+    private native static int getNumSamplesProcessed(long soundFileHandle);
 }

@@ -5,6 +5,7 @@ import android.util.Log;
 
 import ch.ethz.asl.dancebots.danceboteditor.utils.BeatExtractor;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 
 /**
@@ -16,14 +17,12 @@ public class SoundDecodeRunnable implements Runnable {
     private static final String LOG_TAG = "SoundDecodeRunnable";
 
     // Constants for indicating the state of the download
-    static final int DECODE_STATE_FAILED = -1;
-    static final int DECODE_STATE_COMPLETED = 1;
+    public static final int DECODE_STATE_FAILED = -1;
+    public static final int DECODE_STATE_STARTED = 0;
+    public static final int DECODE_STATE_COMPLETED = 1;
 
     // Defines a field that contains the calling object of type PhotoTask.
-    final DanceBotEditorProjectFile mProjectFile;
-
-    // Defines a field that contains the calling object of type PhotoTask.
-    final TaskRunnableDecodeMethods mSoundTask;
+    private final TaskRunnableDecodeMethods mSoundTask;
 
     /**
      *
@@ -47,16 +46,16 @@ public class SoundDecodeRunnable implements Runnable {
         void setSoundFileHandler(long soundFileHandler);
 
         /**
-         * Sets the number of samples of the decoded sound file
-         * @param samples
-         */
-        void setNumSamples(long samples);
-
-        /**
          * Handle the state of the decoding process
          * @param state
          */
         void handleDecodeState(int state);
+
+        /**
+         * Returns the music file, which contains all relevant information about the selected music file
+         * @return The DanceBotMusicFile
+         */
+        DanceBotMusicFile getDanceBotMusicFile();
     }
 
 
@@ -67,7 +66,6 @@ public class SoundDecodeRunnable implements Runnable {
      * @param soundTask The SoundTask which implements TaskRunnableDecodeMethods
      */
     public SoundDecodeRunnable(TaskRunnableDecodeMethods soundTask) {
-        mProjectFile = DanceBotEditorProjectFile.getInstance();
         mSoundTask = soundTask;
     }
 
@@ -91,17 +89,28 @@ public class SoundDecodeRunnable implements Runnable {
                 throw new InterruptedException();
             }
 
-            // Create decoder object
+            /*
+             * Calls the PhotoTask implementation of {@link #handleDecodeState} to
+             * set the state of the download
+             */
+            mSoundTask.handleDecodeState(DECODE_STATE_STARTED);
+
+            // Get the current dance bot editor music file
+            DanceBotMusicFile musicFile = mSoundTask.getDanceBotMusicFile();
+
+            // Create and initialize decoder object
             Decoder mp3Decoder = new Decoder();
 
+            // Open a music file path
             Log.v(LOG_TAG, "opening mp3 file...");
-            mp3Decoder.openFile(mProjectFile.getDanceBotMusicFile().getSongPath());
+            mp3Decoder.openFile(musicFile.getSongPath());
 
+            // Decode the opened music file, if no error occured
             Log.v(LOG_TAG, "start decoding...");
             int result = mp3Decoder.decode();
 
+            // Check result of the decoded music file
             if (result <= 0) {
-
                 Log.v(LOG_TAG, "Error: Decoding failed.");
             }
 
@@ -112,15 +121,12 @@ public class SoundDecodeRunnable implements Runnable {
             mSoundTask.setSoundFileHandler(soundFileHandle);
 
             // Extract sample rate from decoded file
-            mProjectFile.getDanceBotMusicFile().setSampleRate(mp3Decoder.getSampleRate());
-            Log.v(LOG_TAG, "sample rate: " + mp3Decoder.getSampleRate());
-
-            // Extract total number of samples from decoded file
-            mProjectFile.getDanceBotMusicFile().setTotalNumberOfSamples(mp3Decoder.getNumberOfSamples());
-            Log.v(LOG_TAG, "total number of samples: " + mp3Decoder.getNumberOfSamples());
+            musicFile.setSampleRate(mp3Decoder.getSampleRate());
+            Log.v(LOG_TAG, "sample rate: " + musicFile.getSampleRate());
 
             // Get the total number of samples, which were decoded
-            mSoundTask.setNumSamples(mp3Decoder.getNumberOfSamples());
+            musicFile.setTotalNumberOfSamples(mp3Decoder.getNumberOfSamples());
+            Log.v(LOG_TAG, "total number of samples: " + musicFile.getNumberOfSamples());
 
             // Handle the state of the decoding Thread
             mSoundTask.handleDecodeState(DECODE_STATE_COMPLETED);
@@ -132,6 +138,7 @@ public class SoundDecodeRunnable implements Runnable {
             // In all cases, handle the results
         } finally {
 
+            Log.v(LOG_TAG, "DecodeThread finished.");
         }
     }
 }

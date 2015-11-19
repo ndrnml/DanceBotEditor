@@ -1,6 +1,5 @@
 package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
-import android.os.SystemClock;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -8,7 +7,6 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 import ch.ethz.asl.dancebots.danceboteditor.utils.BeatExtractor;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 
 /**
  * Created by andrin on 14.11.15.
@@ -17,10 +15,6 @@ public class SoundBeatExtractRunnable implements Runnable {
 
     // Sets the log tag
     private static final String LOG_TAG = "BEAT_EXTRACT_RUNNABLE";
-
-    // Constants indicating the state of the beat extraction
-    static final int BEAT_EXTRACTION_STATE_FAILED = -1;
-    static final int BEAT_EXTRACTION_STATE_COMPLETED = 1;
 
     // Set maximum limit for the size of the beat buffer (IntBuffer)
     private final int MAX_EXPECTED_BEATS = 1000;
@@ -34,7 +28,6 @@ public class SoundBeatExtractRunnable implements Runnable {
 
     // Beat extraction specific fields (data structure and number of beats detected)
     private IntBuffer mBeatBuffer;
-    private int mNumBeatsDetected;
 
     // Thread specific fields
     private int mThreadId;
@@ -62,9 +55,9 @@ public class SoundBeatExtractRunnable implements Runnable {
         /**
          * Sets the status of the current Thread with the specific Thread ID
          * @param threadId The current Thread ID assigned by SoundTask
-         * @param status The status of the beat extraction
+         * @param beats The number of extracted beats
          */
-        void setBeatExtractionRunnableStatus(int threadId, Boolean status);
+        void setBeatExtractionRunnableStatus(int threadId, int beats);
 
         /**
          * Returns the pointer to the sound file handle
@@ -77,6 +70,12 @@ public class SoundBeatExtractRunnable implements Runnable {
          * @return The number of samples from the decoded sound file
          */
         long getNumSamples();
+
+        /**
+         * Return the sample rate of the previously decoded song
+         * @return Sample rate
+         */
+        int getSampleRate();
     }
 
     /**
@@ -119,8 +118,11 @@ public class SoundBeatExtractRunnable implements Runnable {
         // Get the file handle pointer to the native data structure
         mSoundFileHandle = mSoundTask.getSoundFileHandle();
 
-        // Retrieve number of samples of decoded sound file
+        // Retrieve number of samples of decoded music file
         long numSamples = mSoundTask.getNumSamples();
+
+        // Get the sample rate of the previously decoded music file
+        int sampleRate = mSoundTask.getSampleRate();
 
         try {
             // Before continuing, checks to see that the Thread hasn't been
@@ -130,58 +132,38 @@ public class SoundBeatExtractRunnable implements Runnable {
                 throw new InterruptedException();
             }
 
-            // Calculate the onset detection function alignment (6 second frames)
-            long alignment = 6 * 44100;
-
-            // Compute the chunk of samples the current Thread has to process
-            long chunk = numSamples / mNumThreads;
-
-            // Get the factorial of the onset detection function alignment to this chunk
-            long fac = chunk / alignment;
-
-            // Compute aligned chunk of samples to process
-            chunk = fac * alignment;
-
-            // Set start and end sample
-            mStartSample = mThreadId * chunk;
-            mEndSample = (mThreadId + 1) * chunk;
-
-            // Handle corner cases (first and last Thread)
-            if (mThreadId == 0) {
-                mStartSample = 0;
-            }
-            if (mThreadId == mNumThreads - 1) {
-                mEndSample = numSamples;
-            }
+            /*
+             * For each thread compute the mStartSample and mEndSample position based on the
+             * mThreadId, numSamples and sampleRate
+             */
+            computeStartAndEndSampleOffset(numSamples, sampleRate);
 
             // Moves the current Thread into the background
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
             Log.v(LOG_TAG, "start beat extraction...");
-
             /*
-             * Call to native beat extraction algorithm
+             * Call to native beat extraction algorithm.
              * mBeatBuffer is filled with detected beats
              */
-            mNumBeatsDetected = BeatExtractor.extract(mSoundFileHandle, mBeatBuffer, mStartSample, mEndSample);
+            int mNumBeatsDetected = BeatExtractor.extract(mSoundFileHandle, mBeatBuffer, mStartSample, mEndSample);
 
             /*for (int b = 0; b < result; ++b) {
                 Log.v(LOG_TAG, "IntBuffer at " + b + ": " + buf.get(b));
             }*/
 
-            //mNumBeatsDetected = BeatExtractor.getNumberOfBeatsDetected(mSoundFileHandle);
-
+            // Check the result of the beat extraction
             if (mNumBeatsDetected < 0) {
 
                 Log.v(LOG_TAG, "Error while extracting beats");
 
             } else {
-
+                // If no error occurred, the beat extraction will have found zero or more beats
                 Log.v(LOG_TAG, "Thread: " + mThreadId + " Successfully decoded and beats extracted: " + mNumBeatsDetected);
 
                 // Set feedback to the SoundTask that this Thread finished execution
-                mSoundTask.setBeatExtractionRunnableStatus(mThreadId, true);
-                //mSoundTask.setBeatBuffer(mThreadId, mBeatBuffer);
+                mSoundTask.setBeatExtractionRunnableStatus(mThreadId, mNumBeatsDetected);
+                mSoundTask.setBeatBuffer(mThreadId, mBeatBuffer);
             }
 
         } catch (InterruptedException e1) {
@@ -191,6 +173,45 @@ public class SoundBeatExtractRunnable implements Runnable {
             // In all cases, handle the results
         } finally {
 
+            Log.v(LOG_TAG, "BeatExtractThread: " + mThreadId + " finished.");
+        }
+    }
+
+    /**
+     * Compute the start and end sample position
+     * @param numSamples
+     * @param sampleRate
+     */
+    private void computeStartAndEndSampleOffset(long numSamples, int sampleRate) {
+
+        /*
+         * To identify the tempo, the onset detection function is partitioned into 6-second frames
+         * with a 1.5-second increment.
+         */
+        final int ONSET_DETECTION_FUNCTION_ALIGNMENT = 6;
+
+        // Calculate the onset detection function alignment (6 second frames)
+        long alignment = ONSET_DETECTION_FUNCTION_ALIGNMENT * sampleRate;
+
+        // Compute the chunk of samples the current Thread has to process
+        long chunk = numSamples / mNumThreads;
+
+        // Get the factorial of the onset detection function alignment to this chunk
+        long fac = chunk / alignment;
+
+        // Compute aligned chunk of samples to process
+        chunk = fac * alignment;
+
+        // Set start and end sample
+        mStartSample = mThreadId * chunk;
+        mEndSample = (mThreadId + 1) * chunk;
+
+        // Handle corner cases (first and last Thread)
+        if (mThreadId == 0) {
+            mStartSample = 0;
+        }
+        if (mThreadId == mNumThreads - 1) {
+            mEndSample = numSamples;
         }
     }
 }

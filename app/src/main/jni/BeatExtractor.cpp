@@ -10,7 +10,8 @@
 static const char* LOG_TAG = "NATIVE_BEAT_EXTRACTOR";
 
 /**
- * TODO
+ * This method computes the features (beat peaks) at sample positions for a selected song
+ * which soundFileHandle is pointing to
  */
 JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_extractBeats(JNIEnv *env, jobject self, jlong soundFileHandle, jobject intBuffer, jint intBufferSize)
 {
@@ -170,6 +171,10 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
     return number_of_beats_detected;
 }
 
+/**
+ * THIS METHOD IS NOT THREAD SAFE
+ * This method computes the features (beat peaks) at sample positions for a given range of samples
+ */
 JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_extract(
         JNIEnv *env,
         jobject self,
@@ -265,7 +270,9 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
             ++j;
         }
 
-        // TODO: Compute the what?
+        /*
+         * According to the sample rate map features (beat peaks) to real time stamps (samples)
+         */
         Vamp::RealTime rt = Vamp::RealTime::frame2RealTime(i, sample_rate);
         int frame = Vamp::RealTime::realTime2Frame(rt + adjustment, sample_rate);
 
@@ -274,6 +281,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
         // Initialize data structure where beat peaks (features) will be stored
         Vamp::Plugin::FeatureSet features = beat_tracker.process(plugbuf, rt);
 
+        /*
         for (int k = 0; k < features[0].size(); ++k) {
             int display_frame = frame;
 
@@ -283,14 +291,28 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
             }
 
             if (number_of_beats_detected < beat_buffer_size) {
-                beat_buffer[number_of_beats_detected] = display_frame;
-                number_of_beats_detected += 1;
-            }
-        }
 
-        if ((i % 200000) == 0) {
-            __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "processed samples: %d", i);
-        }
+                __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "IS THIS EVER CALLED?");
+
+                beat_buffer[number_of_beats_detected] = display_frame;
+
+                // Set number of beats detected
+                number_of_beats_detected += 1;
+
+                /*
+                 * THIS IS NOT THREAD SAFE
+                 * Write current number of detected beats to the sound file to keep track
+                 * of progress
+                 */
+                /*sound_file->number_beats_detected += 1;
+            }
+        }*/
+
+        // THIS IS NOT THREAD SAFE
+        // It is possible to make a callback to the UI thread, so that the progress can be properly
+        // updated
+        sound_file->num_of_proc_beat_extract_samples += step_size;
+        //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "processed samples: %d", sound_file->num_of_proc_beat_extract_samples);
     }
 
     Vamp::Plugin::FeatureSet features = beat_tracker.getRemainingFeatures();
@@ -298,6 +320,9 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
     Vamp::RealTime rt = Vamp::RealTime::frame2RealTime(num_samples, sample_rate);
     int frame = Vamp::RealTime::realTime2Frame(rt + adjustment, sample_rate);
 
+    /*
+     * Process all found features (beat peaks) and store time stamps to beat buffer
+     */
     for (int k = 0; k < features[0].size(); ++k) {
         int display_frame = frame;
 
@@ -320,6 +345,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
              * of progress
              */
             sound_file->number_beats_detected += 1;
+            //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "sound_file->number_beats_detected: %i", number_of_beats_detected);
         }
     }
 
@@ -328,6 +354,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
                         number_of_beats_detected);
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "beat extraction finished");
 
+    // THIS IS ALSO NOT THREAD SAFE!
     // Store the total number of beats detected in sound file
     //sound_file->number_beats_detected = number_of_beats_detected;
 

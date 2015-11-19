@@ -1,11 +1,17 @@
 package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.drm.ProcessedData;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
@@ -13,10 +19,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
+import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
+
 /**
  * Created by andrin on 15.11.15.
  */
 public class SoundManager {
+
+    private static final String LOG_TAG = "SOUND_MANAGER";
 
     /*
      * Status indicators
@@ -24,7 +35,7 @@ public class SoundManager {
     static final int DECODING_FAILED = -1;
     static final int DECODING_STARTED = 1;
     static final int DECODING_COMPLETE = 2;
-    static final int BEAT_EXTRACTION_STARTED = 3;
+    static final int UPDATE_PROGRESS = 3;
     static final int TASK_COMPLETE = 4;
 
     // Sets the amount of time an idle thread will wait for a task before terminating
@@ -72,6 +83,7 @@ public class SoundManager {
     /**
      * Constructs the work queues and thread pools used to download and decode images.
      */
+    @SuppressLint("HandlerLeak")
     private SoundManager() {
 
         /*
@@ -109,6 +121,55 @@ public class SoundManager {
             @Override
             public void handleMessage(Message inputMessage) {
 
+                // Get the SoundTask that invoked the message
+                SoundTask soundTask = (SoundTask) inputMessage.obj;
+
+                // Get the progress dialog
+                ProgressDialog dialog = soundTask.getProgressDialog();
+
+                // Get the current state of the SoundTask
+                int state = inputMessage.what;
+
+                switch (state) {
+
+                    case DECODING_STARTED:
+
+                        dialog.setMessage("PREPARING YOUR ABSOLUTE FAVORITE SONG ;)");
+                        dialog.show();
+
+                        Log.v(LOG_TAG, "handleMessage: " + "DECODING_STARTED");
+                        break;
+
+                    case DECODING_COMPLETE:
+
+                        dialog.setIndeterminate(false);
+                        Log.v(LOG_TAG, "handleMessage: " + "DECODING_COMPLETE");
+                        break;
+
+                    case DECODING_FAILED:
+
+                        Log.v(LOG_TAG, "handleMessage: DECODING_FAILED");
+                        break;
+
+                    case UPDATE_PROGRESS:
+
+                        int progress = soundTask.getProgress();
+                        dialog.setProgress(progress);
+                        Log.v(LOG_TAG, "handleMessage: " + "UPDATE_PROGRESS: " + progress);
+                        break;
+
+                    case TASK_COMPLETE:
+
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                        Log.v(LOG_TAG, "handleMessage: TASK_COMPLETE");
+                        break;
+
+                    default:
+                        Log.v(LOG_TAG, "handleMessage: default");
+                        break;
+                }
             }
         };
     }
@@ -122,6 +183,11 @@ public class SoundManager {
         return sInstance;
     }
 
+    /**
+     * TODO
+     * @param soundTask
+     * @param state
+     */
     public void handleState(SoundTask soundTask, int state) {
 
         switch (state) {
@@ -143,9 +209,6 @@ public class SoundManager {
                  * Extract beats of sound file using multi-threaded beat extraction
                  */
 
-                // Initialize all runnables based on the length of the song
-                soundTask.initializeBeatExtractionRunnablesk();
-
                 // Fetch runnable list and hand it to the thread pool
                 ArrayList<Runnable> beatExtractionRunnables = soundTask.getSoundBeatExtractionRunnables();
 
@@ -157,6 +220,7 @@ public class SoundManager {
                 }
 
                 // In all other cases, pass along the message without any other action.
+
             default:
                 mHandler.obtainMessage(state, soundTask).sendToTarget();
                 break;
@@ -164,19 +228,25 @@ public class SoundManager {
 
     }
 
-    static public SoundTask startDecoding(View toastView, int numThreads) {
+    /**
+     * TODO
+     * @param musicFile
+     * @param beatView
+     * @param numThreads
+     * @return
+     */
+    static public SoundTask startDecoding(Activity activity, DanceBotMusicFile musicFile, HorizontalRecyclerViews beatView, int numThreads) {
+
+        // Ensure that at least one Thread is invoked
+        if (numThreads <= 0) {
+            numThreads = 1;
+        }
 
         // If the queue was empty, create a new task instead.
         SoundTask decodeTask = new SoundTask(numThreads);
 
-        // Initializes the task
-        //decodeTask.initializeDecoderTask(sInstance, toastView);
-
-        /*
-         * Provides the download task with the cache buffer corresponding to the URL to be
-         * downloaded.
-         */
-        //decodeTask.setByteBuffer(sInstance.mPhotoCache.get(decodeTask.getImageURL()));
+        // Initializes the decoding task
+        decodeTask.initializeDecoderTask(activity, musicFile, beatView);
 
         /*
          * "Executes" the tasks' download Runnable in order to download the image. If no

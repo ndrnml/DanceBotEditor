@@ -4,18 +4,25 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 /**
- * Created by andrin on 06.07.15.
+ * The DanceBotMusicFile class stores all relevant data about the selected song.
+ * Meta data, details and extracted beats are stored in this object.
  */
 public class DanceBotMusicFile {
 
+    // Meta data
     private String mSongTitle;
     private String mSongArtist;
     private String mSongPath;
+
+    // Details about selected song
     private int mDurationInMiliSeconds;
     private long mNumberOfSamples;
     private int mSampleRate;
     private int mChannels;
+
+    // Decoding and Beat Extraction
     private int mNumberOfBeatsDetected;
+    private int[] mBeatBuffer;
     private ByteBuffer mMP3Buffer;
 
     public DanceBotMusicFile(String songTitle, String songArtist, String songPath, int duration) {
@@ -63,5 +70,13 @@ public class DanceBotMusicFile {
     }
     public long getNumberOfSamples() {
         return mNumberOfSamples;
+    }
+
+    public int getSampleRate() {
+        return mSampleRate;
+    }
+
+    public void setBeatBuffer(int[] beatBuffer) {
+        mBeatBuffer = beatBuffer;
     }
 }

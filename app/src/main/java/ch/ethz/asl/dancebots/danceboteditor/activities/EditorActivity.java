@@ -94,7 +94,7 @@ public class EditorActivity extends Activity {
                 /**
                  * DUMMY DATA CONSTRUCTION
                  */
-                int NUM_BEATS = 300;
+                /*int NUM_BEATS = 300;
                 int SAMPLE_RATE = 44100;
                 int DURATION = 180;
                 int TOTAL_SAMPLES = DURATION * SAMPLE_RATE;
@@ -106,10 +106,11 @@ public class EditorActivity extends Activity {
                     mProjectFile.getChoreoManager().mLedChoregraphy.mBeatElements.add(new LedBeatElement(getApplicationContext(), i, SPACING * i));
                 }
 
-                mProjectFile.getDanceBotMusicFile().setNumberOfBeatsDected(NUM_BEATS);
+                mProjectFile.getDanceBotMusicFile().setNumberOfBeatsDected(NUM_BEATS);*/
                 /**
                  * END DUMMY DATA CONSTRUCTION
                  */
+
 
             } else {
 
@@ -120,7 +121,7 @@ public class EditorActivity extends Activity {
 
                 } else {
 
-                    SoundManager.startDecoding(null, 3);
+                    SoundManager.startDecoding(this, mProjectFile.getDanceBotMusicFile(), null, 4);
                 }
             }
 
@@ -181,6 +182,7 @@ public class EditorActivity extends Activity {
 
                 Log.v(LOG_TAG, "title: " + songTitle);
                 Log.v(LOG_TAG, "path: " + songPath);
+                Log.v(LOG_TAG, "duration: " + songDuration);
 
                 // Selected music file is attached to the current project file
                 DanceBotMusicFile dbMusicFile = new DanceBotMusicFile(songTitle, songArtist, songPath, songDuration);
@@ -193,13 +195,16 @@ public class EditorActivity extends Activity {
                 // Update Title
                 TextView selectedSongTitle = (TextView) findViewById(R.id.id_song_title);
                 selectedSongTitle.setText(songTitle);
-                // Update Artist
+
+                // Update Artist view
                 TextView selectedSongArtist = (TextView) findViewById(R.id.id_song_artist);
                 selectedSongArtist.setText(songArtist);
-                // Update Path
+
+                // Update Path view
                 TextView selectedSongFilePath = (TextView) findViewById(R.id.id_song_path);
                 selectedSongFilePath.setText(songPath);
-                // Update Duration
+
+                // Update Duration view
                 TextView selectedSongDuration = (TextView) findViewById(R.id.id_song_duration);
                 selectedSongDuration.setText(mProjectFile.getDanceBotMusicFile().getDurationReadable());
 
