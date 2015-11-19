@@ -16,11 +16,9 @@ import android.widget.TextView;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundProcessingTask;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SaveMP3Handler;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
-import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
@@ -31,7 +29,7 @@ public class EditorActivity extends Activity {
 
     private static final int PICK_SONG_REQUEST = 1;
 
-    private DanceBotEditorProjectFile mProjectFile;
+    private DanceBotEditorManager mProjectFile;
     private HorizontalRecyclerViews mBeatElementViews;
 
     @Override
@@ -46,7 +44,7 @@ public class EditorActivity extends Activity {
         // TODO: initialize dance bot project file, beat grid, music files etc...
 
         // Project file initialization
-        mProjectFile = DanceBotEditorProjectFile.getInstance();
+        mProjectFile = DanceBotEditorManager.getInstance();
         mProjectFile.init(getApplicationContext());
         mProjectFile.initSelectionMenus();
 
@@ -68,7 +66,7 @@ public class EditorActivity extends Activity {
 
         // TODO: DO all initialization stuff here?
 
-        if (mProjectFile.getEditorState() == DanceBotEditorProjectFile.State.START) {
+        if (mProjectFile.getEditorState() == DanceBotEditorManager.State.START) {
 
             // Start intent that loads the editor view and starts pick-song-activity
             Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
@@ -84,7 +82,7 @@ public class EditorActivity extends Activity {
         // When a song is selected, start decoding and beat extraction in the background
         // Skip this process, if the beat extraction has already been performed
         // TODO: Check that the beat extraction was performed for the currently selected song
-        if (mProjectFile.getEditorState() == DanceBotEditorProjectFile.State.NEW) {
+        if (mProjectFile.getEditorState() == DanceBotEditorManager.State.NEW) {
 
             Log.v(LOG_TAG, "resumed EditorActivity with a song loaded");
 
@@ -112,8 +110,6 @@ public class EditorActivity extends Activity {
                 /**
                  * END DUMMY DATA CONSTRUCTION
                  */
-
-
             } else {
 
                 // Perform beat extraction in async task
@@ -131,7 +127,7 @@ public class EditorActivity extends Activity {
             //registerForContextMenu(mMotorView);
 
             // Set the editor state to decoding (sensitive phase)
-            mProjectFile.setEditorState(DanceBotEditorProjectFile.State.EDITING);
+            mProjectFile.setEditorState(DanceBotEditorManager.State.EDITING);
 
         }
     }
@@ -157,7 +153,7 @@ public class EditorActivity extends Activity {
         // The activity is no longer visible (it is now "stopped")
 
         // If the editor is currently decoding, editing or encoding ask user to leave
-        if (true/*mEditorState == DanceBotEditorProjectFile.State.DECODING || mEditorState == DanceBotEditorProjectFile.State.ENCODING*/) {
+        if (true/*mEditorState == DanceBotEditorManager.State.DECODING || mEditorState == DanceBotEditorManager.State.ENCODING*/) {
 
             // TODO abort/cancel all async tasks and background threads IMPORTANT!!!!
             //AutomaticScrollHandler ah = new AutomaticScrollHandler();
@@ -211,7 +207,7 @@ public class EditorActivity extends Activity {
                 selectedSongDuration.setText(mProjectFile.getDanceBotMusicFile().getDurationReadable());
 
                 // Update Editor activity state
-                mProjectFile.setEditorState(DanceBotEditorProjectFile.State.NEW);
+                mProjectFile.setEditorState(DanceBotEditorManager.State.NEW);
 
                 // Open file in media player
                 mProjectFile.getMediaPlayer().openMusicFile(dbMusicFile);
@@ -222,7 +218,7 @@ public class EditorActivity extends Activity {
                 Log.v(LOG_TAG, "resultCode != RESULT_OK");
 
                 // TODO finish activity
-                mProjectFile.setEditorState(DanceBotEditorProjectFile.State.EDITING);
+                mProjectFile.setEditorState(DanceBotEditorManager.State.EDITING);
                 finish();
 
             }
@@ -255,7 +251,7 @@ public class EditorActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                mProjectFile.setEditorState(DanceBotEditorProjectFile.State.NEW);
+                mProjectFile.setEditorState(DanceBotEditorManager.State.NEW);
                 finish();
             }
         });

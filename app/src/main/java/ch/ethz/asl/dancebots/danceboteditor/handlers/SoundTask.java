@@ -22,7 +22,6 @@ public class SoundTask implements
     private static final String LOG_TAG = "SOUND_TASK";
 
     private ProgressDialog mSoundTaskProgressDialog;
-    private WeakReference<HorizontalRecyclerViews> mBeatViewWeakRef;
 
     // The DanceBotMusicFile, which keeps all relevant information about the selected song
     private DanceBotMusicFile mMusicFile;
@@ -48,8 +47,9 @@ public class SoundTask implements
     private SoundManager sSoundManager;
 
     private long t1,t2;
+
     /**
-     * Creates an PhotoTask containing a download object and a decoder object.
+     * Creates a SoundTask containing a decoder object and a beat extractor object.
      */
     public SoundTask(int numThreads) {
 
@@ -91,9 +91,6 @@ public class SoundTask implements
 
         // Sets the selected dance bot editor music file
         mMusicFile = musicFile;
-
-        // Instantiates the weak reference to the incoming view
-        mBeatViewWeakRef = new WeakReference<HorizontalRecyclerViews>(beatView);
 
         // Initialize progress dialog on UI thread
         mSoundTaskProgressDialog = new ProgressDialog(activity);

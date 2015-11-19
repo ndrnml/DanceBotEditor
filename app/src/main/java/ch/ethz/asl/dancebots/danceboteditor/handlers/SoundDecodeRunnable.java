@@ -1,10 +1,7 @@
 package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
-import android.os.SystemClock;
 import android.util.Log;
 
-import ch.ethz.asl.dancebots.danceboteditor.utils.BeatExtractor;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 

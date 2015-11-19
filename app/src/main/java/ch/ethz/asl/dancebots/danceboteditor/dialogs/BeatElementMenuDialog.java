@@ -22,7 +22,7 @@ import ch.ethz.asl.dancebots.danceboteditor.ui.FloatSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.ui.IntegerSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.ui.LedTypeSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.ui.MotorTypeSelectionMenu;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 
 /**
  * Created by andrin on 23.09.15.
@@ -36,7 +36,7 @@ public class BeatElementMenuDialog extends DialogFragment {
     // General fields
     private View mBeatElementMenuView;
     private BeatElement mBeatElement;
-    private DanceBotEditorProjectFile mProjectFile;
+    private DanceBotEditorManager mProjectFile;
     private BeatElementAdapter mBeatElementAdapter;
 
     // Menus
@@ -75,7 +75,7 @@ public class BeatElementMenuDialog extends DialogFragment {
         // Contextual information
         mBeatElementAdapter = adapter;
         mBeatElement = elem;
-        mProjectFile = DanceBotEditorProjectFile.getInstance();
+        mProjectFile = DanceBotEditorManager.getInstance();
 
         // Load different menus
         mLedTypeMenu = mProjectFile.getLedTypeMenu();

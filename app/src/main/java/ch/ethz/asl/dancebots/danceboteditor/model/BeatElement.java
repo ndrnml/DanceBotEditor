@@ -2,9 +2,6 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
 
-import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
-
 /**
  * Created by andrin on 28.08.15.
  */

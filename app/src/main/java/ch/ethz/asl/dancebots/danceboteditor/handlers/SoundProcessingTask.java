@@ -9,9 +9,7 @@ import android.util.Log;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
-import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
-import ch.ethz.asl.dancebots.danceboteditor.utils.BeatExtractor;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
@@ -29,7 +27,7 @@ public class SoundProcessingTask extends AsyncTask<Integer, Void, Integer> imple
     private static final String LOG_TAG = "BEAT_EXTRACTION_HANDLER";
 
     private Activity mActivity;
-    private DanceBotEditorProjectFile mProjectFile;
+    private DanceBotEditorManager mProjectFile;
     private HorizontalRecyclerViews mBeatElementViews;
     private ProgressDialog mDialog;
 
@@ -47,7 +45,7 @@ public class SoundProcessingTask extends AsyncTask<Integer, Void, Integer> imple
         mActivity = activity;
         mBeatElementViews = beatViews;
 
-        mProjectFile = DanceBotEditorProjectFile.getInstance();
+        mProjectFile = DanceBotEditorManager.getInstance();
 
         mDialog = new ProgressDialog(activity);
         mDialog.setCancelable(false);
@@ -167,8 +165,8 @@ public class SoundProcessingTask extends AsyncTask<Integer, Void, Integer> imple
             // TODO: successfully executed async task
             // TODO set adapters for editor activity
             // Create the beat adapters
-            //BeatElementAdapter motorAdapter = new BeatElementAdapter<>(DanceBotEditorProjectFile.getInstance().getChoreoManager().mMotorChoreography.mBeatElements);
-            //BeatElementAdapter ledAdapter = new BeatElementAdapter<>(DanceBotEditorProjectFile.getInstance().getChoreoManager().mLedChoregraphy.mBeatElements);
+            //BeatElementAdapter motorAdapter = new BeatElementAdapter<>(DanceBotEditorManager.getInstance().getChoreoManager().mMotorChoreography.mBeatElements);
+            //BeatElementAdapter ledAdapter = new BeatElementAdapter<>(DanceBotEditorManager.getInstance().getChoreoManager().mLedChoregraphy.mBeatElements);
 
             // Attach apapters
             //mBeatElementViews.setAdapters(motorAdapter, ledAdapter);

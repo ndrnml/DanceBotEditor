@@ -1,7 +1,6 @@
 package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
 import android.app.Activity;
-import android.app.Notification;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -10,7 +9,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Encoder;
@@ -18,7 +17,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.Encoder;
 /**
  * Created by andrin on 19.10.15.
  */
-public class SaveMP3Handler extends AsyncTask<DanceBotEditorProjectFile, Void, Integer> {
+public class SaveMP3Handler extends AsyncTask<DanceBotEditorManager, Void, Integer> {
 
     /**TODO
      * TODO AsyncTasks don't follow Activity instances' life cycle. If you start an AsyncTask inside an Activity and you rotate the device, the Activity will be destroyed and a new instance will be created. But the AsyncTask will not die. It will go on living until it completes.
@@ -36,9 +35,9 @@ public class SaveMP3Handler extends AsyncTask<DanceBotEditorProjectFile, Void, I
     }
 
     @Override
-    protected Integer doInBackground(DanceBotEditorProjectFile... params) {
+    protected Integer doInBackground(DanceBotEditorManager... params) {
 
-        long numSamples = DanceBotEditorProjectFile.getInstance().getDanceBotMusicFile().getNumberOfSamples();
+        long numSamples = DanceBotEditorManager.getInstance().getDanceBotMusicFile().getNumberOfSamples();
         short[] pcm_l = new short[(int)numSamples];
         short[] pcm_r = new short[(int)numSamples];
 

@@ -9,8 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.activities.EditorActivity;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 
 
 public class MainActivity extends Activity {
@@ -24,7 +23,7 @@ public class MainActivity extends Activity {
 
         // Instantiate and initialize the dance bot editor project file
         // All static variables should be set within the project file
-        DanceBotEditorProjectFile.getInstance().setEditorState(DanceBotEditorProjectFile.State.START);
+        DanceBotEditorManager.getInstance().setEditorState(DanceBotEditorManager.State.START);
     }
 
     @Override

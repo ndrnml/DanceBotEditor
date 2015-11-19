@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.utils.ChoreographyManager;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
 
 /**
@@ -19,7 +19,7 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
     private Activity mActivity;
 
-    private DanceBotEditorProjectFile mProjectFile;
+    private DanceBotEditorManager mProjectFile;
 
     private LinearLayoutManager mMotorLayoutManager;
     private LinearLayoutManager mLedLayoutManager;
@@ -31,7 +31,7 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         // Keep host activity
         mActivity = activity;
 
-        mProjectFile = DanceBotEditorProjectFile.getInstance();
+        mProjectFile = DanceBotEditorManager.getInstance();
 
         // Initialize and setup linear layout manager
         mMotorLayoutManager = new LinearLayoutManager(mActivity.getApplicationContext());

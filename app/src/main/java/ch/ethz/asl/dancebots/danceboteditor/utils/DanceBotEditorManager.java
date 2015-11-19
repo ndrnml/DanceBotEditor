@@ -17,7 +17,7 @@ import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 /**
  * Created by andrin on 09.07.15.
  */
-public class DanceBotEditorProjectFile {
+public class DanceBotEditorManager {
 
     // Possible states of the editor
     public enum State {
@@ -29,7 +29,7 @@ public class DanceBotEditorProjectFile {
     public boolean startedEditing = false;
 
     // Singleton instance
-    private static DanceBotEditorProjectFile instance = null;
+    private static DanceBotEditorManager instance = null;
 
     private Context mContext;
     private State mEditorState;
@@ -56,9 +56,9 @@ public class DanceBotEditorProjectFile {
     private IntegerSelectionMenu mChoreoLengthMenu;
 
     /**
-     * DanceBotEditorProjectFile is treated as Singleton
+     * DanceBotEditorManager is treated as Singleton
      */
-    protected DanceBotEditorProjectFile() {
+    protected DanceBotEditorManager() {
         // Delete default constructor
     }
 
@@ -66,10 +66,10 @@ public class DanceBotEditorProjectFile {
      * getInstance() of the Singleton
      * @return
      */
-    public static DanceBotEditorProjectFile getInstance() {
+    public static DanceBotEditorManager getInstance() {
         if(instance == null) {
             // If it is the first time the object is accessed create instance
-            instance = new DanceBotEditorProjectFile();
+            instance = new DanceBotEditorManager();
         }
         return instance;
     }

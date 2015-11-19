@@ -3,23 +3,18 @@ package ch.ethz.asl.dancebots.danceboteditor.handlers;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.drm.ProcessedData;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.View;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
@@ -165,7 +160,7 @@ public class SoundManager {
                             dialog.dismiss();
                         }
 
-                        DanceBotEditorProjectFile.getInstance().initChoreography();
+                        DanceBotEditorManager.getInstance().initChoreography();
 
                         Log.v(LOG_TAG, "handleMessage: TASK_COMPLETE");
                         break;
