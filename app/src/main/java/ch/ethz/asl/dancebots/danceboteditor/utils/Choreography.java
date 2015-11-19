@@ -2,6 +2,7 @@ package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import android.util.Log;
 
+import java.lang.reflect.Array;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
@@ -17,11 +18,11 @@ public class Choreography<T extends BeatElement> {
     private static final String LOG_TAG = "CHOREOGRAPHY";
 
     //TODO -> change to private
-    public ArrayList<T> mBeatElements;
+    private ArrayList<T> mBeatElements;
 
-    public Choreography() {
+    public Choreography(ArrayList<T> elems) {
 
-        mBeatElements = new ArrayList<>();
+        mBeatElements = elems;
     }
 
     public void addBeatElement(T elem) {
@@ -86,4 +87,7 @@ public class Choreography<T extends BeatElement> {
         return (elem.getChoreoStartIdx() == -1);
     }
 
+    public ArrayList<T> getBeatElements() {
+        return mBeatElements;
+    }
 }

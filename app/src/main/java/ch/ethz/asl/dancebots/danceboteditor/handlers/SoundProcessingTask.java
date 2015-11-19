@@ -167,11 +167,11 @@ public class SoundProcessingTask extends AsyncTask<Integer, Void, Integer> imple
             // TODO: successfully executed async task
             // TODO set adapters for editor activity
             // Create the beat adapters
-            BeatElementAdapter motorAdapter = new BeatElementAdapter<>(DanceBotEditorProjectFile.getInstance().getChoreoManager().mMotorChoreography.mBeatElements);
-            BeatElementAdapter ledAdapter = new BeatElementAdapter<>(DanceBotEditorProjectFile.getInstance().getChoreoManager().mLedChoregraphy.mBeatElements);
+            //BeatElementAdapter motorAdapter = new BeatElementAdapter<>(DanceBotEditorProjectFile.getInstance().getChoreoManager().mMotorChoreography.mBeatElements);
+            //BeatElementAdapter ledAdapter = new BeatElementAdapter<>(DanceBotEditorProjectFile.getInstance().getChoreoManager().mLedChoregraphy.mBeatElements);
 
             // Attach apapters
-            mBeatElementViews.setAdapters(motorAdapter, ledAdapter);
+            //mBeatElementViews.setAdapters(motorAdapter, ledAdapter);
         }
 
         Log.v(LOG_TAG, "PostExecute decoding extracting");

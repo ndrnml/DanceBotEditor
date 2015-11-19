@@ -12,6 +12,7 @@ import ch.ethz.asl.dancebots.danceboteditor.ui.FloatSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.ui.IntegerSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.ui.LedTypeSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.ui.MotorTypeSelectionMenu;
+import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
  * Created by andrin on 09.07.15.
@@ -33,9 +34,9 @@ public class DanceBotEditorProjectFile {
     private Context mContext;
     private State mEditorState;
     private DanceBotMusicFile mMusicFile;
-    private BeatGrid mBeatGrid;
     private ChoreographyManager mChoreoManager;
     private DanceBotMediaPlayer mMediaPlayer;
+    private HorizontalRecyclerViews mBeatViews;
 
     /**
      * TODO
@@ -107,17 +108,10 @@ public class DanceBotEditorProjectFile {
 
 
     /**
-     * Initialize meta container for extracted beats
-     */
-    public void initBeatGrid() {
-        mBeatGrid = new BeatGrid();
-    }
-
-    /**
      * Based on the detected beats, create a new choreography manager
      */
     public void initChoreography() {
-        mChoreoManager = new ChoreographyManager(mContext, mBeatGrid);
+        mChoreoManager = new ChoreographyManager(mContext, mBeatViews, mMusicFile);
     }
 
     /**
@@ -183,6 +177,9 @@ public class DanceBotEditorProjectFile {
     // TODO
     // TODO: make beatgrid, choreography setters
     // TODO
+    public void setBeatViews(HorizontalRecyclerViews beatViews) {
+        mBeatViews = beatViews;
+    }
     public void setEditorState(State s) {
         mEditorState = s;
     }
@@ -197,9 +194,6 @@ public class DanceBotEditorProjectFile {
     }
     public DanceBotMusicFile getDanceBotMusicFile() {
         return mMusicFile;
-    }
-    public BeatGrid getBeatGrid() {
-        return mBeatGrid;
     }
     public ChoreographyManager getChoreoManager() {
         return mChoreoManager;

@@ -48,11 +48,13 @@ public class EditorActivity extends Activity {
         // Project file initialization
         mProjectFile = DanceBotEditorProjectFile.getInstance();
         mProjectFile.init(getApplicationContext());
-        mProjectFile.initBeatGrid();
         mProjectFile.initSelectionMenus();
 
         // Initialize and setup recycler beat element views
         mBeatElementViews = new HorizontalRecyclerViews(EditorActivity.this);
+
+        // Store global reference to HorizontalRecyclerViews beatViews
+        mProjectFile.setBeatViews(mBeatElementViews);
 
         // Create new media player instance, be sure to pass the current activity to resolve
         // all necessary view elements

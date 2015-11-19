@@ -46,7 +46,7 @@ public class BeatExtractionRunnable implements Runnable {
      * IntBuffer contains 32-bit ints to store 2 channels of 16-bit
      */
     private void initBeatBuffer() {
-
+        // Choose int (32 bit) buffer because two channels (16 bit) are decoded
         // Allocate max expected number of beats times Integer size bytes
         ByteBuffer bb = ByteBuffer.allocateDirect(MAX_EXPECTED_BEATS * Integer.SIZE);
         bb.order(ByteOrder.LITTLE_ENDIAN);

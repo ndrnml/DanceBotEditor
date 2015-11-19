@@ -79,4 +79,8 @@ public class DanceBotMusicFile {
     public void setBeatBuffer(int[] beatBuffer) {
         mBeatBuffer = beatBuffer;
     }
+
+    public int[] getBeatBuffer() {
+        return mBeatBuffer;
+    }
 }

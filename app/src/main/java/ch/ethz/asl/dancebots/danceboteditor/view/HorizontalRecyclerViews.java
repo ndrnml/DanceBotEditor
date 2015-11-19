@@ -7,7 +7,7 @@ import android.support.v7.widget.RecyclerView;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
-import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.utils.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
 
@@ -15,7 +15,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
  * Created by andrin on 24.10.15.
  */
 // TODO Can you make this class a bit more dynamic? With lists e.g.?
-public class HorizontalRecyclerViews {
+public class HorizontalRecyclerViews implements ChoreographyManager.ChoreographyViewManager {
 
     private Activity mActivity;
 
@@ -60,14 +60,22 @@ public class HorizontalRecyclerViews {
         // TODO
     }
 
-    public void setAdapters(BeatElementAdapter motorAdapter, BeatElementAdapter ledAdapter) {
+    @Override
+    public void setLedElementAdapter(BeatElementAdapter ledAdapter) {
 
-        // Attach adapters
-        mMotorView.setAdapter(motorAdapter);
+        // Attach led element adapter
         mLedView.setAdapter(ledAdapter);
-
-        // Notify adapters that list content changed
-        motorAdapter.notifyDataSetChanged();
+        // Notify adapter that list content changed
         ledAdapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void setMotorElementAdapter(BeatElementAdapter motorAdapter) {
+
+        // Attach motor element adapter
+        mMotorView.setAdapter(motorAdapter);
+        // Notify adapter that list content changed
+        motorAdapter.notifyDataSetChanged();
     }
 }

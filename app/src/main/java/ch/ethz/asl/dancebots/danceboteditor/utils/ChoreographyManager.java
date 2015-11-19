@@ -3,11 +3,13 @@ package ch.ethz.asl.dancebots.danceboteditor.utils;
 import android.content.Context;
 import android.util.Log;
 
-import java.nio.IntBuffer;
+import java.util.ArrayList;
 
+import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
  * Created by andrin on 31.08.15.
@@ -18,19 +20,49 @@ public class ChoreographyManager {
 
     private Context mContext;
 
-    public Choreography<LedBeatElement> mLedChoregraphy;
-    public Choreography<MotorBeatElement> mMotorChoreography;
+    private Choreography<LedBeatElement> mLedChoregraphy;
+    private Choreography<MotorBeatElement> mMotorChoreography;
 
-    public ChoreographyManager(Context context, BeatGrid beatGrid) {
+    private final ChoreographyViewManager mBeatViews;
+
+    /**
+     * An interface that defines methods that SoundTask implements. An instance of
+     * SoundTask passes itself to an SoundDecodeRunnable instance through the
+     * SoundDecodeRunnable constructor, after which the two instances can access each other's
+     * variables.
+     */
+    public interface ChoreographyViewManager {
+
+        /**
+         * Sets the current led element view adapter
+         * @param ledAdapter
+         */
+        void setLedElementAdapter(BeatElementAdapter ledAdapter);
+
+        /**
+         * Sets the current motor element view adapter
+         * @param motorAdapter
+         */
+        void setMotorElementAdapter(BeatElementAdapter motorAdapter);
+    }
+
+    public ChoreographyManager(Context context, HorizontalRecyclerViews beatViews, DanceBotMusicFile musicFile) {
 
         // Set application context, to load constant colors and strings
         mContext = context;
 
-        mLedChoregraphy = new Choreography<>();
-        initLedBeatElements(beatGrid);
+        // Store the beat view interface object
+        mBeatViews = beatViews;
 
-        mMotorChoreography = new Choreography<>();
-        initMotorBeatElements(beatGrid);
+        ArrayList<LedBeatElement> ledElements = initLedBeatElements(musicFile);
+        mLedChoregraphy = new Choreography<>(ledElements);
+
+        mBeatViews.setLedElementAdapter(new BeatElementAdapter<>(mLedChoregraphy.getBeatElements()));
+
+        ArrayList<MotorBeatElement> motorElements = initMotorBeatElements(musicFile);
+        mMotorChoreography = new Choreography<>(motorElements);
+
+        mBeatViews.setMotorElementAdapter(new BeatElementAdapter<>(mMotorChoreography.getBeatElements()));
     }
 
     public void addSequence(BeatElement mBeatElement) {
@@ -60,38 +92,49 @@ public class ChoreographyManager {
     }
 
     /**
-     * Initialize beat elements after successfully extracting all beats
-     * beatGrid.getBeatBuffer() must be NOT null
-     * @param beatGrid
+     * Initialize led beat elements after successfully extracting all beats
+     * @param musicFile
      */
-    public void initLedBeatElements(BeatGrid beatGrid) {
+    public ArrayList<LedBeatElement> initLedBeatElements(DanceBotMusicFile musicFile) {
 
-        IntBuffer beatBuffer = beatGrid.getBeatBuffer();
-        int numBeats = beatGrid.getNumOfBeats();
+        ArrayList<LedBeatElement> elems = new ArrayList<>();
 
-        if (beatBuffer != null && numBeats > 0) {
+        int[] beatBuffer = musicFile.getBeatBuffer();
+        int numBeats = beatBuffer.length;
+
+        if (numBeats > 0) {
             for (int i = 0; i < numBeats; ++i) {
-                mLedChoregraphy.addBeatElement(new LedBeatElement(mContext, i, beatBuffer.get(i)));
+                elems.add(new LedBeatElement(mContext, i, beatBuffer[i]));
             }
         } else {
             // TODO some error?
             Log.v(LOG_TAG, "Error: " + beatBuffer.toString() + ", Number of beats: " + numBeats);
         }
+
+        return elems;
     }
 
-    public void initMotorBeatElements(BeatGrid beatGrid) {
+    /**
+     * Initialize motor beat elements after successfully extracting all beats
+     * @param musicFile
+     */
+    public ArrayList<MotorBeatElement> initMotorBeatElements(DanceBotMusicFile musicFile) {
 
-        IntBuffer beatBuffer = beatGrid.getBeatBuffer();
-        int numBeats = beatGrid.getNumOfBeats();
+        ArrayList<MotorBeatElement> elems = new ArrayList<>();
 
-        if (beatBuffer != null && numBeats > 0) {
+        int[] beatBuffer = musicFile.getBeatBuffer();
+        int numBeats = beatBuffer.length;
+
+        if (numBeats > 0) {
             for (int i = 0; i < numBeats; ++i) {
-                mMotorChoreography.addBeatElement(new MotorBeatElement(mContext, i, beatBuffer.get(i)));
+                elems.add(new MotorBeatElement(mContext, i, beatBuffer[i]));
             }
         } else {
             // TODO some error?
             Log.v(LOG_TAG, "Error: " + beatBuffer.toString() + ", Number of beats: " + numBeats);
         }
+
+        return elems;
     }
 
 }

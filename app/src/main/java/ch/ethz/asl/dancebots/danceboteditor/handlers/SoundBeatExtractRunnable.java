@@ -37,10 +37,9 @@ public class SoundBeatExtractRunnable implements Runnable {
     public final TaskRunnableBeatExtractionMethods mSoundTask;
 
     /**
-     *
-     * An interface that defines methods that PhotoTask implements. An instance of
-     * PhotoTask passes itself to an PhotoDownloadRunnable instance through the
-     * PhotoDownloadRunnable constructor, after which the two instances can access each other's
+     * An interface that defines methods that SoundTask implements. An instance of
+     * SoundTask passes itself to an SoundBeatExtractRunnable instance through the
+     * SoundDecodeRunnable constructor, after which the two instances can access each other's
      * variables.
      */
     interface TaskRunnableBeatExtractionMethods {

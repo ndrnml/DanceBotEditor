@@ -14,21 +14,20 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 public class SoundDecodeRunnable implements Runnable {
 
     // Sets the log tag
-    private static final String LOG_TAG = "SoundDecodeRunnable";
+    private static final String LOG_TAG = "DECODE_RUNNABLE";
 
     // Constants for indicating the state of the download
     public static final int DECODE_STATE_FAILED = -1;
     public static final int DECODE_STATE_STARTED = 0;
     public static final int DECODE_STATE_COMPLETED = 1;
 
-    // Defines a field that contains the calling object of type PhotoTask.
+    // Defines a field that contains the calling object of type SoundTask.
     private final TaskRunnableDecodeMethods mSoundTask;
 
     /**
-     *
-     * An interface that defines methods that PhotoTask implements. An instance of
-     * PhotoTask passes itself to an PhotoDownloadRunnable instance through the
-     * PhotoDownloadRunnable constructor, after which the two instances can access each other's
+     * An interface that defines methods that SoundTask implements. An instance of
+     * SoundTask passes itself to an SoundDecodeRunnable instance through the
+     * SoundDecodeRunnable constructor, after which the two instances can access each other's
      * variables.
      */
     interface TaskRunnableDecodeMethods {
