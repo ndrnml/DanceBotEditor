@@ -1,12 +1,9 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import android.app.Activity;
-import android.content.pm.LabeledIntent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Handler;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -17,20 +14,17 @@ import java.io.File;
 import java.io.IOException;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
 
 /**
  * Created by andrin on 21.10.15.
  */
-public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, AutomaticScrollHandler.ScrollMediaPlayerMethods {
 
     private static final String LOG_TAG = "DANCE_BOT_MEDIA_PLAYER";
 
     private Activity mActivity;
     private SeekBar mSeekBar;
-    private Handler mSeekBarHandler;
-    private AutomaticScrollHandler mScrollHandler;
     private MediaPlayer mMediaPlayer;
     private boolean mIsReady = false;
     private boolean mIsPlaying = false; // TODO change to mMediaPlayer.isPlaying(); ?
@@ -39,9 +33,6 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
     private int mTotalTime;
     private int mNumBeats;
     private DanceBotMusicFile mMusicFile;
-
-    private RecyclerView mMotorView;
-    private RecyclerView mLedView;
 
     public DanceBotMediaPlayer(Activity activity) {
 
@@ -53,14 +44,6 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
         // Attach on click listener to play/pause button
         Button btn = (Button) mActivity.findViewById(R.id.btn_play);
         btn.setOnClickListener(this);
-
-        // Bind the beat element views to the media player
-        mMotorView = (RecyclerView) mActivity.findViewById(R.id.motor_element_list);
-        mLedView = (RecyclerView) mActivity.findViewById(R.id.led_element_list);
-
-        // Initialize seek bar handler
-        mSeekBarHandler = new Handler();
-        mScrollHandler = new AutomaticScrollHandler();
     }
 
     public void openMusicFile(DanceBotMusicFile musicFile) {
@@ -87,14 +70,33 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
         mSeekBar.setClickable(true);
         mSeekBar.setOnSeekBarChangeListener(this);
         mSeekBar.setMax(mMediaPlayer.getDuration());
-
     }
 
+    @Override
     public void preparePlayback() {
         // Store other important music file properties
         mTotalTime = mMusicFile.getDurationInMiliSecs();
         mNumBeats = mMusicFile.getNumberOfBeatsDetected();
-        mSeekBarHandler.postDelayed(updateSongTime, 100);
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return mIsPlaying;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return mMediaPlayer.getCurrentPosition();
+    }
+
+    @Override
+    public void setSeekBarProgress(int progress) {
+        mSeekBar.setProgress(progress);
+    }
+
+    @Override
+    public SeekBar getSeekBarView() {
+        return mSeekBar;
     }
 
     public void pause() {
@@ -129,24 +131,21 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
 
         Log.d(LOG_TAG, "seekbar: on progress changed");
 
+        // TODO: Implement composite on progress changed listener!
+        DanceBotEditorManager.getInstance().notifyAutomaticScrollHandler();
+
         if (fromUser) {
             mMediaPlayer.seekTo(progress);
             mSeekbarChanged = true;
-            //mSeekBar.setProgress(progress); // TODO: do I need this?
-            /*BeatInfoView biv = (BeatInfoView)findViewById(R.id.beat_info_view);
-            biv.updateCursor(progress, m_seekbar.getMax());
-            biv.invalidate();*/
         }
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-
     }
 
     public void setState(boolean isPlaying) {
@@ -156,7 +155,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
     public boolean getState() {
         return mIsPlaying;
     }
-
+/*
     private Runnable updateSongTime = new Runnable() {
 
         @Override
@@ -185,7 +184,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
                 //mLedView.scrollToPosition(currentBeatElement);
 
                 // TODO
-                /*
+
                 BeatElementAdapter adapter = (BeatElementAdapter) mMotorView.getAdapter();
 
                 // TODO
@@ -194,7 +193,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
                 }
                 if (currentBeatElement - 1 > 0 && currentBeatElement - 1 < adapter.getItemCount()) {
                     adapter.getItem(currentBeatElement - 1).setFocus(false);
-                }*/
+                }
 
                 Log.d(LOG_TAG, "update scroll to element: " + currentBeatElement);
 
@@ -202,5 +201,5 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
 
             mSeekBarHandler.postDelayed(this, 100);
         }
-    };
+    };*/
 }

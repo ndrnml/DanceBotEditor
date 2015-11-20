@@ -3,6 +3,7 @@ package ch.ethz.asl.dancebots.danceboteditor.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import ch.ethz.asl.dancebots.danceboteditor.R;
  */
 public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adapter<BeatElementAdapter.SimpleViewHolder> {
 
+    private final Context mContext;
     private ArrayList<T> mBeatElements;
     private Toast mToast;
 
@@ -38,7 +40,9 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         }
     }
 
-    public BeatElementAdapter(ArrayList<T> elems) {
+    public BeatElementAdapter(Context context, ArrayList<T> elems) {
+
+        mContext = context;
         mBeatElements = elems;
     }
 
@@ -63,10 +67,10 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
             @Override
             public void onClick(View v) {
 
-                Context c = parent.getContext();
                 BeatElementMenuDialog dialog = new BeatElementMenuDialog();
-                dialog.initializeMenu(BeatElementAdapter.this, mBeatElements.get(vh.getPosition()));
-                dialog.show(((Activity) c).getFragmentManager(), "element_menu");
+
+                dialog.initializeMenu(BeatElementAdapter.this, mBeatElements.get(vh.getAdapterPosition()));
+                dialog.show(((Activity) mContext).getFragmentManager(), "element_menu");
             }
         });
 
@@ -93,12 +97,8 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         // Populate the data into the template view using the data object
         holder.mTextView.setText(Integer.toString(position)/*mBeatElements.get(position).getMotionType().getTag()*/);
 
-        if (mBeatElements.get(position).getFocus()) { // TODO remove, if not needed
-            holder.mTextView.setBackgroundColor(Color.RED);
-        } else {
-            // Stylize list item according to type
-            holder.mTextView.setBackgroundColor(mBeatElements.get(position).getMotionType().getColor());
-        }
+        // Stylize list item according to type
+        holder.mTextView.setBackgroundColor(mBeatElements.get(position).getMotionType().getColor());
     }
 
     @Override

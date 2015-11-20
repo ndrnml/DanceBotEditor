@@ -6,6 +6,7 @@ import android.util.Pair;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
 import ch.ethz.asl.dancebots.danceboteditor.ui.FloatSelectionMenu;
@@ -18,6 +19,7 @@ import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
  * Created by andrin on 09.07.15.
  */
 public class DanceBotEditorManager {
+
 
     // Possible states of the editor
     public enum State {
@@ -37,6 +39,7 @@ public class DanceBotEditorManager {
     private ChoreographyManager mChoreoManager;
     private DanceBotMediaPlayer mMediaPlayer;
     private HorizontalRecyclerViews mBeatViews;
+    private AutomaticScrollHandler mAutomaticScrollHandler;
 
     /**
      * TODO
@@ -106,6 +109,13 @@ public class DanceBotEditorManager {
         mChoreoLengthMenu = new IntegerSelectionMenu(generateIntegersInRange(CHOREO_LENGTH_MIN, CHOREO_LENGTH_MAX, CHOREO_LENGTH_STEP));
     }
 
+
+    public void initAutomaticScrollHandler() {
+        mAutomaticScrollHandler = new AutomaticScrollHandler(mBeatViews, mMediaPlayer);
+    }
+    public void notifyAutomaticScrollHandler() {
+        mAutomaticScrollHandler.startListening();
+    }
 
     /**
      * Based on the detected beats, create a new choreography manager

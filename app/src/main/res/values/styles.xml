@@ -7,6 +7,12 @@
 
     <style name="HorizontalListView">
         <item name="android:orientation">horizontal</item>
+
+        <item name="android:scrollbarAlwaysDrawHorizontalTrack">true</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:scrollbars">horizontal</item>
+        <item name="android:fadeScrollbars">false</item>
+        <item name="android:scrollbarThumbHorizontal">@drawable/scroll_bar</item>
     </style>
 
 </resources>

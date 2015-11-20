@@ -45,7 +45,9 @@ public class EditorActivity extends Activity {
 
         // Project file initialization
         mProjectFile = DanceBotEditorManager.getInstance();
-        mProjectFile.init(getApplicationContext());
+
+        // Global application context is this (EditorActivity)
+        mProjectFile.init(this);
         mProjectFile.initSelectionMenus();
 
         // Initialize and setup recycler beat element views

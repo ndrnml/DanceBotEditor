@@ -42,30 +42,29 @@
         android:id="@+id/id_song_duration" />
 
     <LinearLayout
+        android:id="@+id/beat_element_lists"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/beat_element_lists">
+        android:splitMotionEvents="false"
+        android:theme="@style/HorizontalListView">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/motor_element_list"
-            style="@style/HorizontalListView"
             android:layout_width="wrap_content"
             android:layout_height="200dp"
             android:drawSelectorOnTop="true"
             android:background="@color/item_border_color"
-            android:scrollbarAlwaysDrawHorizontalTrack="true"
-            android:scrollbars="horizontal"
             tools:context=".EditorActivity" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/led_element_list"
-            style="@style/HorizontalListView"
             android:layout_width="wrap_content"
             android:layout_height="200dp"
             android:drawSelectorOnTop="true"
             android:background="@color/item_border_color"
             tools:context=".EditorActivity" />
+
     </LinearLayout>
 
     <SeekBar

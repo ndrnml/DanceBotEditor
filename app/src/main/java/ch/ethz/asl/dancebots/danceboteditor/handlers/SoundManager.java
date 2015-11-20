@@ -15,6 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
@@ -160,7 +161,9 @@ public class SoundManager {
                             dialog.dismiss();
                         }
 
+                        // TODO: is this a good place to instantiate these things?
                         DanceBotEditorManager.getInstance().initChoreography();
+                        DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
 
                         Log.v(LOG_TAG, "handleMessage: TASK_COMPLETE");
                         break;

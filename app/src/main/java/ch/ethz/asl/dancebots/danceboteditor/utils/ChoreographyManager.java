@@ -57,12 +57,12 @@ public class ChoreographyManager {
         ArrayList<LedBeatElement> ledElements = initLedBeatElements(musicFile);
         mLedChoregraphy = new Choreography<>(ledElements);
 
-        mBeatViews.setLedElementAdapter(new BeatElementAdapter<>(mLedChoregraphy.getBeatElements()));
+        mBeatViews.setLedElementAdapter(new BeatElementAdapter<>(mContext, mLedChoregraphy.getBeatElements()));
 
         ArrayList<MotorBeatElement> motorElements = initMotorBeatElements(musicFile);
         mMotorChoreography = new Choreography<>(motorElements);
 
-        mBeatViews.setMotorElementAdapter(new BeatElementAdapter<>(mMotorChoreography.getBeatElements()));
+        mBeatViews.setMotorElementAdapter(new BeatElementAdapter<>(mContext, mMotorChoreography.getBeatElements()));
     }
 
     public void addSequence(BeatElement mBeatElement) {
