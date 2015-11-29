@@ -23,9 +23,9 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
     private static final String LOG_TAG = "DANCE_BOT_MEDIA_PLAYER";
 
-    private Activity mActivity;
+    private final Activity mActivity;
     private SeekBar mSeekBar;
-    private MediaPlayer mMediaPlayer;
+    private final MediaPlayer mMediaPlayer;
     private boolean mIsReady = false;
     private boolean mIsPlaying = false; // TODO change to mMediaPlayer.isPlaying(); ?
     private boolean mSeekbarChanged = false;
@@ -173,7 +173,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
             // Set playing flag
             mIsPlaying = false;
             mPlayPauseButton.setText(R.string.txt_play);
-            // Rewind media player to the startu
+            // Rewind media player to the start
             mMediaPlayer.seekTo(0);
         }
     }

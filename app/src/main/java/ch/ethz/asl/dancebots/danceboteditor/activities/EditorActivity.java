@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundProcessingTask;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SaveMP3Handler;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
@@ -88,49 +87,15 @@ public class EditorActivity extends Activity {
 
             Log.v(LOG_TAG, "resumed EditorActivity with a song loaded");
 
-            // TODO REMOVE!
-            boolean USE_DUMMY_DATA = false;
-
-            if (USE_DUMMY_DATA)
-            {
-                /**
-                 * DUMMY DATA CONSTRUCTION
-                 */
-                /*int NUM_BEATS = 300;
-                int SAMPLE_RATE = 44100;
-                int DURATION = 180;
-                int TOTAL_SAMPLES = DURATION * SAMPLE_RATE;
-                int SPACING = TOTAL_SAMPLES / NUM_BEATS;
-
-                mProjectFile.initChoreography();
-                for (int i = 0; i < NUM_BEATS; ++i) {
-                    mProjectFile.getChoreoManager().mMotorChoreography.mBeatElements.add(new MotorBeatElement(getApplicationContext(), i, SPACING * i));
-                    mProjectFile.getChoreoManager().mLedChoregraphy.mBeatElements.add(new LedBeatElement(getApplicationContext(), i, SPACING * i));
-                }
-
-                mProjectFile.getDanceBotMusicFile().setNumberOfBeatsDected(NUM_BEATS);*/
-                /**
-                 * END DUMMY DATA CONSTRUCTION
-                 */
-            } else {
-
-                // Perform beat extraction in async task
-                if (false) {
-                    SoundProcessingTask soundProcessingTask = new SoundProcessingTask(EditorActivity.this, mBeatElementViews);
-                    soundProcessingTask.execute(0);
-
-                } else {
-
-                    SoundManager.startDecoding(this, mProjectFile.getDanceBotMusicFile(), null, 4);
-                }
-            }
+            // TODO: Test with 1 thread, compare results
+            // Perform beat extraction in async task
+            SoundManager.startDecoding(this, mProjectFile.getDanceBotMusicFile(), null, 4);
 
             // TODO remove or change this (THIS WAS ADDED FOR THE LONG CLICK CAPABILITY)
             //registerForContextMenu(mMotorView);
 
             // Set the editor state to decoding (sensitive phase)
             mProjectFile.setEditorState(DanceBotEditorManager.State.EDITING);
-
         }
     }
 

@@ -9,6 +9,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import ch.ethz.asl.dancebots.danceboteditor.utils.BeatExtractor;
+import ch.ethz.asl.dancebots.danceboteditor.utils.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
@@ -43,6 +44,9 @@ public class SoundTask implements
     private ArrayList<Integer> mBeatExtractionRunnablesStatus;
     private ArrayList<IntBuffer> mBeatBuffers;
 
+    // Reference to runnable object that encodes raw song data
+    private Runnable mEncodeRunnable;
+
     // An object that contains the ThreadPool singleton.
     private SoundManager sSoundManager;
 
@@ -55,8 +59,11 @@ public class SoundTask implements
 
         t1 = System.currentTimeMillis();
 
-        // Create the runnables
+        // Create the decode Runnable
         mDecodeRunnable = new SoundDecodeRunnable(this);
+
+        // Create the encode Runnable
+        mEncodeRunnable = new SoundEncodeRunnable(this);
 
         /*
          * Creates the initial beat extraction runnables
@@ -99,6 +106,15 @@ public class SoundTask implements
         mSoundTaskProgressDialog.setCanceledOnTouchOutside(false);
         mSoundTaskProgressDialog.setIndeterminate(true);
         mSoundTaskProgressDialog.setProgress(0);
+    }
+
+    /**
+     * Initialize the encoder task
+     * @param activity
+     * @param musicFile
+     * @param choreoManager
+     */
+    public void initializeEncoderTask(Activity activity, DanceBotMusicFile musicFile, ChoreographyManager choreoManager) {
     }
 
     public ArrayList<Runnable> getSoundBeatExtractionRunnables() {
@@ -216,6 +232,10 @@ public class SoundTask implements
 
     public ProgressDialog getProgressDialog() {
         return mSoundTaskProgressDialog;
+    }
+
+    public Runnable getEncodeRunnable() {
+        return mEncodeRunnable;
     }
 
     /**

@@ -14,6 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import ch.ethz.asl.dancebots.danceboteditor.utils.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
@@ -244,7 +245,7 @@ public class SoundManager {
             numThreads = 1;
         }
 
-        // If the queue was empty, create a new task instead.
+        // Create a new sound task
         SoundTask decodeTask = new SoundTask(numThreads);
 
         // Initializes the decoding task
@@ -262,6 +263,27 @@ public class SoundManager {
 
         // Returns a task object, either newly-created or one from the task pool
         return decodeTask;
+    }
+
+    static public SoundTask startEncoding(Activity activity, DanceBotMusicFile musicFile, ChoreographyManager choreoManager) {
+
+        // Ensure that at least one Thread is invoked
+        int numThreads = 1;
+
+        // Create new sound task
+        SoundTask encodingTask = new SoundTask(numThreads);
+
+        // Initialize the encoding task
+        encodingTask.initializeEncoderTask(activity, musicFile, choreoManager);
+
+        /*
+         * Executes the tasks' encode Runnable in order to encode raw music data and choreography
+         * data.
+         */
+        Thread encodeThread = new Thread(encodingTask.getEncodeRunnable());
+
+        // Returns the newly created task object
+        return encodingTask;
     }
 
     /**
