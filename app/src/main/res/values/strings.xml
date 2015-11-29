@@ -20,4 +20,6 @@
     <string name="txt_cancel">Abbrechen</string>
     <string name="txt_submenu_title">SubmenuTitle</string>
     <string name="txt_velocity_right">Geschwindigkeit Rechts</string>
+    <string name="txt_play">Play</string>
+    <string name="txt_pause">Pause</string>
 </resources>

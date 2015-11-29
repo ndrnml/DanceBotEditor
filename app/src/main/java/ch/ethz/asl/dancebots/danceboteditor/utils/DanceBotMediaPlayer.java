@@ -131,7 +131,13 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
             // Get media player play/pause button
             mPlayPauseButton = (Button) v;
-            mPlayPauseButton.setText(mIsPlaying ? "Pause" : "Play");
+
+            // Update button text value
+            if (mIsPlaying) {
+                mPlayPauseButton.setText(R.string.txt_pause);
+            } else {
+                mPlayPauseButton.setText(R.string.txt_play);
+            }
         }
     }
 
@@ -166,7 +172,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         if (mPlayPauseButton != null) {
             // Set playing flag
             mIsPlaying = false;
-            mPlayPauseButton.setText(mIsPlaying ? "Pause" : "Play");
+            mPlayPauseButton.setText(R.string.txt_play);
             // Rewind media player to the startu
             mMediaPlayer.seekTo(0);
         }
