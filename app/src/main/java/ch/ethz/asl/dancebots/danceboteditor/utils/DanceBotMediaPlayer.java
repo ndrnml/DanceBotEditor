@@ -19,7 +19,7 @@ import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
 /**
  * Created by andrin on 21.10.15.
  */
-public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, AutomaticScrollHandler.ScrollMediaPlayerMethods {
+public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener, AutomaticScrollHandler.ScrollMediaPlayerMethods {
 
     private static final String LOG_TAG = "DANCE_BOT_MEDIA_PLAYER";
 
@@ -33,6 +33,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
     private int mTotalTime;
     private int mNumBeats;
     private DanceBotMusicFile mMusicFile;
+    private Button mPlayPauseButton;
 
     public DanceBotMediaPlayer(Activity activity) {
 
@@ -40,6 +41,8 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
 
         // Initialize media player
         mMediaPlayer = new MediaPlayer();
+        // Attach on completion listener
+        mMediaPlayer.setOnCompletionListener(this);
 
         // Attach on click listener to play/pause button
         Button btn = (Button) mActivity.findViewById(R.id.btn_play);
@@ -112,17 +115,23 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
 
                 mMediaPlayer.start();
 
-                // Start seek bar handler
+                // Set seek bar progress to current song position
                 int currentTime = mMediaPlayer.getCurrentPosition();
                 mSeekBar.setProgress(currentTime);
+
+                // Notify automatic scroll listener when media player progressed
+                if (DanceBotEditorManager.getInstance().getAutomaticScrollHandler() != null) {
+                    DanceBotEditorManager.getInstance().notifyAutomaticScrollHandler();
+                }
 
             } else {
 
                 mMediaPlayer.pause();
             }
 
-            Button btn = (Button) v;
-            btn.setText(mIsPlaying ? "Pause" : "Play");
+            // Get media player play/pause button
+            mPlayPauseButton = (Button) v;
+            mPlayPauseButton.setText(mIsPlaying ? "Pause" : "Play");
         }
     }
 
@@ -131,12 +140,15 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
 
         Log.d(LOG_TAG, "seekbar: on progress changed");
 
-        // TODO: Implement composite on progress changed listener!
-        DanceBotEditorManager.getInstance().notifyAutomaticScrollHandler();
+        // Notify automatic scroll listener when media player progressed
+        if (DanceBotEditorManager.getInstance().getAutomaticScrollHandler() != null) {
+            DanceBotEditorManager.getInstance().notifyAutomaticScrollHandler();
+        }
 
+        // If user interaction, set media player progress
         if (fromUser) {
+            Log.d(LOG_TAG, "fromUser: on progress changed");
             mMediaPlayer.seekTo(progress);
-            mSeekbarChanged = true;
         }
     }
 
@@ -148,13 +160,18 @@ public class DanceBotMediaPlayer implements View.OnClickListener, SeekBar.OnSeek
     public void onStopTrackingTouch(SeekBar seekBar) {
     }
 
-    public void setState(boolean isPlaying) {
-        mIsPlaying = isPlaying;
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+
+        if (mPlayPauseButton != null) {
+            // Set playing flag
+            mIsPlaying = false;
+            mPlayPauseButton.setText(mIsPlaying ? "Pause" : "Play");
+            // Rewind media player to the startu
+            mMediaPlayer.seekTo(0);
+        }
     }
 
-    public boolean getState() {
-        return mIsPlaying;
-    }
 /*
     private Runnable updateSongTime = new Runnable() {
 

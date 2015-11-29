@@ -14,7 +14,7 @@ public class AutomaticScrollHandler implements Runnable {
     // TODO FINISH THIS CLASS, make use of stopListening
     private static final String LOG_TAG = "SCROLL_HANDLER";
 
-    private final int TIME_TO_LIVE = 2000;
+    private final int TIME_TO_LIVE = 10000;
 
     private long mLastInteraction;
 
@@ -23,6 +23,8 @@ public class AutomaticScrollHandler implements Runnable {
     private ScrollViewMethods mBeatViews;
 
     private ScrollMediaPlayerMethods mDanceBotMediaPlayer;
+
+    private boolean mIsRunning;
 
     /**
      * INTERFACE
@@ -55,12 +57,21 @@ public class AutomaticScrollHandler implements Runnable {
         mScrollHandler = new Handler();
 
         mLastInteraction = System.currentTimeMillis();
-
-        startListening();
     }
 
     public void startListening() {
-        mScrollHandler.postDelayed(this, 0);
+
+        // Check if handler not already running to prevent postDelayed flood
+        if (!mIsRunning) {
+            // Post this handler runnable for later execution
+            mScrollHandler.postDelayed(this, 0);
+
+            // Update last interaction time
+            mLastInteraction = System.currentTimeMillis();
+
+            // Set running flag
+            mIsRunning = true;
+        }
     }
 
     private void stopListening() {
@@ -72,9 +83,21 @@ public class AutomaticScrollHandler implements Runnable {
 
         Log.d(LOG_TAG, "run automatic scroll handler");
 
-        if (System.currentTimeMillis() - mLastInteraction > TIME_TO_LIVE) {
-            stopListening();
-            return;
+        // Check if media player is playing the song
+        if (!mDanceBotMediaPlayer.isPlaying()) {
+
+            Log.d(LOG_TAG, "song is not playing");
+
+            // Check for user inactivity only when not playing a song
+            if (System.currentTimeMillis() - mLastInteraction > TIME_TO_LIVE) {
+
+                Log.d(LOG_TAG, "time to live is reached, stop automatic scroll handler");
+
+                // If user has been inactive for a certain time, stop the scroll handler
+                stopListening();
+                mIsRunning = false;
+                return;
+            }
         }
 
         // Update seek bar

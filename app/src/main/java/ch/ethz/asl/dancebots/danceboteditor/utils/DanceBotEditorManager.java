@@ -20,7 +20,6 @@ import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
  */
 public class DanceBotEditorManager {
 
-
     // Possible states of the editor
     public enum State {
         START, NEW, EDITING
@@ -234,5 +233,8 @@ public class DanceBotEditorManager {
     }
     public DanceBotMediaPlayer getMediaPlayer() {
         return mMediaPlayer;
+    }
+    public AutomaticScrollHandler getAutomaticScrollHandler() {
+        return mAutomaticScrollHandler;
     }
 }
