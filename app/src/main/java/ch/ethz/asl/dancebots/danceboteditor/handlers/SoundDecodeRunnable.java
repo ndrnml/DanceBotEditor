@@ -13,7 +13,7 @@ public class SoundDecodeRunnable implements Runnable {
     // Sets the log tag
     private static final String LOG_TAG = "DECODE_RUNNABLE";
 
-    // Constants for indicating the state of the download
+    // Constants for indicating the state of the decoding
     public static final int DECODE_STATE_FAILED = -1;
     public static final int DECODE_STATE_STARTED = 0;
     public static final int DECODE_STATE_COMPLETED = 1;

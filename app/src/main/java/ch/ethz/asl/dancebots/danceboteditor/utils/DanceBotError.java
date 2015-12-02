@@ -14,4 +14,5 @@ public interface DanceBotError {
     int DECODING_ERR = 1;
     int BEAT_EXTRACTION_ERR = 2;
 
+    int WRITE_ERROR = 3;
 }

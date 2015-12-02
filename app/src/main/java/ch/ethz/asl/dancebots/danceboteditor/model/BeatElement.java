@@ -97,10 +97,9 @@ public abstract class BeatElement {
 
     public abstract boolean hasChoreography();
 
-    ///////////
-    // SETTERS
-    ///////////
-
+    /*********
+     * SETTERS
+     *********/
     public void setFocus(boolean isFocused) {
         mIsFocused = isFocused;
     }
@@ -147,5 +146,8 @@ public abstract class BeatElement {
     }
     public boolean getFocus() {
         return mIsFocused;
+    }
+    public long getSamplePosition() {
+        return mSamplePosition;
     }
 }

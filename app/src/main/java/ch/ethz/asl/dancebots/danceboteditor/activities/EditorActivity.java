@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import ch.ethz.asl.dancebots.danceboteditor.handlers.SaveMP3Handler;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
@@ -28,7 +27,7 @@ public class EditorActivity extends Activity {
 
     private static final int PICK_SONG_REQUEST = 1;
 
-    private DanceBotEditorManager mProjectFile;
+    private DanceBotEditorManager mProjectManager;
     private HorizontalRecyclerViews mBeatElementViews;
 
     @Override
@@ -43,21 +42,21 @@ public class EditorActivity extends Activity {
         // TODO: initialize dance bot project file, beat grid, music files etc...
 
         // Project file initialization
-        mProjectFile = DanceBotEditorManager.getInstance();
+        mProjectManager = DanceBotEditorManager.getInstance();
 
         // Global application context is this (EditorActivity)
-        mProjectFile.init(this);
-        mProjectFile.initSelectionMenus();
+        mProjectManager.init(this);
+        mProjectManager.initSelectionMenus();
 
         // Initialize and setup recycler beat element views
         mBeatElementViews = new HorizontalRecyclerViews(EditorActivity.this);
 
         // Store global reference to HorizontalRecyclerViews beatViews
-        mProjectFile.setBeatViews(mBeatElementViews);
+        mProjectManager.setBeatViews(mBeatElementViews);
 
         // Create new media player instance, be sure to pass the current activity to resolve
         // all necessary view elements
-        mProjectFile.attachMediaPlayer(new DanceBotMediaPlayer(this));
+        mProjectManager.attachMediaPlayer(new DanceBotMediaPlayer(this));
     }
 
     @Override
@@ -67,7 +66,7 @@ public class EditorActivity extends Activity {
 
         // TODO: DO all initialization stuff here?
 
-        if (mProjectFile.getEditorState() == DanceBotEditorManager.State.START) {
+        if (mProjectManager.getEditorState() == DanceBotEditorManager.State.START) {
 
             // Start intent that loads the editor view and starts pick-song-activity
             Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
@@ -83,19 +82,19 @@ public class EditorActivity extends Activity {
         // When a song is selected, start decoding and beat extraction in the background
         // Skip this process, if the beat extraction has already been performed
         // TODO: Check that the beat extraction was performed for the currently selected song
-        if (mProjectFile.getEditorState() == DanceBotEditorManager.State.NEW) {
+        if (mProjectManager.getEditorState() == DanceBotEditorManager.State.NEW) {
 
             Log.v(LOG_TAG, "resumed EditorActivity with a song loaded");
 
             // TODO: Test with 1 thread, compare results
             // Perform beat extraction in async task
-            SoundManager.startDecoding(this, mProjectFile.getDanceBotMusicFile(), null, 4);
+            SoundManager.startDecoding(this, mProjectManager.getDanceBotMusicFile(), null, 4);
 
             // TODO remove or change this (THIS WAS ADDED FOR THE LONG CLICK CAPABILITY)
             //registerForContextMenu(mMotorView);
 
             // Set the editor state to decoding (sensitive phase)
-            mProjectFile.setEditorState(DanceBotEditorManager.State.EDITING);
+            mProjectManager.setEditorState(DanceBotEditorManager.State.EDITING);
         }
     }
 
@@ -151,10 +150,10 @@ public class EditorActivity extends Activity {
 
                 // Selected music file is attached to the current project file
                 DanceBotMusicFile dbMusicFile = new DanceBotMusicFile(songTitle, songArtist, songPath, songDuration);
-                mProjectFile.attachMusicFile(dbMusicFile);
+                mProjectManager.attachMusicFile(dbMusicFile);
 
                 // Notify project file handler that a music file was picked
-                mProjectFile.musicFileSelected = true;
+                mProjectManager.musicFileSelected = true;
 
                 // Update music file information
                 // Update Title
@@ -171,13 +170,13 @@ public class EditorActivity extends Activity {
 
                 // Update Duration view
                 TextView selectedSongDuration = (TextView) findViewById(R.id.id_song_duration);
-                selectedSongDuration.setText(mProjectFile.getDanceBotMusicFile().getDurationReadable());
+                selectedSongDuration.setText(mProjectManager.getDanceBotMusicFile().getDurationReadable());
 
                 // Update Editor activity state
-                mProjectFile.setEditorState(DanceBotEditorManager.State.NEW);
+                mProjectManager.setEditorState(DanceBotEditorManager.State.NEW);
 
                 // Open file in media player
-                mProjectFile.getMediaPlayer().openMusicFile(dbMusicFile);
+                mProjectManager.getMediaPlayer().openMusicFile(dbMusicFile);
 
             } else {
 
@@ -185,7 +184,7 @@ public class EditorActivity extends Activity {
                 Log.v(LOG_TAG, "resultCode != RESULT_OK");
 
                 // TODO finish activity
-                mProjectFile.setEditorState(DanceBotEditorManager.State.EDITING);
+                mProjectManager.setEditorState(DanceBotEditorManager.State.EDITING);
                 finish();
 
             }
@@ -218,7 +217,7 @@ public class EditorActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                mProjectFile.setEditorState(DanceBotEditorManager.State.NEW);
+                mProjectManager.setEditorState(DanceBotEditorManager.State.NEW);
                 finish();
             }
         });
@@ -259,8 +258,10 @@ public class EditorActivity extends Activity {
 
             case R.id.editor_action_save:
 
-                SaveMP3Handler sv = new SaveMP3Handler(EditorActivity.this);
-                sv.execute(mProjectFile);
+                //SaveMP3Handler sv = new SaveMP3Handler(EditorActivity.this);
+                //sv.execute(mProjectManager);
+
+                SoundManager.startEncoding(this, mProjectManager.getDanceBotMusicFile(), mProjectManager.getChoreoManager());
 
                 return true;
 

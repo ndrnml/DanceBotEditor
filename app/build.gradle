@@ -30,7 +30,8 @@ android {
 
     /* TODO: THIS IS A WORKAROUND */
     task ndkBuild(type: Exec) {
-        commandLine '/home/andrin/Android/Ndk/ndk-build', '-B', '-C', file('src/main/jni').absolutePath
+        commandLine '/home/andrin/Android/Ndk/ndk-build', '-C', file('src/main/jni').absolutePath
+        /*commandLine '/home/andrin/Android/Ndk/ndk-build', '-B', '-C', file('src/main/jni').absolutePath*/
     }
 
     tasks.withType(JavaCompile) {

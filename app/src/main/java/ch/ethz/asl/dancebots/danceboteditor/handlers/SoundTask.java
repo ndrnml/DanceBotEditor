@@ -8,8 +8,11 @@ import java.lang.ref.WeakReference;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
+import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.utils.BeatExtractor;
 import ch.ethz.asl.dancebots.danceboteditor.utils.ChoreographyManager;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
@@ -18,7 +21,8 @@ import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
  */
 public class SoundTask implements
         SoundDecodeRunnable.TaskRunnableDecodeMethods,
-        SoundBeatExtractRunnable.TaskRunnableBeatExtractionMethods {
+        SoundBeatExtractRunnable.TaskRunnableBeatExtractionMethods,
+        SoundEncodeRunnable.TaskRunnableEncodeMethods {
 
     private static final String LOG_TAG = "SOUND_TASK";
 
@@ -26,6 +30,9 @@ public class SoundTask implements
 
     // The DanceBotMusicFile, which keeps all relevant information about the selected song
     private DanceBotMusicFile mMusicFile;
+
+    // The ChoreographyManager, which keeps all relevant information about the selected choreography
+    private ChoreographyManager mChoreoManager;
 
     // The width and height of the decoded image
     private long mSoundFileHandler;
@@ -115,6 +122,20 @@ public class SoundTask implements
      * @param choreoManager
      */
     public void initializeEncoderTask(Activity activity, DanceBotMusicFile musicFile, ChoreographyManager choreoManager) {
+
+        // Sets the selected dance bot editor music file
+        mMusicFile = musicFile;
+
+        // Sets the selected choreography manager
+        mChoreoManager = choreoManager;
+
+        // Initialize progress dialog on UI thread
+        mSoundTaskProgressDialog = new ProgressDialog(activity);
+        mSoundTaskProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mSoundTaskProgressDialog.setCancelable(false);
+        mSoundTaskProgressDialog.setCanceledOnTouchOutside(false);
+        mSoundTaskProgressDialog.setIndeterminate(true);
+        mSoundTaskProgressDialog.setProgress(0);
     }
 
     public ArrayList<Runnable> getSoundBeatExtractionRunnables() {
@@ -125,17 +146,10 @@ public class SoundTask implements
         sSoundManager.handleState(this, state);
     }
 
-    private boolean allBeatExtractionRunnablesDone() {
-        for (int status : mBeatExtractionRunnablesStatus) {
-            if (status < 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private void postProcessExtractedBeats() {
 
+        // TODO: What happens if one worker Thread gets lost?
+        // Main decoder Thread actively waits for worker (BeatExtraction) Threads to finish
         while (!allBeatExtractionRunnablesDone()) {
 
             // TODO: interrupt thread?
@@ -174,9 +188,29 @@ public class SoundTask implements
          */
         collectExtractedBeats();
         Log.v(LOG_TAG, "Collecting extracted beats done.");
+
+        /*
+         * Notify SoundManager that beat extraction is complete now.
+         * Only the SoundManager can modify views, thus all view related initializations have to be
+         * performed in the main loop thread
+         */
+        handleState(SoundManager.BEAT_EXTRACTION_COMPLETE);
     }
 
-    /*
+    /**
+     * TODO
+     * @return
+     */
+    private boolean allBeatExtractionRunnablesDone() {
+        for (int status : mBeatExtractionRunnablesStatus) {
+            if (status < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * This method provides functionality to collect the extracted beats
      */
     private void collectExtractedBeats() {
@@ -246,6 +280,10 @@ public class SoundTask implements
         return (int) (fraction * 100);
     }
 
+    /*******************************
+     * SoundDecodeRunnable Interface
+     *******************************/
+
     @Override
     public void setDecodeThread(Thread thread) {
         synchronized (sSoundManager) {
@@ -305,6 +343,10 @@ public class SoundTask implements
         return mMusicFile;
     }
 
+    /************************************
+     * SoundBeatExtractRunnable Interface
+     ************************************/
+
     /**
      * For each Thread assign a beat buffer with the corresponding Thread ID
      * @param threadId The Thread ID which belongs to the beat buffer
@@ -335,4 +377,63 @@ public class SoundTask implements
         return mMusicFile.getSampleRate();
     }
 
+    /*******************************
+     * SoundEncodeRunnable Interface
+     *******************************/
+
+    @Override
+    public void setEncodeThread(Thread thread) {
+        synchronized (sSoundManager) {
+            mThreadThis = thread;
+        }
+    }
+
+    /**
+     *
+     * @param state
+     */
+    @Override
+    public void handleEncodeState(int state) {
+
+        int soundTaskState;
+
+        // Converts the encode state to the overall state
+        switch(state) {
+
+            case SoundEncodeRunnable.ENCODE_STATE_COMPLETED:
+                soundTaskState = SoundManager.TASK_COMPLETE;
+                break;
+
+            case SoundEncodeRunnable.ENCODE_STATE_FAILED:
+                soundTaskState = SoundManager.ENCODING_FAILED;
+                break;
+
+            default:
+                soundTaskState = SoundManager.ENCODING_STARTED;
+                break;
+        }
+
+        // Passes the state to the ThreadPool object.
+        handleState(soundTaskState);
+    }
+
+    @Override
+    public ArrayList<MotorBeatElement> getMotorElements() {
+        return mChoreoManager.getMotorBeatElements();
+    }
+
+    @Override
+    public ArrayList<LedBeatElement> getLedElements() {
+        return mChoreoManager.getLedBeatElements();
+    }
+
+    @Override
+    public int getSamplingRate() {
+        return mMusicFile.getSampleRate();
+    }
+
+    @Override
+    public int getNumBeats() {
+        return mMusicFile.getNumberOfBeatsDetected();
+    }
 }

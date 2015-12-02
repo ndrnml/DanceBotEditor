@@ -137,4 +137,11 @@ public class ChoreographyManager {
         return elems;
     }
 
+    public ArrayList<MotorBeatElement> getMotorBeatElements() {
+        return mMotorChoreography.getBeatElements();
+    }
+
+    public ArrayList<LedBeatElement> getLedBeatElements() {
+        return mLedChoregraphy.getBeatElements();
+    }
 }

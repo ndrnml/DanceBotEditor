@@ -63,7 +63,7 @@ public class SaveMP3Handler extends AsyncTask<DanceBotEditorManager, Void, Integ
             fos.close();
         }
         catch (java.io.IOException e) {
-            Log.e("PictureDemo", "Exception in photoCallback", e);
+            Log.d(LOG_TAG, "Exception in file writing", e);
         }
 
         return DanceBotError.NO_ERROR;

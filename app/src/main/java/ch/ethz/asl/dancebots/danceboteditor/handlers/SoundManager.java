@@ -34,7 +34,10 @@ public class SoundManager {
     static final int DECODING_STARTED = 1;
     static final int DECODING_COMPLETE = 2;
     static final int UPDATE_PROGRESS = 3;
-    static final int TASK_COMPLETE = 4;
+    static final int BEAT_EXTRACTION_COMPLETE = 4;
+    static final int TASK_COMPLETE = 5;
+    static final int ENCODING_STARTED = 6;
+    static final int ENCODING_FAILED = -2;
 
     // Sets the amount of time an idle thread will wait for a task before terminating
     private static final int KEEP_ALIVE_TIME = 1;
@@ -156,17 +159,32 @@ public class SoundManager {
                         Log.v(LOG_TAG, "handleMessage: " + "UPDATE_PROGRESS: " + progress);
                         break;
 
+                    case BEAT_EXTRACTION_COMPLETE:
+
+                        // TODO: THIS IS THE PLACE WHERE ALL INITIALIZATION STUFF ETC. SHOULD HAPPEN
+                        // TODO: AFTER POSTPROECESSING ALL THREADS
+                        // TODO: is this a good place to instantiate these things?
+                        DanceBotEditorManager.getInstance().initChoreography();
+                        DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
+
+                        Log.v(LOG_TAG, "handleMessage: BEAT_EXTRACTION_COMPLETE");
+                        break;
+
                     case TASK_COMPLETE:
 
                         if (dialog.isShowing()) {
                             dialog.dismiss();
                         }
 
-                        // TODO: is this a good place to instantiate these things?
-                        DanceBotEditorManager.getInstance().initChoreography();
-                        DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
-
                         Log.v(LOG_TAG, "handleMessage: TASK_COMPLETE");
+                        break;
+
+                    case ENCODING_STARTED:
+                        Log.v(LOG_TAG, "handleMessage: ENCODING_STARTED");
+                        break;
+
+                    case ENCODING_FAILED:
+                        Log.v(LOG_TAG, "handleMessage: ENCODING_FAILED");
                         break;
 
                     default:
@@ -281,6 +299,7 @@ public class SoundManager {
          * data.
          */
         Thread encodeThread = new Thread(encodingTask.getEncodeRunnable());
+        encodeThread.start();
 
         // Returns the newly created task object
         return encodingTask;

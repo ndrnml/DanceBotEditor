@@ -75,4 +75,11 @@ public class MotorBeatElement extends BeatElement {
     public int getVelocityRightIdx() {
         return mVelocityRightIdx;
     }
+    public short getVelocityLeft(float relativeBeat) {
+        return 0;
+    }
+
+    public short getVelocityRight(float relativeBeat) {
+        return 0;
+    }
 }

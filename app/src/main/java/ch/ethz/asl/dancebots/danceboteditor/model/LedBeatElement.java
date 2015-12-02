@@ -101,4 +101,8 @@ public class LedBeatElement extends BeatElement {
     public static int getNumLedLights() {
         return NUM_LED_LIGHTS;
     }
+
+    public short getLedBytes(float relativeBeat) {
+        return 0;
+    }
 }
