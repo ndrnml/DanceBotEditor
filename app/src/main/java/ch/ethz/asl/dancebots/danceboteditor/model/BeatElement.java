@@ -16,9 +16,8 @@ public abstract class BeatElement {
     protected int mChoreoLength;
 
     // Song properties of a beat element
-    protected int mBeatPosition;
-    protected long mSamplePosition;
-    protected boolean mIsFocused;
+    protected final int mBeatPosition;
+    protected final long mSamplePosition;
 
     // Menu property index of a beat element
     protected MotionType mMotionType;
@@ -27,7 +26,7 @@ public abstract class BeatElement {
     protected int mChoreoLengthIdx;
 
     // Absolute values for beat element properties
-    protected float mFrequency;
+    protected float mFrequencyVal;
 
     public BeatElement(Context context, int beatPosition, long samplePosition) {
 
@@ -36,7 +35,6 @@ public abstract class BeatElement {
         // Song properties
         mBeatPosition = beatPosition;
         mSamplePosition = samplePosition;
-        mIsFocused = false;
 
         // Default choreogrpahy values
         mHasChoreography = false;
@@ -61,67 +59,56 @@ public abstract class BeatElement {
      * @param frequencyIdx
      * @param choreoLengthIdx
      */
-    public void setProperties(int choreoStartIdx, int choreoLength, int motionTypeIdx, int frequencyIdx, int choreoLengthIdx, MotionType type) {
+    public void setProperties(
+            int choreoStartIdx,
+            int choreoLength,
+            int motionTypeIdx,
+            int frequencyIdx,
+            float frequencyVal,
+            int choreoLengthIdx,
+            MotionType type) {
 
         // Set all choreography properties
         mChoreoStartIdx = choreoStartIdx;
         mChoreoLength = choreoLength;
         mMotionTypeIdx = motionTypeIdx;
         mFrequencyIdx = frequencyIdx;
+        mFrequencyVal = frequencyVal;
         mChoreoLengthIdx = choreoLengthIdx;
-        mHasChoreography = true;
         mMotionType = type;
+        mHasChoreography = true;
     }
 
     /**
      * Copy beat element properties from the argument element
+     *
      * @param elem
      */
     public void setProperties(BeatElement elem) {
 
-        setProperties(elem.getChoreoStartIdx(), elem.getChoreoLength(), elem.getMotionTypeIdx(), elem.getFrequencyIdx(), elem.getChoreoLengthIdx(), elem.getMotionType());
+        setProperties(elem.getChoreoStartIdx(),
+                elem.getChoreoLength(),
+                elem.getMotionTypeIdx(),
+                elem.getFrequencyIdx(),
+                elem.getFrequencyVal(),
+                elem.getChoreoLengthIdx(),
+                elem.getMotionType());
     }
 
     public boolean isSameChoreography(BeatElement elem) {
 
-        if (mChoreoStartIdx != elem.getChoreoStartIdx() ||
-            mChoreoLength != elem.getChoreoLength() ||
-            mMotionTypeIdx != elem.getMotionTypeIdx() ||
-            mFrequencyIdx != elem.getFrequencyIdx() ||
-            mChoreoLengthIdx != elem.getChoreoLengthIdx()) {
-
-            return false;
-
-        } else {
-
-            return true;
-        }
+        return !(mChoreoStartIdx != elem.getChoreoStartIdx() ||
+                mChoreoLength != elem.getChoreoLength() ||
+                mMotionTypeIdx != elem.getMotionTypeIdx() ||
+                mFrequencyIdx != elem.getFrequencyIdx() ||
+                mChoreoLengthIdx != elem.getChoreoLengthIdx());
     }
 
     public abstract boolean hasChoreography();
 
-    /*********
-     * SETTERS
-     *********/
-    public void setFocus(boolean isFocused) {
-        mIsFocused = isFocused;
-    }
-    public void setMotionType(MotionType t) {
-        mMotionType = t;
-    }
-    public void setMotionTypeIdx(int idx) {
-        mMotionTypeIdx = idx; // TODO Check that idx is a valid number?
-    }
-    public void setFrequencyIdx(int idx) {
-        mFrequencyIdx = idx; // TODO Check that idx is a valid number?
-    }
-    public void setChoreoLengthIdx(int idx) {
-        mChoreoLengthIdx = idx; // TODO Check that idx is a valid number?
-    }
-
-    ///////////
-    // GETTERS
-    ///////////
+    /**********
+     * GETTERS
+     **********/
 
     public int getChoreoStartIdx() {
         return mChoreoStartIdx;
@@ -147,10 +134,11 @@ public abstract class BeatElement {
     public MotionType getMotionType() {
         return mMotionType;
     }
-    public boolean getFocus() {
-        return mIsFocused;
-    }
     public long getSamplePosition() {
         return mSamplePosition;
     }
+    public float getFrequencyVal() {
+        return mFrequencyVal;
+    }
+
 }

@@ -2,8 +2,6 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
 
-import ch.ethz.asl.dancebots.danceboteditor.R;
-
 /**
  * Created by andrin on 04.09.15.
  */
@@ -15,8 +13,8 @@ public class MotorBeatElement extends BeatElement {
 
     private int mVelocityLeftIdx;
     private int mVelocityRightIdx;
-    private int mLeftVelocity;
-    private int mRightVelocity;
+    private int mLeftVelocityValue;
+    private int mRightVelocityValue;
 
     public MotorBeatElement(Context context, int beatPos, int samplePos) {
 
@@ -24,14 +22,24 @@ public class MotorBeatElement extends BeatElement {
         super(context, beatPos, samplePos);
 
         // Initialize beat element properties
-        mMotionType = MotorType.DEFAULT;
+        mMotionType = MotorType.DEFAULT; // TODO: Obsolete. Remove!
         mMotorType = MotorType.DEFAULT;
 
         // Initialize specific motor element default properties
         mVelocityLeftIdx = 0;
         mVelocityRightIdx = 0;
+
+        // Initialize motor element specific default absolute values
+        mLeftVelocityValue = 0;
+        mRightVelocityValue = 0;
     }
 
+    /**
+     *
+     * @param relativeBeat
+     * @param isLeft
+     * @return
+     */
     private int computeVelocityValue(float relativeBeat, boolean isLeft) {
 
         int velocity = 0;
@@ -39,36 +47,36 @@ public class MotorBeatElement extends BeatElement {
         switch (mMotorType) {
 
             case STRAIGHT:
-                velocity = mLeftVelocity;
+                velocity = mLeftVelocityValue;
                 break;
 
             case SPIN:
                 if (isLeft) {
-                    velocity = mLeftVelocity;
+                    velocity = mLeftVelocityValue;
                 } else {
-                    velocity = -mLeftVelocity;
+                    velocity = -mLeftVelocityValue;
                 }
                 break;
 
             case TWIST:
                 if (isLeft) {
                     // TODO: Check this works with float and int
-                    velocity = mLeftVelocity * (int) Math.sin(relativeBeat * mFrequency * 2 * Math.PI);
+                    velocity = mLeftVelocityValue * (int) Math.sin(relativeBeat * mFrequencyVal * 2 * Math.PI);
                 } else {
-                    velocity = -mLeftVelocity * (int) Math.sin(relativeBeat * mFrequency * 2 * Math.PI);
+                    velocity = -mLeftVelocityValue * (int) Math.sin(relativeBeat * mFrequencyVal * 2 * Math.PI);
                 }
                 break;
 
             case BACK_AND_FORTH:
                 // TODO: Check this works with float and int
-                velocity = mLeftVelocity * (int) Math.sin(relativeBeat * mFrequency * 2 * Math.PI);
+                velocity = mLeftVelocityValue * (int) Math.sin(relativeBeat * mFrequencyVal * 2 * Math.PI);
                 break;
 
             case CONSTANT:
                 if (isLeft) {
-                    velocity = mLeftVelocity;
+                    velocity = mLeftVelocityValue;
                 } else {
-                    velocity = mRightVelocity;
+                    velocity = mRightVelocityValue;
                 }
                 break;
 
@@ -84,7 +92,6 @@ public class MotorBeatElement extends BeatElement {
 
     /**
      * Set motor element properties based on specific input value
-     *
      * @param idx
      */
     public void setVelocityLeftIdx(int idx) {
@@ -95,7 +102,6 @@ public class MotorBeatElement extends BeatElement {
 
     /**
      * Set motor element properties based on specific input value
-     *
      * @param idx
      */
     public void setVelocityRightIdx(int idx) {
@@ -111,6 +117,20 @@ public class MotorBeatElement extends BeatElement {
         setVelocityRightIdx(((MotorBeatElement) elem).getVelocityRightIdx());
     }
 
+    public void setVelocityLeftValue(int velocityLeftValue) {
+        mLeftVelocityValue = velocityLeftValue;
+    }
+
+    public void setVelocityRightValue(int velocityRightValue) {
+        mRightVelocityValue = velocityRightValue;
+    }
+
+    public void setVelocityValues(BeatElement elem) {
+
+        setVelocityLeftValue(((MotorBeatElement) elem).getVelocityLeftValue());
+        setVelocityRightValue(((MotorBeatElement) elem).getVelocityRightValue());
+    }
+
     @Override
     public void setProperties(BeatElement elem) {
 
@@ -119,6 +139,9 @@ public class MotorBeatElement extends BeatElement {
 
         // Set motor element specific properties
         setVelocityIndices(elem);
+
+        // Set motor element specific absolute values
+        setVelocityValues(elem);
     }
 
     @Override
@@ -141,4 +164,13 @@ public class MotorBeatElement extends BeatElement {
     public int getVelocityRight(float relativeBeat) {
         return computeVelocityValue(relativeBeat, false);
     }
+
+    public int getVelocityLeftValue() {
+        return mLeftVelocityValue;
+    }
+
+    public int getVelocityRightValue() {
+        return mRightVelocityValue;
+    }
+
 }

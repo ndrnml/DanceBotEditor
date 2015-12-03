@@ -343,6 +343,7 @@ public class BeatElementMenuDialog extends DialogFragment {
 
             // Process all check boxes
             processCheckBoxes();
+
             // Set led light switches according to selected check boxes
             ((LedBeatElement) mBeatElement).setLedLightSwitches(mLedLightSwitches);
 
