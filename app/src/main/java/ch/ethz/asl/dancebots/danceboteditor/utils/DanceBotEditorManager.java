@@ -1,14 +1,9 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import android.content.Context;
-import android.util.Pair;
-
-import java.util.ArrayList;
-import java.util.EnumSet;
 
 import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
-import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
-import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
+import ch.ethz.asl.dancebots.danceboteditor.model.BeatElementContents;
 import ch.ethz.asl.dancebots.danceboteditor.ui.FloatSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.ui.IntegerSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.ui.LedTypeSelectionMenu;
@@ -44,12 +39,6 @@ public class DanceBotEditorManager {
      * TODO
      * New Menu implementation
      */
-    private final int VELOCITY_MIN = 10;
-    private final int VELOCITY_MAX = 100;
-    private final int VELOCITY_STEP = 10;
-    private final int CHOREO_LENGTH_MIN = 1;
-    private final int CHOREO_LENGTH_MAX = 50;
-    private final int CHOREO_LENGTH_STEP = 1;
     private LedTypeSelectionMenu mLedTypeMenu;
     private MotorTypeSelectionMenu mMotorTypeMenu;
     private FloatSelectionMenu mLedFrequencyMenu;
@@ -92,20 +81,20 @@ public class DanceBotEditorManager {
     public void initSelectionMenus() {
 
         // Init frequency menus
-        mLedFrequencyMenu = new FloatSelectionMenu(generateLedFrequencies());
-        mMotorFrequencyMenu = new FloatSelectionMenu(generateMotorFrequencies());
+        mLedFrequencyMenu = new FloatSelectionMenu(BeatElementContents.getLedFrequencies());
+        mMotorFrequencyMenu = new FloatSelectionMenu(BeatElementContents.getMotorFrequencies());
 
         // Init led type menu
-        mLedTypeMenu = new LedTypeSelectionMenu(new ArrayList<>(EnumSet.allOf(LedType.class)));
+        mLedTypeMenu = new LedTypeSelectionMenu(BeatElementContents.getLedTypes());
 
         // Init motor type menu
-        mMotorTypeMenu = new MotorTypeSelectionMenu(new ArrayList<>(EnumSet.allOf(MotorType.class)));
+        mMotorTypeMenu = new MotorTypeSelectionMenu(BeatElementContents.getMotorTypes());
 
         // Init velocity menu
-        mVelocityMenu = new IntegerSelectionMenu(generateIntegersInRange(VELOCITY_MIN, VELOCITY_MAX, VELOCITY_STEP));
+        mVelocityMenu = new IntegerSelectionMenu(BeatElementContents.getVelocityValues());
 
         // Init choreo length menu
-        mChoreoLengthMenu = new IntegerSelectionMenu(generateIntegersInRange(CHOREO_LENGTH_MIN, CHOREO_LENGTH_MAX, CHOREO_LENGTH_STEP));
+        mChoreoLengthMenu = new IntegerSelectionMenu(BeatElementContents.getLengthValues());
     }
 
 
@@ -133,51 +122,6 @@ public class DanceBotEditorManager {
 
     public void attachMediaPlayer(DanceBotMediaPlayer mediaPlayer) {
         mMediaPlayer = mediaPlayer;
-    }
-
-    /**
-     * Generate led frequencies
-     */
-    private ArrayList<Pair<Integer,Integer>> generateLedFrequencies() {
-
-        // "1/4", "1/3", "1/2", "2/3", "1"
-        ArrayList<Pair<Integer, Integer>> frequencies = new ArrayList<>();
-        frequencies.add(new Pair<>(1, 4));
-        frequencies.add(new Pair<>(1, 3));
-        frequencies.add(new Pair<>(2, 3));
-        frequencies.add(new Pair<>(1, 1));
-
-        return frequencies;
-    }
-    /**
-     * Generate led frequencies
-     */
-    private ArrayList<Pair<Integer,Integer>> generateMotorFrequencies() {
-
-        // "1/4", "1/3", "1/2", "2/3", "3/2", "2", "3", "4"
-        ArrayList<Pair<Integer, Integer>> frequencies = new ArrayList<>();
-        frequencies.add(new Pair<>(1, 4));
-        frequencies.add(new Pair<>(1, 3));
-        frequencies.add(new Pair<>(1, 2));
-        frequencies.add(new Pair<>(2, 3));
-        frequencies.add(new Pair<>(3, 2));
-        frequencies.add(new Pair<>(2, 1));
-        frequencies.add(new Pair<>(3, 1));
-        frequencies.add(new Pair<>(4, 1));
-
-        return frequencies;
-    }
-
-    private ArrayList<Integer> generateIntegersInRange(int min, int max, int step) {
-
-        ArrayList<Integer> collection = new ArrayList<>();
-
-        int number_of_elements = (max / step);
-        for (int i = 0; i < number_of_elements; ++i) {
-            collection.add(min + (i * step));
-        }
-
-        return collection;
     }
 
     ///////////
@@ -219,15 +163,12 @@ public class DanceBotEditorManager {
     public FloatSelectionMenu getLedFrequencyMenu() {
         return mLedFrequencyMenu;
     }
-
     public FloatSelectionMenu getMotorFrequencyMenu() {
         return mMotorFrequencyMenu;
     }
-
     public IntegerSelectionMenu getVelocityMenu() {
         return mVelocityMenu;
     }
-
     public IntegerSelectionMenu getChoreoLengthMenu() {
         return mChoreoLengthMenu;
     }

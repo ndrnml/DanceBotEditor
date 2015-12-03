@@ -2,7 +2,6 @@ package ch.ethz.asl.dancebots.danceboteditor.ui;
 
 import java.util.ArrayList;
 
-import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
 
 /**
@@ -22,7 +21,7 @@ public class MotorTypeSelectionMenu {
     }
 
     public String getStringAt(int idx) {
-        return mSelection.get(idx).toString();
+        return mSelection.get(idx).getReadableName();
     }
 
     public String[] getStrings() {

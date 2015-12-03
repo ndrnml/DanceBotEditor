@@ -21,7 +21,7 @@ public class LedTypeSelectionMenu {
     }
 
     public String getStringAt(int idx) {
-        return mSelection.get(idx).toString();
+        return mSelection.get(idx).getReadableName();
     }
 
     public String[] getStrings() {
