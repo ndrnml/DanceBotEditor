@@ -8,6 +8,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
  */
 // 'Static' enum types are instantiated with the object
 public enum LedType implements MotionType {
+
     DEFAULT(DanceBotEditorManager.getInstance().getContext().getResources().getColor(R.color.led_list_default_color), ""),
     KNIGHT_RIDER(DanceBotEditorManager.getInstance().getContext().getResources().getColor(R.color.led_elem_color1), "K"),
     RANDOM(DanceBotEditorManager.getInstance().getContext().getResources().getColor(R.color.led_elem_color2), "R"),

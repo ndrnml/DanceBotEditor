@@ -40,8 +40,8 @@ public class Decoder {
     }
 
     // TODO: making this method static is reeeeeally dangerous. What if mSoundFileHandle is not yet initialized?
-    public static int transfer(short[] pcm_buffer) {
-        return transfer(mSoundFileHandle, pcm_buffer);
+    public static int transfer(short[] pcmBuffer) {
+        return transfer(mSoundFileHandle, pcmBuffer);
     }
 
     public void dispose()
@@ -68,13 +68,8 @@ public class Decoder {
     public int getSampleRate() {
         return (int)getSampleRate(mSoundFileHandle);
     }
-
     public long getNumberOfSamples() {
         return getNumberOfSamples(mSoundFileHandle);
-    }
-
-    public int getNumberOfBeatsDetected() {
-        return getNumBeatsDetected(mSoundFileHandle);
     }
 
     // Prepare native mp3 decoder
@@ -83,11 +78,9 @@ public class Decoder {
     private native static long open(String filePath);
     // Decode the currently opened music file
     private native static int decode(long soundFileHandle);
-    private native static int transfer(long soundFileHandle, short[] pcm_buffer);
-
+    private native static int transfer(long soundFileHandle, short[] pcmBuffer);
     // Delete native sound file
     private native static int delete(long mSoundFileHandle);
-
     // Get sample rate from selected song
     private native static long getSampleRate(long soundFileHandle);
     // Get total number of samples from selected song

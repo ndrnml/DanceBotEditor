@@ -12,6 +12,8 @@ public class LedBeatElement extends BeatElement {
     private static final String LOG_TAG = "LED_BEAT_ELEMENT";
     private static final int NUM_LED_LIGHTS = 8;
 
+    private LedType mLedType;
+
     private boolean[] mLedLightSwitches;
 
     public LedBeatElement(Context context, int beatPos, int samplePos) {
@@ -20,7 +22,8 @@ public class LedBeatElement extends BeatElement {
         super(context, beatPos, samplePos);
 
         // Initialize beat element properties
-        mMotionType = LedType.DEFAULT;
+        mMotionType = LedType.DEFAULT; // TODO: Obsolete. REMOVE!
+        mLedType = LedType.DEFAULT;
 
         // Initialize specific led element default properties
         mLedLightSwitches = new boolean[NUM_LED_LIGHTS];

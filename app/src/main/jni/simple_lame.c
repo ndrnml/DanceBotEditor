@@ -1,3 +1,4 @@
+// TODO: COPYRIGHT
 //
 // Created by andrin on 24.10.15.
 //

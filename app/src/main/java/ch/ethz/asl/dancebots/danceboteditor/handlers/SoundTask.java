@@ -180,7 +180,7 @@ public class SoundTask implements
         }
 
         t2 = System.currentTimeMillis();
-        Log.v(LOG_TAG, "Elapsed time for decoding and extracting: " + (t2 - t1));
+        Log.v(LOG_TAG, "Elapsed time for decoding and extracting: " + (t2 - t1) / 1000 + "s");
 
         /*
          * After all beat extraction Threads terminated, the current thread is collecting

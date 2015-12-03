@@ -180,6 +180,10 @@ public class SoundManager {
                         break;
 
                     case ENCODING_STARTED:
+
+                        dialog.setMessage("Saving your song. This might take ages... ;)");
+                        dialog.show();
+
                         Log.v(LOG_TAG, "handleMessage: ENCODING_STARTED");
                         break;
 

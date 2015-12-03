@@ -35,9 +35,12 @@ public class SoundEncodeRunnable implements Runnable {
 
     // Defines a field that contains the calling object of type SoundTask.
     private final TaskRunnableEncodeMethods mSoundTask;
-    private int mNumTicksReset;
-    private int mNumTicksOne;
-    private int mNumTicksZero;
+    private Encoder mEncoder;
+    private int mNumSamplesReset;
+    private int mNumSamplesOne;
+    private int mNumSamplesZero;
+
+    private long t1,t2;
 
     /**
      * An interface that defines methods that SoundTask implements. An instance of
@@ -78,6 +81,8 @@ public class SoundEncodeRunnable implements Runnable {
     @Override
     public void run() {
 
+        t1 = System.currentTimeMillis();
+
         /*
          * Stores the current Thread in the the SoundTask instance, so that the instance
          * can interrupt the Thread.
@@ -113,11 +118,16 @@ public class SoundEncodeRunnable implements Runnable {
 
             byte[] mp3buf = new byte[(int)(1.25 * numSamples + 7200)];
 
-            Encoder encoder = new Encoder.Builder(44100, 2, 44100, 128).create();
-            result = encoder.encode(pcmMusic, pcmData, (int)numSamples, mp3buf);
-            result = encoder.flush(mp3buf);
+            mEncoder = new Encoder.Builder(44100, 2, 44100, 128).create();
+            result = mEncoder.encode(pcmMusic, pcmData, (int) numSamples, mp3buf);
+            result = mEncoder.flush(mp3buf);
 
-            File mp3File = new File(Environment.getExternalStorageDirectory(), "FOO.mp3");
+            File mp3File = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_MUSIC), "FOO.mp3");
+
+            if (!mp3File.mkdirs()) {
+                Log.e(LOG_TAG, "File not created");
+            }
 
             Log.v(LOG_TAG, "Store mp3 file: " + mp3File.getAbsolutePath());
 
@@ -142,11 +152,21 @@ public class SoundEncodeRunnable implements Runnable {
             // In all cases, handle the results
         } finally {
 
+            mEncoder.close();
+
+            t2 = System.currentTimeMillis();
+            Log.v(LOG_TAG, "Elapsed time for encoding: " + (t2 - t1) / 1000 + "s");
+
             Log.v(LOG_TAG, "EncodeThread finished.");
         }
 
     }
 
+    /**
+     *
+     * @param pcmData
+     * @return
+     */
     private int fillRawDataChannel(short[] pcmData) {
 
         // Get beat element lists for motor and led elements
@@ -161,17 +181,18 @@ public class SoundEncodeRunnable implements Runnable {
         int samplingRate = mSoundTask.getSamplingRate();
 
         // Compute the nominal sampling scale
-        int tickScale = samplingRate / SAMPLE_FREQUENCY_NOMINAL;
+        float sampleScale = samplingRate / SAMPLE_FREQUENCY_NOMINAL;
 
         // TODO: round up or down?
-        mNumTicksZero = tickScale * BIT_LENGTH_ZERO_NOMINAL;
-        mNumTicksOne = tickScale * BIT_LENGTH_ONE_NOMINAL;
-        mNumTicksReset = tickScale * BIT_LENGTH_RESET_NOMINAL;
+        mNumSamplesZero = Math.round(sampleScale * BIT_LENGTH_ZERO_NOMINAL);
+        mNumSamplesOne = Math.round(sampleScale * BIT_LENGTH_ONE_NOMINAL);
+        mNumSamplesReset = Math.round(sampleScale * BIT_LENGTH_RESET_NOMINAL);
+
         int numBitsInMsg = 2 * (NUM_BIT_MOTOR + 1) + 8;
 
-        int maxNumTicks = numBitsInMsg * mNumTicksOne + mNumTicksReset;
+        int maxNumSamplesInMsg = numBitsInMsg * mNumSamplesOne + mNumSamplesReset;
 
-        short dataBuffer[] = new short[maxNumTicks];
+        short dataBuffer[] = new short[maxNumSamplesInMsg];
 
         for (int i = 0; i < numBeats - 1; ++i) {
 
@@ -182,26 +203,37 @@ public class SoundEncodeRunnable implements Runnable {
             long startSamplePosition = motorElements.get(i).getSamplePosition();
             long endSamplePosition = motorElements.get(i + 1).getSamplePosition();
 
-            //int processSamples = (int) (endSamplePosition - startSamplePosition);
+            int samplesToProcess = (int) (endSamplePosition - startSamplePosition);
 
-            short lastBit = DATA_LEVEL;
-            int sample = (int) startSamplePosition;
+            short lastSampleLevel = DATA_LEVEL;
+            int samplePos = 0;
 
-            while (sample < endSamplePosition) {
+            while (samplePos < samplesToProcess) {
 
-                float relativeBeat = sample / numSamples;
+                float relativeBeat = samplePos / samplesToProcess;
 
-                short vLeft = motorElement.getVelocityLeft(relativeBeat);
-                short vRight = motorElement.getVelocityRight(relativeBeat);
+                // TODO: is this cast (short) valid?
+                short vLeft = (short) motorElement.getVelocityLeft(relativeBeat);
+                short vRight = (short) motorElement.getVelocityRight(relativeBeat);
                 short led = ledElement.getLedBytes(relativeBeat);
 
-                int numTicks = calculateMessage(dataBuffer, vLeft, vRight, led, lastBit);
+                int numSamplesInMsg = calculateMessage(dataBuffer, vLeft, vRight, led, lastSampleLevel);
 
-                lastBit = dataBuffer[numTicks - 1];
+                lastSampleLevel = dataBuffer[numSamplesInMsg - 1];
 
-                int error = writeMessage(pcmData, dataBuffer, sample, numTicks);
+                // TODO: Is this check valid?
+                if (samplePos + numSamplesInMsg < samplesToProcess) {
 
-                sample += numTicks;
+                    int currentSamplePosition = (int) startSamplePosition + samplePos;
+                    int error = writeMessage(pcmData, dataBuffer, currentSamplePosition, numSamplesInMsg);
+
+                } else {
+
+                    // If this happens, the message is too long
+                    break;
+                }
+
+                samplePos += numSamplesInMsg;
             }
         }
 
@@ -219,106 +251,142 @@ public class SoundEncodeRunnable implements Runnable {
 
         } else {
 
-            Log.v(LOG_TAG, "ERROR: writeMessage out of bounds");
+            Log.d(LOG_TAG, "ERROR: writeMessage out of bounds");
             return DanceBotError.WRITE_ERROR;
         }
     }
 
+    /**
+     * This function calculates the needed samples for left and right velocities and for the led
+     * light. The values of the current beat element will be parsed an put into the dataBuffer.
+     * After the three properties are parsed and the buffer filled it returns the number of samples
+     * written to the dataBuffer.
+     * @param dataBuffer
+     * @param vLeft
+     * @param vRight
+     * @param led
+     * @param lastBitLevel
+     * @return the written samples
+     */
     private int calculateMessage(short[] dataBuffer, short vLeft, short vRight, short led, short lastBitLevel) {
 
-        int offsetBits = 0;
-        short velByte = 0;
+        // TODO: WHERE IS CHECKED THAT dataBuffer IS NOT OUT OF BOUND?
+
+        int offsetSamples = 0;
+        byte velByte = 0;
+
+        // Init all dataBuffer elements to -DATA_LEVEL
+        for (int i = 0; i < dataBuffer.length; ++i) {
+            dataBuffer[i] = -DATA_LEVEL;
+        }
 
         // Invert last bit
         lastBitLevel *= -1;
 
         // Write reset message
-        for (int i = 0; i < mNumTicksReset; ++i) {
+        for (int i = 0; i < mNumSamplesReset; ++i) {
             dataBuffer[i] = lastBitLevel;
         }
 
         // Bits written
-        offsetBits += mNumTicksReset;
+        offsetSamples += mNumSamplesReset;
 
         // Parse left velocity
         if (vLeft < 0) {
             vLeft *= -1;
         } else {
-            velByte = 0x80;
+            // Set sign bit in velByte
+            velByte = (byte) 0x80;
         }
 
+        // Get bits for left velocity
         velByte |= 0x7F & vLeft;
 
         // Write left velocity message
-        for (int i = 0; i < Byte.SIZE; ++i) {
+        for (int i = 0; i < 8; ++i) {
 
-            int numTicks = mNumTicksZero;
+            int numSamples = mNumSamplesZero;
 
-            if (true /*velByte & (0x01 << i)*/) {
-                numTicks = mNumTicksOne;
+            // Check if the i-th bit in velByte is set to 1
+            if ((velByte & (0x01 << i)) != 0) {
+                numSamples = mNumSamplesOne;
             }
 
+            // Invert last bit level
             lastBitLevel *= -1;
 
-            for (int j = 0; j < numTicks; ++j) {
-                dataBuffer[j + offsetBits] = lastBitLevel;
+            // Write the number of samples required for the specific velocity encoding
+            for (int j = 0; j < numSamples; ++j) {
+                dataBuffer[j + offsetSamples] = lastBitLevel;
             }
 
-            offsetBits += numTicks;
+            // Count number of samples added to the buffer
+            offsetSamples += numSamples;
         }
 
-        // Parse right velocity
+        // Init right velocity
         velByte = 0;
 
+        // Parse right velocity
         if (vRight < 0) {
             vRight *= -1;
         } else {
-            velByte = 0x80;
+            velByte = (byte) 0x80;
         }
 
+        // Get bits for right velocity
         velByte |=  0x7F & vRight;
 
         // Write right velocity message
-        for (int i = 0; i < Byte.SIZE; ++i) {
+        for (int i = 0; i < 8; ++i) {
 
-            int numTicks = mNumTicksZero;
+            int numSamples = mNumSamplesZero;
 
-            if (true /*velByte & (0x01 << i)*/) {
-                numTicks = mNumTicksOne;
+            // Check if the i-th bit in velByte is set to 1
+            if ((velByte & (0x01 << i)) != 0) {
+                numSamples = mNumSamplesOne;
             }
 
+            // Invert last bit level
             lastBitLevel *= -1;
 
-            for (int j = 0; j < numTicks; ++j) {
-                dataBuffer[j + offsetBits] = lastBitLevel;
+            // Write the number of samples required for the specific velocity encoding
+            for (int j = 0; j < numSamples; ++j) {
+                dataBuffer[j + offsetSamples] = lastBitLevel;
             }
 
-            offsetBits += numTicks;
+            // Count number of samples added to the buffer
+            offsetSamples += numSamples;
         }
 
         // Parse led byte
-        short ledByte = 0xFF;
+        byte ledByte = (byte) 0xFF;
 
+        // Get bits for led
         ledByte &= led;
 
         // Write led message
-        for (int i = 0; i < Byte.SIZE; ++i) {
+        for (int i = 0; i < 8; ++i) {
 
-            int numTicks = mNumTicksZero;
+            int numSamples = mNumSamplesZero;
 
-            if (true /*ledByte & (0x01 << i)*/) {
-                numTicks = mNumTicksOne;
+            // Check if the i-th bit in ledByte is set to 1
+            if ((ledByte & (0x01 << i)) != 0) {
+                numSamples = mNumSamplesOne;
             }
 
+            // Invert last bit level
             lastBitLevel *= -1;
 
-            for (int j = 0; j < numTicks; ++j) {
-                dataBuffer[j + offsetBits] = lastBitLevel;
+            // Write the number of samples required for the specific led encoding
+            for (int j = 0; j < numSamples; ++j) {
+                dataBuffer[j + offsetSamples] = lastBitLevel;
             }
 
-            offsetBits += numTicks;
+            // Count number of samples added to the buffer
+            offsetSamples += numSamples;
         }
 
-        return offsetBits;
+        return offsetSamples;
     }
 }

@@ -26,6 +26,9 @@ public abstract class BeatElement {
     protected int mFrequencyIdx;
     protected int mChoreoLengthIdx;
 
+    // Absolute values for beat element properties
+    protected float mFrequency;
+
     public BeatElement(Context context, int beatPosition, long samplePosition) {
 
         mContext = context;
