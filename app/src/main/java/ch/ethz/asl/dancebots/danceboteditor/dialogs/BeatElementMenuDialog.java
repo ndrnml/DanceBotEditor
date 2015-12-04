@@ -65,6 +65,12 @@ public class BeatElementMenuDialog extends DialogFragment {
     private int mSelectedVelocityRightIdx;
     private int mSelectedChoreoLengthIdx;
 
+    // Temporarily store selected menu values
+    private float mSelectedLedFrequencyVal;
+    private float mSelectedMotorFrequencyVal;
+    private int mSelectedVelocityLeftVal;
+    private int mSelectedVelocityRightVal;
+
     /**
      * Ensure that this method is called directly after instantiation of the menu
      * It loads all relevant information (menu lists) for setting up the menu
@@ -159,19 +165,13 @@ public class BeatElementMenuDialog extends DialogFragment {
         Log.v(LOG_TAG, "doPositiveClick()");
     }
 
+    /**
+     * Get selected led light switches
+     */
     private void processCheckBoxes() {
-
         for (int i = 0; i < mNumCheckBoxes; ++i) {
-
-            if (mCheckBoxes.get(i).isChecked()) {
-                // Set light switch on
-                mLedLightSwitches[i] = true;
-                //Log.v(LOG_TAG, "checkbox: " + i + " is " + mCheckBoxes.get(i).isChecked());
-            } else {
-                // Set light switch off
-                mLedLightSwitches[i] = false;
-                //Log.v(LOG_TAG, "checkbox: " + i + " is " + mCheckBoxes.get(i).isChecked());
-            }
+            // Set light switch on/off
+            mLedLightSwitches[i] = mCheckBoxes.get(i).isChecked();
         }
     }
 
@@ -291,7 +291,7 @@ public class BeatElementMenuDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
 
-                        if (mBeatElement.hasChoreography()) {
+                        if (mBeatElement.hasDanceSequence()) {
 
                             // Remove existing choreography
                             /*TODO
@@ -338,23 +338,54 @@ public class BeatElementMenuDialog extends DialogFragment {
         // Save Led/Motor element properties
         if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE
 
-            // Set general beat element properties according to menu choices
-            mBeatElement.setProperties(choreoStartIdx, choreoLength, mSelectedMotionTypeIdx, mSelectedFrequencyIdx, mSelectedChoreoLengthIdx, mLedTypeMenu.getValAt(mSelectedMotionTypeIdx));
-
             // Process all check boxes
             processCheckBoxes();
+
+            // Fetch led frequency value
+            mSelectedLedFrequencyVal = mLedFrequencyMenu.getValAt(mSelectedFrequencyIdx);
+
+            // Set general beat element properties according to menu choices
+            mBeatElement.setProperties(
+                    choreoStartIdx,
+                    choreoLength,
+                    mSelectedMotionTypeIdx,
+                    mSelectedFrequencyIdx,
+                    mSelectedLedFrequencyVal,
+                    mSelectedChoreoLengthIdx);
+
+            // Set LedBeatElement specific type
+            ((LedBeatElement) mBeatElement).setMotionType(mLedTypeMenu.getValAt(mSelectedMotionTypeIdx));
 
             // Set led light switches according to selected check boxes
             ((LedBeatElement) mBeatElement).setLedLightSwitches(mLedLightSwitches);
 
         } else if (mBeatElement.getClass() == MotorBeatElement.class) { // MOVE_TYPE
 
+            // Fetch motor frequency value
+            mSelectedMotorFrequencyVal = mMotorFrequencyMenu.getValAt(mSelectedFrequencyIdx);
+
+            // Fetch velocity values
+            mSelectedVelocityLeftVal = mVelocityMenu.getValAt(mSelectedVelocityLeftIdx);
+            mSelectedVelocityRightVal = mVelocityMenu.getValAt(mSelectedVelocityRightIdx);
+
             // Set general beat element properties according to menu choices
-            mBeatElement.setProperties(choreoStartIdx, choreoLength, mSelectedMotionTypeIdx, mSelectedFrequencyIdx, mSelectedChoreoLengthIdx, mMotorTypeMenu.getValAt(mSelectedMotionTypeIdx));
+            mBeatElement.setProperties(
+                    choreoStartIdx,
+                    choreoLength,
+                    mSelectedMotionTypeIdx,
+                    mSelectedFrequencyIdx,
+                    mSelectedMotorFrequencyVal,
+                    mSelectedChoreoLengthIdx);
+
+            // Set MotorBeatElement specific type
+            ((MotorBeatElement) mBeatElement).setMotionType(mMotorTypeMenu.getValAt(mSelectedMotionTypeIdx));
 
             // Set velocities of motor beat element
             ((MotorBeatElement) mBeatElement).setVelocityLeftIdx(mSelectedVelocityLeftIdx);
             ((MotorBeatElement) mBeatElement).setVelocityRightIdx(mSelectedVelocityRightIdx);
+
+            ((MotorBeatElement) mBeatElement).setVelocityLeftValue(mSelectedVelocityLeftVal);
+            ((MotorBeatElement) mBeatElement).setVelocityRightValue(mSelectedVelocityRightVal);
         }
     }
 

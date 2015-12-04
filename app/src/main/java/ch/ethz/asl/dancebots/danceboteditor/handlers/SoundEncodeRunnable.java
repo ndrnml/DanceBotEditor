@@ -112,8 +112,8 @@ public class SoundEncodeRunnable implements Runnable {
             short[] pcmData = new short[(int)numSamples];
 
             // Prepare data channel and music channel
-            //int result = fillRawDataChannel(pcmData);
-            int result = Decoder.transfer(pcmData);
+            int result = fillRawDataChannel(pcmData);
+            //int result = Decoder.transfer(pcmData);
             result = Decoder.transfer(pcmMusic);
 
             byte[] mp3buf = new byte[(int)(1.25 * numSamples + 7200)];

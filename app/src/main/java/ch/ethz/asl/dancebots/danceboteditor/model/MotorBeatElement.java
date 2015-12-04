@@ -22,7 +22,7 @@ public class MotorBeatElement extends BeatElement {
         super(context, beatPos, samplePos);
 
         // Initialize beat element properties
-        mMotionType = MotorType.DEFAULT; // TODO: Obsolete. Remove!
+        //mMotionType = MotorType.DEFAULT; // TODO: Obsolete. Remove!
         mMotorType = MotorType.DEFAULT;
 
         // Initialize specific motor element default properties
@@ -91,6 +91,20 @@ public class MotorBeatElement extends BeatElement {
     }
 
     /**
+     * @param motorType
+     */
+    public void setMotionType(MotorType motorType) {
+        mMotorType = motorType;
+    }
+
+    /**
+     * @param elem
+     */
+    public void setMotionType(BeatElement elem) {
+        mMotorType = ((MotorBeatElement) elem).getMotionType();
+    }
+
+    /**
      * Set motor element properties based on specific input value
      * @param idx
      */
@@ -110,32 +124,48 @@ public class MotorBeatElement extends BeatElement {
         mVelocityRightIdx = idx; // TODO Check that idx is a valid number?
     }
 
+    /**
+     * Set MotorBeatElement specific velocity indices
+     * @param elem
+     */
     public void setVelocityIndices(BeatElement elem) {
-
         // TODO is this cast type safe?
         setVelocityLeftIdx(((MotorBeatElement) elem).getVelocityLeftIdx());
         setVelocityRightIdx(((MotorBeatElement) elem).getVelocityRightIdx());
     }
 
+    /**
+     * Set MotorBeatElement specific left velocity value
+     * @param velocityLeftValue
+     */
     public void setVelocityLeftValue(int velocityLeftValue) {
         mLeftVelocityValue = velocityLeftValue;
     }
 
+    /**
+     * Set MotorBeatElement specific right velocity value
+     * @param velocityRightValue
+     */
     public void setVelocityRightValue(int velocityRightValue) {
         mRightVelocityValue = velocityRightValue;
     }
 
+    /**
+     * Set MotorBeatElement specific velocity values
+     * @param elem
+     */
     public void setVelocityValues(BeatElement elem) {
-
         setVelocityLeftValue(((MotorBeatElement) elem).getVelocityLeftValue());
         setVelocityRightValue(((MotorBeatElement) elem).getVelocityRightValue());
     }
 
-    @Override
-    public void setProperties(BeatElement elem) {
-
-        // Set general beat element properties
-        super.setProperties(elem);
+    /**
+     * Set MotorBeatElement specific properties
+     * @param elem the BeatElement from which all MotorBeatElement specific properties get copied
+     */
+    public void setMotorProperties(BeatElement elem) {
+        // Set MotorBeatElement type
+        setMotionType(elem);
 
         // Set motor element specific properties
         setVelocityIndices(elem);
@@ -144,9 +174,23 @@ public class MotorBeatElement extends BeatElement {
         setVelocityValues(elem);
     }
 
+    /**
+     * Set general BeatElement properties
+     * @param elem the BeatElement from which all properties get copied
+     */
     @Override
-    public boolean hasChoreography() {
-        return mHasChoreography;
+    public void setProperties(BeatElement elem) {
+
+        // Set general beat element properties
+        super.setProperties(elem);
+
+        // Set MotorBeatElement specific properties
+        setMotorProperties(elem);
+    }
+
+    @Override
+    public MotorType getMotionType() {
+        return mMotorType;
     }
 
     public int getVelocityLeftIdx() {
@@ -172,5 +216,4 @@ public class MotorBeatElement extends BeatElement {
     public int getVelocityRightValue() {
         return mRightVelocityValue;
     }
-
 }

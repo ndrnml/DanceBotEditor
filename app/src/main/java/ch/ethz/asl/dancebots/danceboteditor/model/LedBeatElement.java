@@ -2,8 +2,7 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
 
-import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.ui.IntegerSelectionMenu;
+import java.util.Random;
 
 /**
  * Created by andrin on 18.09.15.
@@ -24,7 +23,7 @@ public class LedBeatElement extends BeatElement {
         super(context, beatPos, samplePos);
 
         // Initialize beat element properties
-        mMotionType = LedType.DEFAULT; // TODO: Obsolete. REMOVE!
+        //mMotionType = LedType.DEFAULT; // TODO: Obsolete. REMOVE!
         mLedType = LedType.DEFAULT;
 
         // Initialize specific led element default properties
@@ -55,20 +54,11 @@ public class LedBeatElement extends BeatElement {
 
             case RANDOM:
 
-                /*
-                if (randBytes == 0) {
-                    generateRandomBytes()
-                }
+                // TODO: Where comes frequency and relative beat into place?
+                byte[] bs = new byte[50];
+                new Random().nextBytes(bs);
+                ledByte = bs[new Random().nextInt(50)];
 
-                if(0 == m_randBytes){
-                    // generate an array of random bytes
-                    generateRandomBytes();
-                }
-                quint16 idx = quint16(2*relbeat*m_frequency);
-                if(idx >= m_nbytes){
-                    idx = m_nbytes - 1;
-                }
-                bytes = m_randBytes[idx];*/
                 break;
 
             case BLINK:
@@ -105,6 +95,10 @@ public class LedBeatElement extends BeatElement {
         return ledByte;
     }
 
+    /**
+     * Transform boolean[] into single 8-bit byte with the corresponding bits set to 1
+     * @return single byte that represents boolean[] mLedLightSwitches
+     */
     private byte computeByteFromSwitches() {
 
         // Init new string
@@ -116,6 +110,34 @@ public class LedBeatElement extends BeatElement {
         }
         // Parse string as (byte) integer with radix 2
         return (byte) Integer.parseInt(s, 2);
+    }
+
+    /**
+     *
+     * @param elem
+     * @return
+     */
+    private boolean hasSameSwitches(LedBeatElement elem) {
+
+        boolean[] elemLightSwitches = elem.getLedLightSwitches();
+        for (int i = 0; i < elemLightSwitches.length; ++i) {
+
+            if (mLedLightSwitches[i] != elemLightSwitches[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param ledType
+     */
+    public void setMotionType(LedType ledType) {
+        mLedType = ledType;
+    }
+
+    public void setMotionType(BeatElement elem) {
+        mLedType = ((LedBeatElement) elem).getMotionType();
     }
 
     /**
@@ -143,44 +165,25 @@ public class LedBeatElement extends BeatElement {
         // Set general beat element properties
         super.setProperties(elem);
 
+        // Set LedBeatElement type
+        setMotionType(elem);
+
         // Set led element specific properties
         setLedLightSwitches(elem);
     }
 
     @Override
-    public boolean isSameChoreography(BeatElement elem) {
-
-        // Check if all beat element choreography properties and led element choreo properties are the same
-        if (super.isSameChoreography(elem) && hasSameSwitches((LedBeatElement) elem))
-        {
-            return true;
-
-        } else {
-
-            return false;
-        }
-    }
-
-    private boolean hasSameSwitches(LedBeatElement elem) {
-
-        boolean[] elemLightSwitches = elem.getLedLightSwitches();
-
-        for (int i = 0; i < elemLightSwitches.length; ++i) {
-
-            if (mLedLightSwitches[i] != elemLightSwitches[i]) {
-                return false;
-            }
-        }
-
-        return true;
+    public boolean isSameDanceSequence(BeatElement elem) {
+        // Check if all BeatElement choreography properties and LedBeatElement choreography properties are the same
+        return super.isSameDanceSequence(elem) && hasSameSwitches((LedBeatElement) elem);
     }
 
     @Override
-    public boolean hasChoreography() {
-        return mHasChoreography;
+    public LedType getMotionType() {
+        return mLedType;
     }
 
-    public boolean[] getLedLightSwitches() {
+    public boolean[] getLedLightSwitches () {
         return mLedLightSwitches;
     }
 
@@ -191,5 +194,4 @@ public class LedBeatElement extends BeatElement {
     public byte getLedBytes(float relativeBeat) {
         return computeLedBytes(relativeBeat);
     }
-
 }

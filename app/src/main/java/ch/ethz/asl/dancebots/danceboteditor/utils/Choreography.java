@@ -1,14 +1,8 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
-import android.util.Log;
-
-import java.lang.reflect.Array;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
 
 /**
  * Created by andrin on 16.10.15.
@@ -69,7 +63,7 @@ public class Choreography<T extends BeatElement> {
 
         // Update element if it does not belong to any choreography and if the current length is
         // less than the total choreography length
-        while (nextElem.isSameChoreography(startElem) && (length < choreoLength)) {
+        while (nextElem.isSameDanceSequence(startElem) && (length < choreoLength)) {
 
             // Copy the element properties
             nextElem.setDefaultProperties();
