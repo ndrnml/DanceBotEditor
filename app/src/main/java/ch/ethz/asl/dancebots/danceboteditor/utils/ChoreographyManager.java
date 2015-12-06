@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
@@ -57,37 +58,57 @@ public class ChoreographyManager {
         ArrayList<LedBeatElement> ledElements = initLedBeatElements(musicFile);
         mLedChoregraphy = new Choreography<>(ledElements);
 
-        mBeatViews.setLedElementAdapter(new BeatElementAdapter<>(mContext, mLedChoregraphy.getBeatElements()));
+        mBeatViews.setLedElementAdapter(new BeatElementAdapter<>(mContext, ledElements));
 
         ArrayList<MotorBeatElement> motorElements = initMotorBeatElements(musicFile);
         mMotorChoreography = new Choreography<>(motorElements);
 
-        mBeatViews.setMotorElementAdapter(new BeatElementAdapter<>(mContext, mMotorChoreography.getBeatElements()));
+        mBeatViews.setMotorElementAdapter(new BeatElementAdapter<>(mContext, motorElements));
     }
 
-    public void addSequence(BeatElement mBeatElement) {
+    public void addNewDanceSequence(BeatElement mBeatElement) {
+
+        // Generate new unique dance sequence identifier
+        UUID choreoID = UUID.randomUUID();
 
         if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE
 
-            mLedChoregraphy.addSequence((LedBeatElement) mBeatElement);
+            mLedChoregraphy.addDanceSequence(choreoID, (LedBeatElement) mBeatElement);
 
         } else if (mBeatElement.getClass() == MotorBeatElement.class) { // MOTOR_TYPE
 
-            mMotorChoreography.addSequence((MotorBeatElement) mBeatElement);
+            mMotorChoreography.addDanceSequence(choreoID, (MotorBeatElement) mBeatElement);
 
+        }
+    }
+
+    public void updateSequence(BeatElement mBeatElement) {
+
+        // Get dance sequence unique identifier
+        UUID choreoID = mBeatElement.getChoreographyID();
+
+        if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE
+
+            mLedChoregraphy.updateDanceSequence(choreoID, (LedBeatElement) mBeatElement);
+
+        } else if (mBeatElement.getClass() == MotorBeatElement.class) { // MOTOR_TYPE
+
+            mMotorChoreography.updateDanceSequence(choreoID, (MotorBeatElement) mBeatElement);
         }
     }
 
     public void removeSequence(BeatElement mBeatElement) {
 
+        // Get dance sequence unique identifier
+        UUID choreoID = mBeatElement.getChoreographyID();
+
         if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE
 
-            mLedChoregraphy.removeSequence((LedBeatElement) mBeatElement);
+            mLedChoregraphy.removeDanceSequence(choreoID, (LedBeatElement) mBeatElement);
 
         } else if (mBeatElement.getClass() == MotorBeatElement.class) { // MOTOR_TYPE
 
-            mMotorChoreography.removeSequence((MotorBeatElement) mBeatElement);
-
+            mMotorChoreography.removeDanceSequence(choreoID, (MotorBeatElement) mBeatElement);
         }
     }
 

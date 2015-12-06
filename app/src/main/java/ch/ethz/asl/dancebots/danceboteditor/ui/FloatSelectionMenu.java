@@ -20,7 +20,7 @@ public class FloatSelectionMenu {
         if (mSelection.get(idx).second == 0) {
             throw new IllegalArgumentException("Argument 'divisor' is 0");
         }
-        return mSelection.get(idx).first / mSelection.get(idx).second;
+        return (float) mSelection.get(idx).first / mSelection.get(idx).second;
     }
 
     public String getStringAt(int idx) {

@@ -293,23 +293,16 @@ public class BeatElementMenuDialog extends DialogFragment {
 
                         if (mBeatElement.hasDanceSequence()) {
 
-                            // Remove existing choreography
-                            /*TODO
-                            mProjectFile.getChoreoManager().removeSequence(mBeatElement);
+                            /*
+                             * Menu selection will be stored and current dance sequence will be
+                             * updated
+                             */
+                            updateChoreography();
 
-                            // Store new choreography properties
-                            storeCollectedMenuData();
-
-                            // Remove existing choregraphy
-                            mProjectFile.getChoreoManager().addSequence(mBeatElement);
-                            */
                         } else {
 
-                            // Add a new choreography
-                            storeCollectedMenuData();
-
-                            // Notify all corresponding beat elements that belong to this choreography
-                            mProjectFile.getChoreoManager().addSequence(mBeatElement);
+                            // Add a new dance sequence based on the properties set in the menu
+                            addNewChoreography();
                         }
 
                         // Notify the list adapter to update the modified list elements
@@ -323,6 +316,29 @@ public class BeatElementMenuDialog extends DialogFragment {
                 });
 
         return builder.create();
+    }
+
+    /**
+     * Update dance sequence for selected BeatElement
+     */
+    private void updateChoreography() {
+        // Store new choreography properties
+        storeCollectedMenuData();
+
+        // Update existing choreography
+        mProjectFile.getChoreoManager().updateSequence(mBeatElement);
+    }
+
+    /**
+     * Add new dance sequence to choreography.
+     * For every new dance sequence a unique identifier gets created
+     */
+    private void addNewChoreography() {
+        // Add a new choreography
+        storeCollectedMenuData();
+
+        // Notify all corresponding beat elements that belong to this choreography
+        mProjectFile.getChoreoManager().addNewDanceSequence(mBeatElement);
     }
 
     private void storeCollectedMenuData() {

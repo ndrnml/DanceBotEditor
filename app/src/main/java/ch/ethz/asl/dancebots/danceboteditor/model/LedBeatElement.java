@@ -22,7 +22,8 @@ public class LedBeatElement extends BeatElement {
         // Parent constructor call
         super(context, beatPos, samplePos);
 
-        // Initialize beat element properties
+        // TODO this whole chunk is obsolete
+        /*// Initialize beat element properties
         //mMotionType = LedType.DEFAULT; // TODO: Obsolete. REMOVE!
         mLedType = LedType.DEFAULT;
 
@@ -32,7 +33,7 @@ public class LedBeatElement extends BeatElement {
         // Initialize led light indices to 0
         for (int i = 0; i < NUM_LED_LIGHTS; ++i) {
             mLedLightSwitches[i] = false;
-        }
+        }*/
     }
 
     /**
@@ -145,7 +146,6 @@ public class LedBeatElement extends BeatElement {
      * @param ledLightSwitches
      */
     public void setLedLightSwitches(boolean[] ledLightSwitches) {
-
         // Set led element specific values
         mLedLightSwitches = ledLightSwitches;
     }
@@ -155,16 +155,33 @@ public class LedBeatElement extends BeatElement {
      * @param elem
      */
     public void setLedLightSwitches(BeatElement elem) {
-
         setLedLightSwitches(((LedBeatElement) elem).getLedLightSwitches());
     }
 
+    /**
+     * Set default properties of LedBeatElement
+     */
     @Override
-    public void setProperties(BeatElement elem) {
+    protected void setDefaultSubProperties() {
+        // Initialize beat element properties
+        //mMotionType = LedType.DEFAULT; // TODO: Obsolete. REMOVE!
+        mLedType = LedType.DEFAULT;
 
-        // Set general beat element properties
-        super.setProperties(elem);
+        // Initialize specific led element default properties
+        mLedLightSwitches = new boolean[NUM_LED_LIGHTS];
 
+        // Initialize led light indices to 0
+        for (int i = 0; i < NUM_LED_LIGHTS; ++i) {
+            mLedLightSwitches[i] = false;
+        }
+    }
+
+    /**
+     * Set LedBeatElement specific properties
+     * @param elem the BeatElement from which all LedBeatElement specific properties get copied
+     */
+    @Override
+    public void setSubProperties(BeatElement elem) {
         // Set LedBeatElement type
         setMotionType(elem);
 

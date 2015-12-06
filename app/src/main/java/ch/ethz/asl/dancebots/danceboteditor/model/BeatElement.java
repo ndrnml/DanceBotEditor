@@ -2,6 +2,8 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
 
+import java.util.UUID;
+
 /**
  * Created by andrin on 28.08.15.
  */
@@ -11,6 +13,7 @@ public abstract class BeatElement {
     protected static Context mContext;
 
     // Choreography properties of a beat element
+    protected UUID mChoreographyID;
     protected boolean mHasDanceSequence;
     protected int mChoreoStartIdx;
     protected int mChoreoLength;
@@ -30,13 +33,26 @@ public abstract class BeatElement {
 
     public BeatElement(Context context, int beatPosition, long samplePosition) {
 
+        // Set context to access application resources
         mContext = context;
+
+        // Initialize choreography id
+        mChoreographyID = null;
 
         // Song properties
         mBeatPosition = beatPosition;
         mSamplePosition = samplePosition;
 
-        // Default choreogrpahy values
+        // Set default BeatElement properties
+        setDefaultProperties();
+    }
+
+    /**
+     * Default properties for BeatElement
+     */
+    public void setDefaultProperties() {
+        // Default choreography values
+        mChoreographyID = null;
         mHasDanceSequence = false;
         mChoreoStartIdx = -1;
         mChoreoLength = -1;
@@ -45,12 +61,15 @@ public abstract class BeatElement {
         mMotionTypeIdx = 0;
         mFrequencyIdx = 0;
         mChoreoLengthIdx = 0;
+
+        // Call the more specific sub type setDefaultSubProperties() of sub class
+        setDefaultSubProperties();
     }
 
-    // TODO
-    public void setDefaultProperties() {
-        // TODO;
-    }
+    /**
+     * This function has to be implemented with specific sub type properties
+     */
+    protected abstract void setDefaultSubProperties();
 
     /**
      * Set beat element properties
@@ -66,8 +85,7 @@ public abstract class BeatElement {
             int motionTypeIdx,
             int frequencyIdx,
             float frequencyVal,
-            int choreoLengthIdx/*,
-            MotionType type*/) {
+            int choreoLengthIdx) {
 
         // Set all choreography properties
         mChoreoStartIdx = choreoStartIdx;
@@ -76,7 +94,6 @@ public abstract class BeatElement {
         mFrequencyIdx = frequencyIdx;
         mFrequencyVal = frequencyVal;
         mChoreoLengthIdx = choreoLengthIdx;
-        //mMotionType = type;
         mHasDanceSequence = true;
     }
 
@@ -86,14 +103,23 @@ public abstract class BeatElement {
      */
     public void setProperties(BeatElement elem) {
 
-        setProperties(elem.getChoreoStartIdx(),
+        setProperties(
+                elem.getChoreoStartIdx(),
                 elem.getChoreoLength(),
                 elem.getMotionTypeIdx(),
                 elem.getFrequencyIdx(),
                 elem.getFrequencyVal(),
-                elem.getChoreoLengthIdx()/*,
-                elem.getMotionType()*/);
+                elem.getChoreoLengthIdx());
+
+        // Call the more specific sub type setSubProperties() of sub class
+        setSubProperties(elem);
     }
+
+    /**
+     * This function has to be implemented with specific sub type properties
+     * @param elem the specific sub class element
+     */
+    public abstract void setSubProperties(BeatElement elem);
 
     /**
      * This function is implemented in the sub class
@@ -108,12 +134,25 @@ public abstract class BeatElement {
      * @return
      */
     public boolean isSameDanceSequence(BeatElement elem) {
+        return (mChoreographyID == elem.getChoreographyID());
+    }
 
+    //TODO
+    public boolean hasSameProperties(BeatElement elem) {
+        /*
         return !(mChoreoStartIdx != elem.getChoreoStartIdx() ||
                 mChoreoLength != elem.getChoreoLength() ||
                 mMotionTypeIdx != elem.getMotionTypeIdx() ||
                 mFrequencyIdx != elem.getFrequencyIdx() ||
-                mChoreoLengthIdx != elem.getChoreoLengthIdx());
+                mChoreoLengthIdx != elem.getChoreoLengthIdx());*/
+        return false;
+    }
+
+    /**
+     * @param choreoID
+     */
+    public void setChoreographyID(UUID choreoID) {
+        mChoreographyID = choreoID;
     }
 
     /**
@@ -126,7 +165,6 @@ public abstract class BeatElement {
     /**********
      * GETTERS
      **********/
-
     public int getChoreoStartIdx() {
         return mChoreoStartIdx;
     }
@@ -148,14 +186,13 @@ public abstract class BeatElement {
     public int getChoreoLengthIdx() {
         return mChoreoLengthIdx;
     }
-    /*public MotionType getMotionType() {
-        return mMotionType;
-    }*/
     public long getSamplePosition() {
         return mSamplePosition;
     }
     public float getFrequencyVal() {
         return mFrequencyVal;
     }
-
+    public UUID getChoreographyID() {
+        return mChoreographyID;
+    }
 }

@@ -21,7 +21,8 @@ public class MotorBeatElement extends BeatElement {
         // Parent constructor call
         super(context, beatPos, samplePos);
 
-        // Initialize beat element properties
+        // TODO this whole chunk is obsolete
+        /*// Initialize beat element properties
         //mMotionType = MotorType.DEFAULT; // TODO: Obsolete. Remove!
         mMotorType = MotorType.DEFAULT;
 
@@ -31,7 +32,7 @@ public class MotorBeatElement extends BeatElement {
 
         // Initialize motor element specific default absolute values
         mLeftVelocityValue = 0;
-        mRightVelocityValue = 0;
+        mRightVelocityValue = 0;*/
     }
 
     /**
@@ -160,10 +161,29 @@ public class MotorBeatElement extends BeatElement {
     }
 
     /**
+     * Set default properties of MotorBeatElement
+     */
+    @Override
+    protected void setDefaultSubProperties() {
+        // Initialize beat element properties
+        //mMotionType = MotorType.DEFAULT; // TODO: Obsolete. Remove!
+        mMotorType = MotorType.DEFAULT;
+
+        // Initialize specific motor element default properties
+        mVelocityLeftIdx = 0;
+        mVelocityRightIdx = 0;
+
+        // Initialize motor element specific default absolute values
+        mLeftVelocityValue = 0;
+        mRightVelocityValue = 0;
+    }
+
+    /**
      * Set MotorBeatElement specific properties
      * @param elem the BeatElement from which all MotorBeatElement specific properties get copied
      */
-    public void setMotorProperties(BeatElement elem) {
+    @Override
+    public void setSubProperties(BeatElement elem) {
         // Set MotorBeatElement type
         setMotionType(elem);
 
@@ -174,11 +194,11 @@ public class MotorBeatElement extends BeatElement {
         setVelocityValues(elem);
     }
 
-    /**
+    /*
      * Set general BeatElement properties
      * @param elem the BeatElement from which all properties get copied
      */
-    @Override
+    /*@Override
     public void setProperties(BeatElement elem) {
 
         // Set general beat element properties
@@ -186,7 +206,7 @@ public class MotorBeatElement extends BeatElement {
 
         // Set MotorBeatElement specific properties
         setMotorProperties(elem);
-    }
+    }*/
 
     @Override
     public MotorType getMotionType() {
