@@ -35,6 +35,13 @@ public class MotorBeatElement extends BeatElement {
         mRightVelocityValue = 0;*/
     }
 
+    public MotorBeatElement(BeatElement mBeatElement) {
+        super(null, -1, -1);
+
+        // Set choreography properties
+        mChoreographyID = mBeatElement.getChoreographyID();
+    }
+
     /**
      *
      * @param relativeBeat
@@ -106,6 +113,13 @@ public class MotorBeatElement extends BeatElement {
     }
 
     /**
+     * @param elem
+     */
+    public void setFrequencyVal(BeatElement elem) {
+        mFrequencyVal = elem.getFrequencyVal();
+    }
+
+    /**
      * Set motor element properties based on specific input value
      * @param idx
      */
@@ -161,6 +175,24 @@ public class MotorBeatElement extends BeatElement {
     }
 
     /**
+     * Store MotorBeatElement specific menu data
+     * @param motorType
+     * @param frequencyVal
+     * @param velocityLeftIdx
+     * @param velocityRightIdx
+     * @param leftVelocityVal
+     * @param rightVelocityVal
+     */
+    public void pushSelectedMenuData(MotorType motorType, float frequencyVal, int velocityLeftIdx, int velocityRightIdx, int leftVelocityVal, int rightVelocityVal) {
+        mMotorType = motorType;
+        mFrequencyVal = frequencyVal;
+        mVelocityLeftIdx = velocityLeftIdx;
+        mVelocityRightIdx = velocityRightIdx;
+        mLeftVelocityValue = leftVelocityVal;
+        mRightVelocityValue = rightVelocityVal;
+    }
+
+    /**
      * Set default properties of MotorBeatElement
      */
     @Override
@@ -168,6 +200,9 @@ public class MotorBeatElement extends BeatElement {
         // Initialize beat element properties
         //mMotionType = MotorType.DEFAULT; // TODO: Obsolete. Remove!
         mMotorType = MotorType.DEFAULT;
+
+        // Frequency
+        mFrequencyVal = 0;
 
         // Initialize specific motor element default properties
         mVelocityLeftIdx = 0;
@@ -186,6 +221,9 @@ public class MotorBeatElement extends BeatElement {
     public void setSubProperties(BeatElement elem) {
         // Set MotorBeatElement type
         setMotionType(elem);
+
+        // Frequency val
+        setFrequencyVal(elem);
 
         // Set motor element specific properties
         setVelocityIndices(elem);

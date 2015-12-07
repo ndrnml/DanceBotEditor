@@ -11,7 +11,7 @@ import android.view.MotionEvent;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
-import ch.ethz.asl.dancebots.danceboteditor.utils.ChoreographyManager;
+import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
 
 /**

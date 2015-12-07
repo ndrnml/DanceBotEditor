@@ -4,6 +4,7 @@ import android.content.Context;
 
 import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElementContents;
+import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.ui.FloatSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.ui.IntegerSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.ui.LedTypeSelectionMenu;

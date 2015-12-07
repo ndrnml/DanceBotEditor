@@ -1,4 +1,4 @@
-package ch.ethz.asl.dancebots.danceboteditor.utils;
+package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
-import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
@@ -25,6 +23,7 @@ public class ChoreographyManager {
     private Choreography<MotorBeatElement> mMotorChoreography;
 
     private final ChoreographyViewManager mBeatViews;
+
 
     /**
      * An interface that defines methods that SoundTask implements. An instance of
@@ -66,18 +65,92 @@ public class ChoreographyManager {
         mBeatViews.setMotorElementAdapter(new BeatElementAdapter<>(mContext, motorElements));
     }
 
-    public void addNewDanceSequence(BeatElement mBeatElement) {
 
-        // Generate new unique dance sequence identifier
-        UUID choreoID = UUID.randomUUID();
+    /*public void processMenuData(BeatElement beatElem) {
+
+        if (beatElem.getChoreographyID() == null) {
+
+            addNewDanceSequence(beatElem);
+
+        } else {
+
+            updateSequence(beatElem);
+
+        }
+    }*/
+
+    public void processMenuData(
+            BeatElement selectedBeatElem,
+            int slectedChoreoLengthIdx,
+            int selectedChoreoLength,
+            int selectedMotionTypeIdx,
+            int selectedFrequencyIdx,
+            LedType ledType,
+            float ledFrequencyVal,
+            boolean[] ledLightSwitches,
+            MotorType motorType,
+            float motorFrquencyVal,
+            int selectedVelocityLeftIdx,
+            int selectedVelocityRightIdx,
+            int leftVelocityVal,
+            int rightVelocityVal) {
+
+        // Set general beat element properties according to menu choices
+        selectedBeatElem.setProperties(
+                selectedMotionTypeIdx,
+                selectedFrequencyIdx,
+                slectedChoreoLengthIdx);
+
+        if (selectedBeatElem.getClass() == LedBeatElement.class) { // LED_TYPE
+
+            // Fetch and store led specific menu values; motion, frequency, switches...
+            ((LedBeatElement) selectedBeatElem).pushSelectedManuData(
+                    ledType,
+                    ledFrequencyVal,
+                    ledLightSwitches);
+
+            if (selectedBeatElem.getChoreographyID() == null) {
+
+                mLedChoregraphy.addDanceSequence((LedBeatElement) selectedBeatElem, selectedChoreoLength);
+
+            } else {
+
+                mLedChoregraphy.updateDanceSequence((LedBeatElement) selectedBeatElem, selectedChoreoLength);
+
+            }
+
+        } else if (selectedBeatElem.getClass() == MotorBeatElement.class) { // MOTOR_TYPE
+
+            // Fetch and store motor specific menu values: motion, frequency, velocities...
+            ((MotorBeatElement) selectedBeatElem).pushSelectedMenuData(
+                    motorType,
+                    motorFrquencyVal,
+                    selectedVelocityLeftIdx,
+                    selectedVelocityRightIdx,
+                    leftVelocityVal,
+                    rightVelocityVal);
+
+            if (selectedBeatElem.getChoreographyID() == null) {
+
+                mMotorChoreography.addDanceSequence((MotorBeatElement) selectedBeatElem, selectedChoreoLength);
+
+            } else {
+
+                mMotorChoreography.updateDanceSequence((MotorBeatElement) selectedBeatElem, selectedChoreoLength);
+
+            }
+        }
+    }
+
+    /*public void addNewDanceSequence(BeatElement mBeatElement) {
 
         if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE
 
-            mLedChoregraphy.addDanceSequence(choreoID, (LedBeatElement) mBeatElement);
+            mLedChoregraphy.addDanceSequence((LedBeatElement) mBeatElement);
 
         } else if (mBeatElement.getClass() == MotorBeatElement.class) { // MOTOR_TYPE
 
-            mMotorChoreography.addDanceSequence(choreoID, (MotorBeatElement) mBeatElement);
+            mMotorChoreography.addDanceSequence((MotorBeatElement) mBeatElement);
 
         }
     }
@@ -110,7 +183,7 @@ public class ChoreographyManager {
 
             mMotorChoreography.removeDanceSequence(choreoID, (MotorBeatElement) mBeatElement);
         }
-    }
+    }*/
 
     /**
      * Initialize led beat elements after successfully extracting all beats

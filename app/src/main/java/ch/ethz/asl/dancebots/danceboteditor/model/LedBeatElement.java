@@ -36,6 +36,13 @@ public class LedBeatElement extends BeatElement {
         }*/
     }
 
+    public LedBeatElement(BeatElement mBeatElement) {
+        super(null, -1, -1);
+
+        // Set choreography properties
+        mChoreographyID = mBeatElement.getChoreographyID();
+    }
+
     /**
      *
      * @param relativeBeat
@@ -142,6 +149,13 @@ public class LedBeatElement extends BeatElement {
     }
 
     /**
+     * @param elem
+     */
+    public void setFrequencyVal(BeatElement elem) {
+        mFrequencyVal = elem.getFrequencyVal();
+    }
+
+    /**
      * Set properties of led element based on specific input values
      * @param ledLightSwitches
      */
@@ -159,6 +173,19 @@ public class LedBeatElement extends BeatElement {
     }
 
     /**
+     * Store LedBeatElement specific selected menu data
+     * @param ledType
+     * @param frequencyVal
+     * @param ledLightSwitches
+     */
+    public void pushSelectedManuData(LedType ledType, float frequencyVal, boolean[] ledLightSwitches) {
+        // Store type of motion, frequency value and led light switch selection
+        mLedType = ledType;
+        mFrequencyVal = frequencyVal;
+        mLedLightSwitches = ledLightSwitches;
+    }
+
+    /**
      * Set default properties of LedBeatElement
      */
     @Override
@@ -166,6 +193,9 @@ public class LedBeatElement extends BeatElement {
         // Initialize beat element properties
         //mMotionType = LedType.DEFAULT; // TODO: Obsolete. REMOVE!
         mLedType = LedType.DEFAULT;
+
+        // Frequency
+        mFrequencyVal = 0;
 
         // Initialize specific led element default properties
         mLedLightSwitches = new boolean[NUM_LED_LIGHTS];
@@ -187,6 +217,9 @@ public class LedBeatElement extends BeatElement {
 
         // Set led element specific properties
         setLedLightSwitches(elem);
+
+        // Set led element specific frequency val
+        setFrequencyVal(elem);
     }
 
     @Override

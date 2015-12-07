@@ -14,9 +14,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import ch.ethz.asl.dancebots.danceboteditor.utils.ChoreographyManager;
+import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 

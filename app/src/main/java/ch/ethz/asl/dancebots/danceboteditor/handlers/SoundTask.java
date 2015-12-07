@@ -4,15 +4,13 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.util.Log;
 
-import java.lang.ref.WeakReference;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.utils.BeatExtractor;
-import ch.ethz.asl.dancebots.danceboteditor.utils.ChoreographyManager;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
+import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 

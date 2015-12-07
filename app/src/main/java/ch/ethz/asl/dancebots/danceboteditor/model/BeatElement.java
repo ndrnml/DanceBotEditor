@@ -12,15 +12,12 @@ public abstract class BeatElement {
     // Context properties
     protected static Context mContext;
 
-    // Choreography properties of a beat element
-    protected UUID mChoreographyID;
-    protected boolean mHasDanceSequence;
-    protected int mChoreoStartIdx;
-    protected int mChoreoLength;
-
     // Song properties of a beat element
     protected final int mBeatPosition;
     protected final long mSamplePosition;
+
+    // Choreography properties of a beat element
+    protected UUID mChoreographyID;
 
     // Menu property index of a beat element
     //protected MotionType mMotionType;
@@ -53,9 +50,6 @@ public abstract class BeatElement {
     public void setDefaultProperties() {
         // Default choreography values
         mChoreographyID = null;
-        mHasDanceSequence = false;
-        mChoreoStartIdx = -1;
-        mChoreoLength = -1;
 
         // Default menu indices
         mMotionTypeIdx = 0;
@@ -73,28 +67,19 @@ public abstract class BeatElement {
 
     /**
      * Set beat element properties
-     * @param choreoStartIdx
-     * @param choreoLength
      * @param motionTypeIdx
      * @param frequencyIdx
      * @param choreoLengthIdx
      */
     public void setProperties(
-            int choreoStartIdx,
-            int choreoLength,
             int motionTypeIdx,
             int frequencyIdx,
-            float frequencyVal,
             int choreoLengthIdx) {
 
         // Set all choreography properties
-        mChoreoStartIdx = choreoStartIdx;
-        mChoreoLength = choreoLength;
         mMotionTypeIdx = motionTypeIdx;
         mFrequencyIdx = frequencyIdx;
-        mFrequencyVal = frequencyVal;
         mChoreoLengthIdx = choreoLengthIdx;
-        mHasDanceSequence = true;
     }
 
     /**
@@ -104,11 +89,8 @@ public abstract class BeatElement {
     public void setProperties(BeatElement elem) {
 
         setProperties(
-                elem.getChoreoStartIdx(),
-                elem.getChoreoLength(),
                 elem.getMotionTypeIdx(),
                 elem.getFrequencyIdx(),
-                elem.getFrequencyVal(),
                 elem.getChoreoLengthIdx());
 
         // Call the more specific sub type setSubProperties() of sub class
@@ -140,7 +122,7 @@ public abstract class BeatElement {
     //TODO
     public boolean hasSameProperties(BeatElement elem) {
         /*
-        return !(mChoreoStartIdx != elem.getChoreoStartIdx() ||
+        return !(mChoreoStartElem != elem.getChoreoStartIdx() ||
                 mChoreoLength != elem.getChoreoLength() ||
                 mMotionTypeIdx != elem.getMotionTypeIdx() ||
                 mFrequencyIdx != elem.getFrequencyIdx() ||
@@ -155,22 +137,9 @@ public abstract class BeatElement {
         mChoreographyID = choreoID;
     }
 
-    /**
-     * @return true if BeatElement belongs to a valid dance sequence
-     */
-    public boolean hasDanceSequence() {
-        return mHasDanceSequence;
-    }
-
     /**********
      * GETTERS
      **********/
-    public int getChoreoStartIdx() {
-        return mChoreoStartIdx;
-    }
-    public int getChoreoLength() {
-        return mChoreoLength;
-    }
     public int getBeatPosition() {
         return mBeatPosition;
     }
