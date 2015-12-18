@@ -4,9 +4,12 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
+import ch.ethz.asl.dancebots.danceboteditor.ui.FloatSelectionMenu;
+import ch.ethz.asl.dancebots.danceboteditor.ui.IntegerSelectionMenu;
+import ch.ethz.asl.dancebots.danceboteditor.ui.LedTypeSelectionMenu;
+import ch.ethz.asl.dancebots.danceboteditor.ui.MotorTypeSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
@@ -81,41 +84,41 @@ public class ChoreographyManager {
 
     public void processMenuData(
             BeatElement selectedBeatElem,
-            int slectedChoreoLengthIdx,
-            int selectedChoreoLength,
+            int selectedChoreoLengthIdx,
+            IntegerSelectionMenu selectedChoreoLength,
             int selectedMotionTypeIdx,
             int selectedFrequencyIdx,
-            LedType ledType,
-            float ledFrequencyVal,
+            LedTypeSelectionMenu ledType,
+            FloatSelectionMenu ledFrequencyVal,
             boolean[] ledLightSwitches,
-            MotorType motorType,
-            float motorFrquencyVal,
+            MotorTypeSelectionMenu motorType,
+            FloatSelectionMenu motorFrquencyVal,
             int selectedVelocityLeftIdx,
             int selectedVelocityRightIdx,
-            int leftVelocityVal,
-            int rightVelocityVal) {
+            IntegerSelectionMenu leftVelocityVal,
+            IntegerSelectionMenu rightVelocityVal) {
 
         // Set general beat element properties according to menu choices
         selectedBeatElem.setProperties(
                 selectedMotionTypeIdx,
                 selectedFrequencyIdx,
-                slectedChoreoLengthIdx);
+                selectedChoreoLengthIdx);
 
         if (selectedBeatElem.getClass() == LedBeatElement.class) { // LED_TYPE
 
             // Fetch and store led specific menu values; motion, frequency, switches...
             ((LedBeatElement) selectedBeatElem).pushSelectedManuData(
-                    ledType,
-                    ledFrequencyVal,
+                    ledType.getValAt(selectedMotionTypeIdx),
+                    ledFrequencyVal.getValAt(selectedFrequencyIdx),
                     ledLightSwitches);
 
             if (selectedBeatElem.getChoreographyID() == null) {
 
-                mLedChoregraphy.addDanceSequence((LedBeatElement) selectedBeatElem, selectedChoreoLength);
+                mLedChoregraphy.addNewDanceSequence((LedBeatElement) selectedBeatElem, selectedChoreoLength.getValAt(selectedChoreoLengthIdx));
 
             } else {
 
-                mLedChoregraphy.updateDanceSequence((LedBeatElement) selectedBeatElem, selectedChoreoLength);
+                mLedChoregraphy.updateDanceSequence((LedBeatElement) selectedBeatElem, selectedChoreoLength.getValAt(selectedChoreoLengthIdx));
 
             }
 
@@ -123,20 +126,20 @@ public class ChoreographyManager {
 
             // Fetch and store motor specific menu values: motion, frequency, velocities...
             ((MotorBeatElement) selectedBeatElem).pushSelectedMenuData(
-                    motorType,
-                    motorFrquencyVal,
+                    motorType.getValAt(selectedMotionTypeIdx),
+                    motorFrquencyVal.getValAt(selectedFrequencyIdx),
                     selectedVelocityLeftIdx,
                     selectedVelocityRightIdx,
-                    leftVelocityVal,
-                    rightVelocityVal);
+                    leftVelocityVal.getValAt(selectedVelocityLeftIdx),
+                    rightVelocityVal.getValAt(selectedVelocityRightIdx));
 
             if (selectedBeatElem.getChoreographyID() == null) {
 
-                mMotorChoreography.addDanceSequence((MotorBeatElement) selectedBeatElem, selectedChoreoLength);
+                mMotorChoreography.addNewDanceSequence((MotorBeatElement) selectedBeatElem, selectedChoreoLength.getValAt(selectedChoreoLengthIdx));
 
             } else {
 
-                mMotorChoreography.updateDanceSequence((MotorBeatElement) selectedBeatElem, selectedChoreoLength);
+                mMotorChoreography.updateDanceSequence((MotorBeatElement) selectedBeatElem, selectedChoreoLength.getValAt(selectedChoreoLengthIdx));
 
             }
         }

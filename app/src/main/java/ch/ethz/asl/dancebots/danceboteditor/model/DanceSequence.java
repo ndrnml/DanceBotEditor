@@ -27,7 +27,7 @@ public class DanceSequence<T extends BeatElement> {
         mLength = -1;
     }
 
-    public void setProperties(UUID choreoID, T startElem, int danceSequenceLength) {
+    public void updateProperties(UUID choreoID, T startElem, int danceSequenceLength) {
         mSequenceID = choreoID;
         mStartElement = startElem;
         mLength = danceSequenceLength;

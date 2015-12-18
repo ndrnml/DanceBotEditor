@@ -314,18 +314,18 @@ public class BeatElementMenuDialog extends DialogFragment {
                         mProjectFile.getChoreoManager().processMenuData(
                                 mBeatElement,
                                 mSelectedChoreoLengthIdx,
-                                mChoreoLengthMenu.getValAt(mSelectedChoreoLengthIdx),
+                                mChoreoLengthMenu/*.getValAt(mSelectedChoreoLengthIdx)*/,
                                 mSelectedMotionTypeIdx,
                                 mSelectedFrequencyIdx,
-                                mLedTypeMenu.getValAt(mSelectedMotionTypeIdx),
-                                mLedFrequencyMenu.getValAt(mSelectedFrequencyIdx),
+                                mLedTypeMenu/*.getValAt(mSelectedMotionTypeIdx)*/,
+                                mLedFrequencyMenu/*.getValAt(mSelectedFrequencyIdx)*/,
                                 mLedLightSwitches,
-                                mMotorTypeMenu.getValAt(mSelectedMotionTypeIdx),
-                                mMotorFrequencyMenu.getValAt(mSelectedFrequencyIdx),
+                                mMotorTypeMenu/*.getValAt(mSelectedMotionTypeIdx)*/,
+                                mMotorFrequencyMenu/*.getValAt(mSelectedFrequencyIdx)*/,
                                 mSelectedVelocityLeftIdx,
                                 mSelectedVelocityRightIdx,
-                                mVelocityMenu.getValAt(mSelectedVelocityLeftIdx),
-                                mVelocityMenu.getValAt(mSelectedVelocityRightIdx));
+                                mVelocityMenu/*.getValAt(mSelectedVelocityLeftIdx)*/,
+                                mVelocityMenu);/*.getValAt(mSelectedVelocityRightIdx)*/
 
                         // Notify the list adapter to update the modified list elements
                         mBeatElementAdapter.notifyDataSetChanged();
@@ -340,7 +340,7 @@ public class BeatElementMenuDialog extends DialogFragment {
         return builder.create();
     }
 
-    private void storeAndProcessMenuData() {
+    /*private void storeAndProcessMenuData() {
 
         // Initialize dummy beat element
         BeatElement dummyBeatElement = null;
@@ -364,7 +364,7 @@ public class BeatElementMenuDialog extends DialogFragment {
     /**
      * Update dance sequence for selected BeatElement
      */
-    private void updateChoreography() {
+    /*private void updateChoreography() {
 
         // Initialize dummy beat element
         BeatElement dummyBeatElement = null;
@@ -390,7 +390,7 @@ public class BeatElementMenuDialog extends DialogFragment {
      * Add new dance sequence to choreography.
      * For every new dance sequence a unique identifier gets created
      */
-    private void addNewChoreography() {
+    /*private void addNewChoreography() {
         // Add a new choreography
         storeMenuData(mBeatElement);
 
@@ -432,6 +432,6 @@ public class BeatElementMenuDialog extends DialogFragment {
                     mVelocityMenu.getValAt(mSelectedVelocityLeftIdx),
                     mVelocityMenu.getValAt(mSelectedVelocityRightIdx));
         }
-    }
+    }*/
 
 }
