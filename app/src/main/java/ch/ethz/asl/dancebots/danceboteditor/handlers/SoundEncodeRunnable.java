@@ -73,6 +73,10 @@ public class SoundEncodeRunnable implements Runnable {
         long getNumSamples();
     }
 
+    /**
+     *
+     * @param soundTask
+     */
     public SoundEncodeRunnable(SoundTask soundTask) {
 
         mSoundTask = soundTask;
@@ -133,7 +137,9 @@ public class SoundEncodeRunnable implements Runnable {
 
             if (mp3File.exists()) {
                 mp3File.delete();
+                Log.d(LOG_TAG, "Existing file deleted");
             }
+
             try {
                 FileOutputStream fos = new FileOutputStream(mp3File.getPath());
                 fos.write(mp3buf);
@@ -194,6 +200,8 @@ public class SoundEncodeRunnable implements Runnable {
 
         short dataBuffer[] = new short[maxNumSamplesInMsg];
 
+        short lastSampleLevel = DATA_LEVEL;
+
         for (int i = 0; i < numBeats - 1; ++i) {
 
             MotorBeatElement motorElement = motorElements.get(i);
@@ -205,7 +213,6 @@ public class SoundEncodeRunnable implements Runnable {
 
             int samplesToProcess = (int) (endSamplePosition - startSamplePosition);
 
-            short lastSampleLevel = DATA_LEVEL;
             int samplePos = 0;
 
             while (samplePos < samplesToProcess) {
@@ -219,6 +226,7 @@ public class SoundEncodeRunnable implements Runnable {
 
                 int numSamplesInMsg = calculateMessage(dataBuffer, vLeft, vRight, led, lastSampleLevel);
 
+                // Get last sample level
                 lastSampleLevel = dataBuffer[numSamplesInMsg - 1];
 
                 // TODO: Is this check valid?
@@ -247,6 +255,7 @@ public class SoundEncodeRunnable implements Runnable {
             for (int i = 0; i < msgLength; ++i) {
                 pcmData[msgStart + i] = dataBuffer[i];
             }
+
             return DanceBotError.NO_ERROR;
 
         } else {

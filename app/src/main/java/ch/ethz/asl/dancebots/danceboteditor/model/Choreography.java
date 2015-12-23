@@ -141,13 +141,43 @@ public class Choreography<T extends BeatElement> {
         }
 
         // Overwrite existing elements
-        overwriteDanceSequence(oldDanceSequence.getChoreographyID(), oldStartElement, newDanceSequenceLength);
+        overwriteElements(oldDanceSequence.getChoreographyID(), oldStartElement, newDanceSequenceLength);
 
         // Update dance sequence
         oldDanceSequence.updateProperties(danceSequenceID, oldStartElement, newDanceSequenceLength);
     }
 
-    private void overwriteDanceSequence(UUID choreoID, T startElem, int danceSequenceLength) {
+    /**
+     *
+     * @param selectedBeatElem
+     */
+    public void removeDanceSequence(T selectedBeatElem) {
+
+        // Get unique identifier of existing dance sequence
+        UUID danceSequenceID = selectedBeatElem.getChoreographyID();
+
+        DanceSequence<T> selectedDanceSequence = mDanceSequences.get(danceSequenceID);
+
+        int danceSequenceLength = selectedDanceSequence.getLength();
+
+        int startIdx = selectedDanceSequence.getStartElement().getBeatPosition();
+        int endIdx = startIdx + danceSequenceLength;
+
+        // Reset dance sequence elements
+        resetElements(startIdx, endIdx);
+
+        // Remove dance sequence from hash table
+        mDanceSequences.remove(danceSequenceID);
+
+    }
+
+    /**
+     *
+     * @param choreoID
+     * @param startElem
+     * @param danceSequenceLength
+     */
+    private void overwriteElements(UUID choreoID, T startElem, int danceSequenceLength) {
 
         // Get start element and length of dance sequence
         int startIdx = startElem.getBeatPosition();
@@ -192,9 +222,15 @@ public class Choreography<T extends BeatElement> {
         }
     }
 
-    private void removeDanceSequence(int startIdx, int endIdx) {
+    /**
+     * Reset all dance sequence elements from startIdx to endIdx (including the endIdx element)
+     *
+     * @param startIdx first element that is removed from the choreography
+     * @param endIdx last element that is removed from the choreography
+     */
+    private void resetElements(int startIdx, int endIdx) {
 
-        for (int i = startIdx; i < endIdx; ++i) {
+        for (int i = startIdx; i <= endIdx; ++i) {
 
             // Get next element to remove
             T nextElem = mBeatElements.get(i);
@@ -209,93 +245,6 @@ public class Choreography<T extends BeatElement> {
     }
 
     /**
-     * Compute the length of a dance sequence beginning at startElem
-     *
-     * @param choreoID  unique dance sequence identifier
-     * @param startElem start element of the dance sequence
-     * @return length of dance sequence beginning at startElem
-     */
-    private int getDanceSequenceLength(UUID choreoID, T startElem) {
-
-        // Get absolute start index of old start element
-        int startIdx = startElem.getBeatPosition();
-
-        // Initialize length
-        int length = 1;
-
-        // Compute next element
-        int nextElemIdx = startIdx + 1;
-        T nextElem = mBeatElements.get(nextElemIdx);
-
-        /*
-         * While the following elements have the same choreID they belong to the old dance
-         * sequence
-         */
-        while (nextElemIdx < mNumBeats && nextElem.getChoreographyID() == choreoID) {
-            length += 1;
-            nextElemIdx += 1;
-            nextElem = mBeatElements.get(nextElemIdx);
-        }
-
-        // Return the computed length
-        return length;
-    }
-
-    /**
-     * Remove existing dance sequence with unique identifier choreoID, beginning at startIdx
-     *
-     * @param choreoID unique dance sequence identifier
-     * @param startIdx start index for the dance sequence, that is removed
-     */
-    private void removeDanceSequence(UUID choreoID, int startIdx) {
-
-        // Fetch first element to remove
-        int nextElemIdx = startIdx;
-        T nextElem = mBeatElements.get(nextElemIdx);
-
-        while (nextElem.getChoreographyID() == choreoID) {
-
-            // Set default properties
-            nextElem.setDefaultProperties();
-
-            if (nextElemIdx + 1 < mNumBeats) {
-                // Fetch next element
-                nextElemIdx += 1;
-                nextElem = mBeatElements.get(nextElemIdx);
-            } else {
-                break;
-            }
-        }
-    }
-
-    /*public void removeDanceSequence(UUID choreoID, T startElem) {
-
-        int startIdx = startElem.getBeatPosition();
-        int choreoLength = startElem.getChoreoLength();
-
-        // At least the clicked element belongs to a choreography
-        int length = 1;
-        int nextElemIdx = startIdx + 1;
-
-        T nextElem = mBeatElements.get(nextElemIdx);
-
-        // Update element if it does not belong to any choreography and if the current length is
-        // less than the total choreography length
-        while (nextElem.isSameDanceSequence(startElem) && (length < choreoLength)) {
-
-            // Copy the element properties
-            nextElem.setDefaultProperties();
-
-            // Increment the current length
-            length += 1;
-
-            // Increment element
-            nextElemIdx += 1;
-            nextElem = mBeatElements.get(nextElemIdx);
-        }
-    }*/
-
-    /**
      * Check if elem is not assigned to any other dance sequence
      *
      * @param choreoID existing dance sequence identifier
@@ -307,9 +256,10 @@ public class Choreography<T extends BeatElement> {
     }
 
     /**
-     * @return
+     * @return BeatElement list
      */
     public ArrayList<T> getBeatElements() {
         return mBeatElements;
     }
+
 }

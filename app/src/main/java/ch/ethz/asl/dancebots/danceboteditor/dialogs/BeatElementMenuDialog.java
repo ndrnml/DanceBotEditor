@@ -288,22 +288,6 @@ public class BeatElementMenuDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
 
-                        //storeAndProcessMenuData();
-
-                        /*if (mBeatElement.hasDanceSequence()) { */
-
-                            /*
-                             * Menu selection will be stored and current dance sequence will be
-                             * updated
-                             */
-                        /*    updateChoreography();
-
-                        } else {
-
-                            // Add a new dance sequence based on the properties set in the menu
-                            addNewChoreography();
-                        }*/
-
                         // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         // TODO:
                         // TODO make classes for LedElementMenuProperties, MotorElementMenuProperties!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -311,7 +295,7 @@ public class BeatElementMenuDialog extends DialogFragment {
                         // Process all check boxes
                         processCheckBoxes();
 
-                        mProjectFile.getChoreoManager().processMenuData(
+                        mProjectFile.getChoreoManager().processPositiveClick(
                                 mBeatElement,
                                 mSelectedChoreoLengthIdx,
                                 mChoreoLengthMenu/*.getValAt(mSelectedChoreoLengthIdx)*/,
@@ -333,105 +317,16 @@ public class BeatElementMenuDialog extends DialogFragment {
                 })
                 .setNegativeButton(R.string.txt_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+
                         // Discard BeatElement properties
+                        mProjectFile.getChoreoManager().processNegativeClick(mBeatElement);
+
+                        // Notify the list adapter to update the modified list elements
+                        mBeatElementAdapter.notifyDataSetChanged();
                     }
                 });
 
         return builder.create();
     }
-
-    /*private void storeAndProcessMenuData() {
-
-        // Initialize dummy beat element
-        BeatElement dummyBeatElement = null;
-
-        // Save Led/Motor element properties
-        if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE
-
-            dummyBeatElement = new LedBeatElement(mBeatElement);
-
-        } else if (mBeatElement.getClass() == MotorBeatElement.class) { // MOVE_TYPE
-
-            dummyBeatElement = new MotorBeatElement(mBeatElement);
-        }
-
-        // Store menu data to dummy object, that is deleted afterwards
-        storeMenuData(dummyBeatElement);
-
-        //mProjectFile.getChoreoManager().processMenuData(dummyBeatElement);
-    }
-
-    /**
-     * Update dance sequence for selected BeatElement
-     */
-    /*private void updateChoreography() {
-
-        // Initialize dummy beat element
-        BeatElement dummyBeatElement = null;
-
-        // Save Led/Motor element properties
-        if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE
-
-            dummyBeatElement = new LedBeatElement(mBeatElement);
-
-        } else if (mBeatElement.getClass() == MotorBeatElement.class) { // MOVE_TYPE
-
-            dummyBeatElement = new MotorBeatElement(mBeatElement);
-        }
-
-        // Store menu data to dummy object, that is deleted afterwards
-        storeMenuData(dummyBeatElement);
-
-        // Update existing choreography
-        //mProjectFile.getChoreoManager().updateSequence(dummyBeatElement);
-    }
-
-    /**
-     * Add new dance sequence to choreography.
-     * For every new dance sequence a unique identifier gets created
-     */
-    /*private void addNewChoreography() {
-        // Add a new choreography
-        storeMenuData(mBeatElement);
-
-        // Notify all corresponding beat elements that belong to this choreography
-        //mProjectFile.getChoreoManager().addNewDanceSequence(mBeatElement);
-    }
-
-    private void storeMenuData(BeatElement elem) {
-
-        // Get the selected length of the choreography
-        int selectedChoreoLength = mChoreoLengthMenu.getValAt(mSelectedChoreoLengthIdx);
-
-        // Set general beat element properties according to menu choices
-        elem.setProperties(
-                mSelectedMotionTypeIdx,
-                mSelectedFrequencyIdx,
-                mSelectedChoreoLengthIdx);
-
-        // Save Led/Motor element properties
-        if (elem.getClass() == LedBeatElement.class) { // LED_TYPE
-
-            // Process all check boxes
-            processCheckBoxes();
-
-            // Fetch and store led specific menu values; motion, frequency, switches...
-            ((LedBeatElement) elem).pushSelectedManuData(
-                    mLedTypeMenu.getValAt(mSelectedMotionTypeIdx),
-                    mLedFrequencyMenu.getValAt(mSelectedFrequencyIdx),
-                    mLedLightSwitches);
-
-        } else if (elem.getClass() == MotorBeatElement.class) { // MOVE_TYPE
-
-            // Fetch and store motor specific menu values: motion, frequency, velocities...
-            ((MotorBeatElement) elem).pushSelectedMenuData(
-                    mMotorTypeMenu.getValAt(mSelectedMotionTypeIdx),
-                    mMotorFrequencyMenu.getValAt(mSelectedFrequencyIdx),
-                    mSelectedVelocityLeftIdx,
-                    mSelectedVelocityRightIdx,
-                    mVelocityMenu.getValAt(mSelectedVelocityLeftIdx),
-                    mVelocityMenu.getValAt(mSelectedVelocityRightIdx));
-        }
-    }*/
 
 }
