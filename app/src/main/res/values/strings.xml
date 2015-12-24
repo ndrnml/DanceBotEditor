@@ -17,7 +17,7 @@
     <string name="txt_song_artist">Artist:</string>
     <string name="txt_song_duration">Länge:</string>
     <string name="txt_save">OK</string>
-    <string name="txt_cancel">Löschen</string>
+    <string name="txt_cancel">Abbrechen</string>
     <string name="txt_submenu_title">SubmenuTitle</string>
     <string name="txt_velocity_right">Geschwindigkeit Rechts</string>
     <string name="txt_play">Play</string>
@@ -33,4 +33,5 @@
     <string name="led_type_blink">Blinken</string>
     <string name="led_type_same_blink">Gleichmässig</string>
     <string name="led_type_constant">Konstant</string>
+    <string name="txt_delete">Löschen</string>
 </resources>

@@ -65,6 +65,7 @@ public class SubMenuDialog extends DialogFragment {
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 // TODO: change title
                 //subMenuTitleView.setText(newVal);
+                int i = 1;
             }
         });
 

@@ -315,7 +315,7 @@ public class BeatElementMenuDialog extends DialogFragment {
                         mBeatElementAdapter.notifyDataSetChanged();
                     }
                 })
-                .setNegativeButton(R.string.txt_cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.txt_delete, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
                         // Discard BeatElement properties

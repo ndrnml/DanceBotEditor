@@ -1,5 +1,4 @@
-APP_PLATFORM := android-21
-APP_ABI := armeabi
+APP_ABI := armeabi x86
 # TODO: this is optional?
 APP_STL := c++_static
 APP_CPPFLAGS += -frtti
