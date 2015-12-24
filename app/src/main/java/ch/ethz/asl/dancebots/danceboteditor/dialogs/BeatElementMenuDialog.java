@@ -70,7 +70,7 @@ public class BeatElementMenuDialog extends DialogFragment {
      * It loads all relevant information (menu lists) for setting up the menu
      * @param elem
      */
-    public void initializeMenu(BeatElementAdapter adapter, BeatElement elem) {
+    public void initializeMenuFromElement(BeatElementAdapter adapter, BeatElement elem) {
 
         // Contextual information
         mBeatElementAdapter = adapter;
@@ -95,6 +95,7 @@ public class BeatElementMenuDialog extends DialogFragment {
         // Further menu lists based on motion type
         if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE
 
+            // Load LedElement type specific menu strings
             mMenuListMotionTypes = mLedTypeMenu.getStrings();
             mMenuListFrequencies = mLedFrequencyMenu.getStrings();
 
@@ -103,10 +104,23 @@ public class BeatElementMenuDialog extends DialogFragment {
             mCheckBoxes = new ArrayList<>(mNumCheckBoxes);
             mLedLightSwitches = new boolean[mNumCheckBoxes];
 
+            // Load LedElement type specific property indices
+            mSelectedMotionTypeIdx = elem.getMotionTypeIdx();
+            mSelectedFrequencyIdx = elem.getFrequencyIdx();
+            mSelectedChoreoLengthIdx = elem.getChoreoLengthIdx();
+
         } else if (mBeatElement.getClass() == MotorBeatElement.class) { // MOVE_TYPE
 
+            // Load MotorElement type specific menu strings
             mMenuListMotionTypes = mMotorTypeMenu.getStrings();
             mMenuListFrequencies = mMotorFrequencyMenu.getStrings();
+
+            // Load MotorElement type specific property indices
+            mSelectedMotionTypeIdx = elem.getMotionTypeIdx();
+            mSelectedFrequencyIdx = elem.getFrequencyIdx();
+            mSelectedVelocityLeftIdx = ((MotorBeatElement) elem).getVelocityLeftIdx();
+            mSelectedVelocityRightIdx = ((MotorBeatElement) elem).getVelocityRightIdx();
+            mSelectedChoreoLengthIdx = elem.getChoreoLengthIdx();
 
         } else {
             Log.v(LOG_TAG, "Error doing menu initialization based on beat element type");

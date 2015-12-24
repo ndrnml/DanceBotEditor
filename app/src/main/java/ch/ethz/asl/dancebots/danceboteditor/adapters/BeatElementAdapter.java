@@ -2,8 +2,6 @@ package ch.ethz.asl.dancebots.danceboteditor.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -69,7 +67,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
 
                 BeatElementMenuDialog dialog = new BeatElementMenuDialog();
 
-                dialog.initializeMenu(BeatElementAdapter.this, mBeatElements.get(vh.getAdapterPosition()));
+                dialog.initializeMenuFromElement(BeatElementAdapter.this, mBeatElements.get(vh.getAdapterPosition()));
                 dialog.show(((Activity) mContext).getFragmentManager(), "element_menu");
             }
         });
