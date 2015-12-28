@@ -99,13 +99,6 @@ public class MotorBeatElement extends BeatElement {
     }
 
     /**
-     * @param motorType
-     */
-    public void setMotionType(MotorType motorType) {
-        mMotorType = motorType;
-    }
-
-    /**
      * @param elem
      */
     public void setMotionType(BeatElement elem) {
@@ -231,20 +224,6 @@ public class MotorBeatElement extends BeatElement {
         // Set motor element specific absolute values
         setVelocityValues(elem);
     }
-
-    /*
-     * Set general BeatElement properties
-     * @param elem the BeatElement from which all properties get copied
-     */
-    /*@Override
-    public void setProperties(BeatElement elem) {
-
-        // Set general beat element properties
-        super.setProperties(elem);
-
-        // Set MotorBeatElement specific properties
-        setMotorProperties(elem);
-    }*/
 
     @Override
     public MotorType getMotionType() {

@@ -258,9 +258,7 @@ public class EditorActivity extends Activity {
 
             case R.id.editor_action_save:
 
-                //SaveMP3Handler sv = new SaveMP3Handler(EditorActivity.this);
-                //sv.execute(mProjectManager);
-
+                // Start saving the project mp3
                 SoundManager.startEncoding(this, mProjectManager.getDanceBotMusicFile(), mProjectManager.getChoreoManager());
 
                 return true;

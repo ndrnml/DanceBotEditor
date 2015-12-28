@@ -73,17 +73,21 @@ public class LedBeatElement extends BeatElement {
 
                 byte b = computeByteFromSwitches();
 
-                if ((relativeBeat * mFrequencyVal) % 2 == 0) {
+                if (Math.round(relativeBeat * mFrequencyVal) % 2 == 0) {
+
                     ledByte = b;
+
                 } else {
+
                     ledByte = (byte) ~b;
+
                 }
 
                 break;
 
             case SAME_BLINK:
 
-                if ((relativeBeat * mFrequencyVal) % 2 == 0) {
+                if (Math.round(relativeBeat * mFrequencyVal) % 2 == 0) {
 
                     ledByte = 0;
 
@@ -138,12 +142,8 @@ public class LedBeatElement extends BeatElement {
     }
 
     /**
-     * @param ledType
+     * @param elem
      */
-    public void setMotionType(LedType ledType) {
-        mLedType = ledType;
-    }
-
     public void setMotionType(BeatElement elem) {
         mLedType = ((LedBeatElement) elem).getMotionType();
     }
