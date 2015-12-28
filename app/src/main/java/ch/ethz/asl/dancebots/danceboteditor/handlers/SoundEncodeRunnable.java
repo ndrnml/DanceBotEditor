@@ -232,12 +232,12 @@ public class SoundEncodeRunnable implements Runnable {
             // Iterate while not all samples at the current beat are processed
             while (samplePos < samplesToProcess) {
 
-                float relativeBeat = samplePos / samplesToProcess;
+                float relativeBeat = (float) samplePos / (float) samplesToProcess;
 
                 // Initialize velocities and led
                 short vLeft = 0;
                 short vRight = 0;
-                short led = 0;
+                byte led = 0;
 
                 // Check the current motor element is different from the DEFAULT state
                 if (motorElement.getMotionType() != MotorType.DEFAULT) {
@@ -316,7 +316,7 @@ public class SoundEncodeRunnable implements Runnable {
      * @param lastBitLevel
      * @return the written samples
      */
-    private int calculateMessage(short[] dataBuffer, short vLeft, short vRight, short led, short lastBitLevel) {
+    private int calculateMessage(short[] dataBuffer, short vLeft, short vRight, byte led, short lastBitLevel) {
 
         // TODO: WHERE IS CHECKED THAT dataBuffer IS NOT OUT OF BOUND?
 
@@ -408,10 +408,7 @@ public class SoundEncodeRunnable implements Runnable {
         }
 
         // Parse led byte
-        byte ledByte = (byte) 0xFF;
-
-        // Get bits for led
-        ledByte &= led;
+        byte ledByte = led;
 
         // Write led message
         for (int i = 0; i < 8; ++i) {

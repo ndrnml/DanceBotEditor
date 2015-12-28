@@ -10,7 +10,7 @@ import java.util.EnumSet;
  */
 public class BeatElementContents {
 
-    private final int VELOCITY_MIN = 10;
+    private final int VELOCITY_MIN = 0;
     private final int VELOCITY_MAX = 100;
     private final int VELOCITY_STEP = 10;
     private final int CHOREO_LENGTH_MIN = 1;

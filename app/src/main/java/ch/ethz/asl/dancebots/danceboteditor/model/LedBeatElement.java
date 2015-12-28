@@ -62,10 +62,10 @@ public class LedBeatElement extends BeatElement {
 
             case RANDOM:
 
-                // TODO: Where comes frequency and relative beat into place?
-                byte[] bs = new byte[50];
+                int numRands = (int) (relativeBeat * mFrequencyVal);
+                byte[] bs = new byte[numRands];
                 new Random().nextBytes(bs);
-                ledByte = bs[new Random().nextInt(50)];
+                ledByte = bs[new Random().nextInt(numRands)];
 
                 break;
 
@@ -73,26 +73,19 @@ public class LedBeatElement extends BeatElement {
 
                 byte b = computeByteFromSwitches();
 
-                if (Math.round(relativeBeat * mFrequencyVal) % 2 == 0) {
-
+                if (Math.round(relativeBeat * 100 * mFrequencyVal) % 2 == 0) {
                     ledByte = b;
-
                 } else {
-
                     ledByte = (byte) ~b;
-
                 }
 
                 break;
 
             case SAME_BLINK:
 
-                if (Math.round(relativeBeat * mFrequencyVal) % 2 == 0) {
-
+                if (Math.round(relativeBeat * 100 * mFrequencyVal) % 2 == 0) {
                     ledByte = 0;
-
                 } else {
-
                     ledByte = computeByteFromSwitches();
                 }
 
