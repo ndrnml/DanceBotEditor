@@ -88,7 +88,7 @@ public class EditorActivity extends Activity {
 
             // TODO: Test with 1 thread, compare results
             // Perform beat extraction in async task
-            SoundManager.startDecoding(this, mProjectManager.getDanceBotMusicFile(), null, 4);
+            SoundManager.startDecoding(this, mProjectManager.getDanceBotMusicFile(), null, 1);
 
             // TODO remove or change this (THIS WAS ADDED FOR THE LONG CLICK CAPABILITY)
             //registerForContextMenu(mMotorView);

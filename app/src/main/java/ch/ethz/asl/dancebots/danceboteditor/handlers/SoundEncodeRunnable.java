@@ -6,9 +6,12 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
+import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Encoder;
@@ -115,8 +118,11 @@ public class SoundEncodeRunnable implements Runnable {
             short[] pcmMusic = new short[(int)numSamples];
             short[] pcmData = new short[(int)numSamples];
 
+            // Initialize
+            Arrays.fill(pcmData, (short) -DATA_LEVEL);
+
             // Prepare data channel and music channel
-            int result = fillRawDataChannel(pcmData);
+            int result = generateDataChannel(pcmData);
             //int result = Decoder.transfer(pcmData);
             result = Decoder.transfer(pcmMusic);
 
@@ -173,7 +179,7 @@ public class SoundEncodeRunnable implements Runnable {
      * @param pcmData
      * @return
      */
-    private int fillRawDataChannel(short[] pcmData) {
+    private int generateDataChannel(short[] pcmData) {
 
         // Get beat element lists for motor and led elements
         ArrayList<MotorBeatElement> motorElements = mSoundTask.getMotorElements();
@@ -189,21 +195,27 @@ public class SoundEncodeRunnable implements Runnable {
         // Compute the nominal sampling scale
         float sampleScale = samplingRate / SAMPLE_FREQUENCY_NOMINAL;
 
-        // TODO: round up or down?
+        // Round to the closest Integer
         mNumSamplesZero = Math.round(sampleScale * BIT_LENGTH_ZERO_NOMINAL);
         mNumSamplesOne = Math.round(sampleScale * BIT_LENGTH_ONE_NOMINAL);
         mNumSamplesReset = Math.round(sampleScale * BIT_LENGTH_RESET_NOMINAL);
 
+        // Define the maximum number of bits in a robot message
         int numBitsInMsg = 2 * (NUM_BIT_MOTOR + 1) + 8;
 
+        // Define the maximum number of samples in a robot message
         int maxNumSamplesInMsg = numBitsInMsg * mNumSamplesOne + mNumSamplesReset;
 
+        // Initialize a new data buffer, which stores the current calculated message
         short dataBuffer[] = new short[maxNumSamplesInMsg];
 
+        // Keep a state of the last sample written
         short lastSampleLevel = DATA_LEVEL;
 
+        // Iterate over all detected beats in the song
         for (int i = 0; i < numBeats - 1; ++i) {
 
+            // Get the corresponding MotorBeatElement and LedBeatElement
             MotorBeatElement motorElement = motorElements.get(i);
             LedBeatElement ledElement = ledElements.get(i);
 
@@ -211,33 +223,52 @@ public class SoundEncodeRunnable implements Runnable {
             long startSamplePosition = motorElements.get(i).getSamplePosition();
             long endSamplePosition = motorElements.get(i + 1).getSamplePosition();
 
+            // Compute the total number of samples to process for the current beat
             int samplesToProcess = (int) (endSamplePosition - startSamplePosition);
 
+            // Initialize the (current) relative sample start position to zero
             int samplePos = 0;
 
+            // Iterate while not all samples at the current beat are processed
             while (samplePos < samplesToProcess) {
 
                 float relativeBeat = samplePos / samplesToProcess;
 
-                // TODO: is this cast (short) valid?
-                short vLeft = (short) motorElement.getVelocityLeft(relativeBeat);
-                short vRight = (short) motorElement.getVelocityRight(relativeBeat);
-                short led = ledElement.getLedBytes(relativeBeat);
+                // Initialize velocities and led
+                short vLeft = 0;
+                short vRight = 0;
+                short led = 0;
+
+                // Check the current motor element is different from the DEFAULT state
+                if (motorElement.getMotionType() != MotorType.DEFAULT) {
+                    vLeft = (short) motorElement.getVelocityLeft(relativeBeat);
+                    vRight = (short) motorElement.getVelocityRight(relativeBeat);
+                }
+
+                // Check the current led element is different from the DEFAULT state
+                if (ledElement.getMotionType() != LedType.DEFAULT) {
+                    led = ledElement.getLedBytes(relativeBeat);
+                }
 
                 int numSamplesInMsg = calculateMessage(dataBuffer, vLeft, vRight, led, lastSampleLevel);
 
                 // Get last sample level
                 lastSampleLevel = dataBuffer[numSamplesInMsg - 1];
 
-                // TODO: Is this check valid?
+                /*
+                 * If the end of samples to process is not reached, the data buffer is copied to
+                 * pcm buffer
+                 */
                 if (samplePos + numSamplesInMsg < samplesToProcess) {
 
+                    // Compute the current absolute sample position and write data to the pcm buffer
                     int currentSamplePosition = (int) startSamplePosition + samplePos;
-                    int error = writeMessage(pcmData, dataBuffer, currentSamplePosition, numSamplesInMsg);
+                    // Write calculated data message to pcm buffer
+                    writeMessage(pcmData, dataBuffer, currentSamplePosition, numSamplesInMsg);
 
                 } else {
 
-                    // If this happens, the message is too long
+                    // If this happens, all messages have been written for the current beat
                     break;
                 }
 
@@ -248,6 +279,14 @@ public class SoundEncodeRunnable implements Runnable {
         return -1;
     }
 
+    /**
+     * TODO
+     * @param pcmData
+     * @param dataBuffer
+     * @param msgStart
+     * @param msgLength
+     * @return
+     */
     private int writeMessage(short[] pcmData, short[] dataBuffer, int msgStart, int msgLength) {
 
         if (msgStart > 0 && (msgStart + msgLength < mSoundTask.getNumSamples())) {
