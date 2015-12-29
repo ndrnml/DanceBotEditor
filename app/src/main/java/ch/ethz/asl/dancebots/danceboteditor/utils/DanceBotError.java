@@ -6,13 +6,14 @@ package ch.ethz.asl.dancebots.danceboteditor.utils;
 public interface DanceBotError {
 
     // No errors
-    int NO_ERROR = -1;
+    int ERROR = -1;
+    int NO_ERROR = 1;
 
     int MPG123_OK = 0;
 
     // Errors
-    int DECODING_ERR = 1;
-    int BEAT_EXTRACTION_ERR = 2;
+    int MPG123_FORMAT_ERROR = 2;
+    int BEAT_EXTRACTION_ERR = 3;
 
-    int WRITE_ERROR = 3;
+    int WRITE_ERROR = 4;
 }

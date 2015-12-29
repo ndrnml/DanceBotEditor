@@ -9,12 +9,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.adapters.SongListAdapter;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
+import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 
 /**
  * Created by andrin on 06.07.15.
@@ -63,7 +66,8 @@ public class MediaLibraryActivity extends ListActivity {
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
 
-        if(musicCursor !=null && musicCursor.moveToFirst()){
+        // Check if media resolver cursor is at a valid position
+        if (musicCursor != null && musicCursor.moveToFirst()) {
 
             // Get audio file meta data columns
             int titleColumn = musicCursor.getColumnIndex
@@ -74,26 +78,58 @@ public class MediaLibraryActivity extends ListActivity {
                     (MediaStore.Audio.Media.ARTIST);
             int durationColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.DURATION);
-            // int durationColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.SIZE);
 
             // Add audio information to list
             do {
-                //long thisId = musicCursor.getLong(idColumn);
                 Uri path = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, musicCursor.getString(idColumn));
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
                 int thisDuration = musicCursor.getInt(durationColumn);
 
-                mSongListTitle.add(thisTitle);
-                mSongListArtist.add(thisArtist);
-                mSongListPath.add(getRealPathFromURI(this, path));
-                mSongListDuration.add(thisDuration);
+                // TODO change this. Some mp3 files are not listed!
+                if (getMimeType(getRealPathFromURI(this, path)).equals("audio/mpeg")/*Decoder.checkAudioFormat(getRealPathFromURI(this, path)) == DanceBotError.NO_ERROR*/) {
+                    mSongListTitle.add(thisTitle);
+                    mSongListArtist.add(thisArtist);
+                    mSongListPath.add(getRealPathFromURI(this, path));
+                    mSongListDuration.add(thisDuration);
+                }
             }
             while (musicCursor.moveToNext());
         }
     }
 
-    // retrieve absolute path from Uri
+    /**
+     *
+     * @param url
+     * @return
+     */
+    public static String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+
+        // TODO type can be null
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+
+        if (type != null) {
+            return type;
+        } else {
+            // TODO This check is really slow
+            if (Decoder.checkAudioFormat(url) == DanceBotError.NO_ERROR) {
+                return "audio/mpeg";
+            } else {
+                return "";
+            }
+        }
+    }
+
+    /**
+     * Retrieve absolute path from Uri
+     * @param context
+     * @param contentUri
+     * @return
+     */
     public String getRealPathFromURI(Context context, Uri contentUri) {
         Cursor cursor = null;
         try {

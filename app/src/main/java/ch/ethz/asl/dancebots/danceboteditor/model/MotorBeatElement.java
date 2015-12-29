@@ -16,37 +16,23 @@ public class MotorBeatElement extends BeatElement {
     private int mLeftVelocityValue;
     private int mRightVelocityValue;
 
+    /**
+     * MotorBeatElement constructor
+     * @param context application context is needed to resolve colors and strings
+     * @param beatPos beat position index is needed for the choreography
+     * @param samplePos absolute sample position of this element
+     */
     public MotorBeatElement(Context context, int beatPos, int samplePos) {
 
         // Parent constructor call
         super(context, beatPos, samplePos);
-
-        // TODO this whole chunk is obsolete
-        /*// Initialize beat element properties
-        //mMotionType = MotorType.DEFAULT; // TODO: Obsolete. Remove!
-        mMotorType = MotorType.DEFAULT;
-
-        // Initialize specific motor element default properties
-        mVelocityLeftIdx = 0;
-        mVelocityRightIdx = 0;
-
-        // Initialize motor element specific default absolute values
-        mLeftVelocityValue = 0;
-        mRightVelocityValue = 0;*/
-    }
-
-    public MotorBeatElement(BeatElement mBeatElement) {
-        super(null, -1, -1);
-
-        // Set choreography properties
-        mChoreographyID = mBeatElement.getChoreographyID();
     }
 
     /**
-     *
-     * @param relativeBeat
-     * @param isLeft
-     * @return
+     * MotorBeatElement velocity byte computation
+     * @param relativeBeat relative sample position within the current beat
+     * @param isLeft boolean to specify whether the left or the right wheel spins
+     * @return encoding of the velocity byte
      */
     private int computeVelocityValue(float relativeBeat, boolean isLeft) {
 
@@ -117,9 +103,8 @@ public class MotorBeatElement extends BeatElement {
      * @param idx
      */
     public void setVelocityLeftIdx(int idx) {
-
         // Set motor element specific properties
-        mVelocityLeftIdx = idx; // TODO Check that idx is a valid number?
+        mVelocityLeftIdx = idx;
     }
 
     /**
@@ -127,9 +112,8 @@ public class MotorBeatElement extends BeatElement {
      * @param idx
      */
     public void setVelocityRightIdx(int idx) {
-
         // Set motor element specific properties
-        mVelocityRightIdx = idx; // TODO Check that idx is a valid number?
+        mVelocityRightIdx = idx;
     }
 
     /**
@@ -137,7 +121,6 @@ public class MotorBeatElement extends BeatElement {
      * @param elem
      */
     public void setVelocityIndices(BeatElement elem) {
-        // TODO is this cast type safe?
         setVelocityLeftIdx(((MotorBeatElement) elem).getVelocityLeftIdx());
         setVelocityRightIdx(((MotorBeatElement) elem).getVelocityRightIdx());
     }
@@ -191,7 +174,6 @@ public class MotorBeatElement extends BeatElement {
     @Override
     protected void setDefaultSubProperties() {
         // Initialize beat element properties
-        //mMotionType = MotorType.DEFAULT; // TODO: Obsolete. Remove!
         mMotorType = MotorType.DEFAULT;
 
         // Frequency

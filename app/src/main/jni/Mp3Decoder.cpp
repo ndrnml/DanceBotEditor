@@ -215,3 +215,61 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_d
 
     delete sound_file;
 }
+
+JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_checkFormat(JNIEnv *env, jobject self, jstring path_to_file)
+{
+
+    // Error code
+    int err = MPG123_OK;
+
+    // Properties
+    int channels;
+    long rate;
+    long num_samples;
+    int encoding;
+    size_t buffer_size;
+
+    mpg123_handle* mh;
+
+    // Create new mpg123 handle
+    mh = mpg123_new(NULL, &err);
+    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "mpg123_new: %p", mh);
+
+    if (err == MPG123_OK && mh != NULL) {
+
+        // Get the utf-8 string
+        const char *file_path = env->GetStringUTFChars(path_to_file, JNI_FALSE);
+        __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Sound file path: %s", file_path);
+
+        err = mpg123_open(mh, file_path);
+
+        if (err == MPG123_OK) {
+
+            err = mpg123_getformat(mh, &rate, &channels, &encoding);
+
+            if (err == MPG123_OK) {
+
+                return MPG123_OK;
+
+            } else {
+
+                __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Error: mpg123_getformat err: %i",
+                                    err);
+                __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Trouble with mpg123: %s",
+                                    mpg123_strerror(mh));
+
+                return MPG123_ERR;
+            }
+
+        } else {
+
+            __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Error: mpg123_open err: %i", err);
+
+            return MPG123_ERR;
+        }
+    }
+
+    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG,
+                        "Error: no proper initialization of mpg123lib.");
+    return MPG123_ERR;
+}

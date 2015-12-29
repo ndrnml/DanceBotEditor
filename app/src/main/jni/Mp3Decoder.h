@@ -35,6 +35,9 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_t
 JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_delete
         (JNIEnv*, jobject, jlong);
 
+JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_checkFormat
+        (JNIEnv*, jobject self, jstring);
+
 #ifdef __cplusplus
 }
 #endif

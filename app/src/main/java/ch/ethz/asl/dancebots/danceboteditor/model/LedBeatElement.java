@@ -11,42 +11,29 @@ public class LedBeatElement extends BeatElement {
 
     private static final String LOG_TAG = "LED_BEAT_ELEMENT";
 
+    // Number of led lights attached to the robot
     private static final int NUM_LED_LIGHTS = 8;
-
+    // Specific motion type
     private LedType mLedType;
-
+    // Led light array
     private boolean[] mLedLightSwitches;
 
+    /**
+     * LedBeatElement constructor
+     * @param context application context needed to resolve colors and strings
+     * @param beatPos beat position index is needed for the choreography
+     * @param samplePos absolute sample position of this element
+     */
     public LedBeatElement(Context context, int beatPos, int samplePos) {
 
         // Parent constructor call
         super(context, beatPos, samplePos);
-
-        // TODO this whole chunk is obsolete
-        /*// Initialize beat element properties
-        //mMotionType = LedType.DEFAULT; // TODO: Obsolete. REMOVE!
-        mLedType = LedType.DEFAULT;
-
-        // Initialize specific led element default properties
-        mLedLightSwitches = new boolean[NUM_LED_LIGHTS];
-
-        // Initialize led light indices to 0
-        for (int i = 0; i < NUM_LED_LIGHTS; ++i) {
-            mLedLightSwitches[i] = false;
-        }*/
-    }
-
-    public LedBeatElement(BeatElement mBeatElement) {
-        super(null, -1, -1);
-
-        // Set choreography properties
-        mChoreographyID = mBeatElement.getChoreographyID();
     }
 
     /**
-     *
-     * @param relativeBeat
-     * @return
+     * LedBeatElement light motion computation
+     * @param relativeBeat relative sample position within the current beat
+     * @return encoding of led light byte
      */
     private byte computeLedBytes(float relativeBeat) {
 
@@ -118,9 +105,9 @@ public class LedBeatElement extends BeatElement {
     }
 
     /**
-     *
-     * @param elem
-     * @return
+     * Check if selected switches of the current and the LedBeatElement elem are the same
+     * @param elem the reference LedBeatElement
+     * @return a match of the led switch
      */
     private boolean hasSameSwitches(LedBeatElement elem) {
 
@@ -184,7 +171,6 @@ public class LedBeatElement extends BeatElement {
     @Override
     protected void setDefaultSubProperties() {
         // Initialize beat element properties
-        //mMotionType = LedType.DEFAULT; // TODO: Obsolete. REMOVE!
         mLedType = LedType.DEFAULT;
 
         // Frequency

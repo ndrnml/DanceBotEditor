@@ -44,6 +44,25 @@ public class Decoder {
         return transfer(mSoundFileHandle, pcmBuffer);
     }
 
+    public static int checkAudioFormat(String filePath) {
+
+        // Initialize mpg123 library for this thread
+        int result = initialize();
+
+        if (result != DanceBotError.MPG123_OK) {
+            throw new java.lang.Error("Error: " + result + " initializing native Mp3Decoder");
+        }
+
+        // Check (audio) file format
+        int err = checkFormat(filePath);
+
+        if (err == DanceBotError.MPG123_OK) {
+            return DanceBotError.NO_ERROR;
+        } else {
+            return DanceBotError.MPG123_FORMAT_ERROR;
+        }
+    }
+
     public void dispose()
     {
         if(mSoundFileHandle != 0)
@@ -81,10 +100,11 @@ public class Decoder {
     private native static int transfer(long soundFileHandle, short[] pcmBuffer);
     // Delete native sound file
     private native static int delete(long mSoundFileHandle);
+    // Check audio format
+    private native static int checkFormat(String filePath);
+
     // Get sample rate from selected song
     private native static long getSampleRate(long soundFileHandle);
     // Get total number of samples from selected song
     private native static long getNumberOfSamples(long soundFileHandle);
-    // Get total number of beats detected from selected song
-    private native static int getNumBeatsDetected(long soundFileHandle);
 }
