@@ -126,7 +126,10 @@ public class SoundEncodeRunnable implements Runnable {
             //int result = Decoder.transfer(pcmData);
             result = Decoder.transfer(pcmMusic);
 
-            byte[] mp3buf = new byte[(int)(1.25 * numSamples + 7200)];
+            // Create new mp3 buffer and specify size in bytes
+            // TODO Calculate buffer size in bytes
+            int mp3bufSize = (int) numSamples / 2 + 7200;
+            byte[] mp3buf = new byte[mp3bufSize];
 
             mEncoder = new Encoder.Builder(44100, 2, 44100, 128).create();
             result = mEncoder.encode(pcmMusic, pcmData, (int) numSamples, mp3buf);

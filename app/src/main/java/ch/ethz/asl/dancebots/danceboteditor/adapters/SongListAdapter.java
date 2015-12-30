@@ -17,24 +17,30 @@ import ch.ethz.asl.dancebots.danceboteditor.R;
  */
 public class SongListAdapter extends BaseAdapter {
 
-    private ArrayList<String> songTitles;
-    private ArrayList<String> songArtists;
-    private ArrayList<String> songDirs;
+    private Context mContext;
 
-    private LayoutInflater songElementInflater;
+    private ArrayList<String> mSongTitles;
+    private ArrayList<String> mSongArtists;
+    private ArrayList<String> mSongPaths;
+    private ArrayList<Integer> mSongDurations;
 
-    public SongListAdapter(Context c, ArrayList<String> titles, ArrayList<String> artists, ArrayList<String> dirs){
+    private LayoutInflater mSongElementInflater;
 
-        songTitles = titles;
-        songArtists = artists;
-        songDirs = dirs;
+    public SongListAdapter(Context context, ArrayList<String> titles, ArrayList<String> artists, ArrayList<String> paths, ArrayList<Integer> durations) {
 
-        songElementInflater = LayoutInflater.from(c);
+        mContext = context;
+
+        mSongTitles = titles;
+        mSongArtists = artists;
+        mSongPaths = paths;
+        mSongDurations = durations;
+
+        mSongElementInflater = LayoutInflater.from(context);
     }
 
     @Override
     public int getCount() {
-        return songTitles.size();
+        return mSongTitles.size();
     }
 
     @Override
@@ -51,7 +57,7 @@ public class SongListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         //map to song layout
-        LinearLayout songLayout = (LinearLayout) songElementInflater.inflate
+        LinearLayout songLayout = (LinearLayout) mSongElementInflater.inflate
                 (R.layout.song_list_details, null);
 
         //get title and artist views
@@ -59,17 +65,36 @@ public class SongListAdapter extends BaseAdapter {
         TextView artistView = (TextView)songLayout.findViewById(R.id.song_artist);
         TextView dirView = (TextView)songLayout.findViewById(R.id.song_dir);
 
-        //get song using position
-        String currTitle = songTitles.get(position);
-        String currArtist = songArtists.get(position);
-        String currDir = songDirs.get(position);
+        // Retrieve song details using position
+        String currTitle = mSongTitles.get(position);
+        String currArtist = mSongArtists.get(position);
+        String currDir = mSongPaths.get(position);
 
-        //get title and artist strings
+        // Display all relevant properties of this song
         songView.setText(currTitle);
         artistView.setText(currArtist);
         dirView.setText(currDir);
 
         return songLayout;
+    }
 
+    public Context getContext() {
+        return mContext;
+    }
+
+    public ArrayList<String> getSongListTitle() {
+        return mSongTitles;
+    }
+
+    public ArrayList<String> getSongListArtist() {
+        return mSongArtists;
+    }
+
+    public ArrayList<String> getSongListPath() {
+        return mSongPaths;
+    }
+
+    public ArrayList<Integer> getSongListDuratoin() {
+        return mSongDurations;
     }
 }
