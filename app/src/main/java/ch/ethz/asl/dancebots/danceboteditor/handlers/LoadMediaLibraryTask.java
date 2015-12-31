@@ -63,15 +63,19 @@ public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integ
     @Override
     protected Integer doInBackground(SongListAdapter... adapters) {
 
+        // Fetch song list adapter
         mSongListAdapter = adapters[0];
 
+        // Load current context
         Context context = mSongListAdapter.getContext();
 
+        // Get references to adapter lists
         mSongListTitle = mSongListAdapter.getSongListTitle();
         mSongListArtist = mSongListAdapter.getSongListArtist();
         mSongListPath = mSongListAdapter.getSongListPath();
         mSongListDuration = mSongListAdapter.getSongListDuratoin();
 
+        // Initialize content resolver
         ContentResolver musicResolver = context.getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
@@ -91,6 +95,7 @@ public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integ
 
             // Add audio information to list
             do {
+                // Get URI of external storage
                 Uri path = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, musicCursor.getString(idColumn));
 
                 // Iterate over all MediaStore columns

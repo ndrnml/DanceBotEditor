@@ -28,8 +28,6 @@ public class MediaLibraryActivity extends ListActivity {
 
     private static final String LOG_TAG = "MEDIA_LIBRARY_ACTIVITY";
 
-    private Runnable mListUpdater;
-
     private ArrayList<String> mSongListTitle = new ArrayList<>();
     private ArrayList<String> mSongListArtist = new ArrayList<>();
     private ArrayList<String> mSongListPath = new ArrayList<>();
@@ -41,24 +39,16 @@ public class MediaLibraryActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Set list view
         setContentView(R.layout.activity_media_library);
 
+        // Create song list view adapter, initialized with empty arrays
         mSongListAdpt = new SongListAdapter(this, mSongListTitle, mSongListArtist, mSongListPath, mSongListDuration);
         setListAdapter(mSongListAdpt);
 
-        mListUpdater = new Runnable() {
-            @Override
-            public void run() {
-                mSongListAdpt.notifyDataSetChanged();
-            }
-        };
-
+        // Execute asynchronous audio file loading task
         LoadMediaLibraryTask mediaLibraryTask = new LoadMediaLibraryTask();
         mediaLibraryTask.execute(mSongListAdpt);
-
-        // Load song list immediately after activity started
-        // TODO: handle large music libraries asynchronously
-        //getSongList();
     }
 
     @Override
