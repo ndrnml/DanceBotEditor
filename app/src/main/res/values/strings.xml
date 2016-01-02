@@ -34,4 +34,7 @@
     <string name="led_type_same_blink">Gleichmässig</string>
     <string name="led_type_constant">Konstant</string>
     <string name="txt_delete">Löschen</string>
+    <string name="btn_beatmenu_txt_ok">OK</string>
+    <string name="btn_beatmenu_txt_cancel">Abbrechen</string>
+    <string name="btn_beatmenu_txt_discard">Löschen</string>
 </resources>

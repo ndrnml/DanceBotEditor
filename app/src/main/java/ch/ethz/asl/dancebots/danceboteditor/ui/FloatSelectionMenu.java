@@ -9,7 +9,8 @@ import java.util.ArrayList;
  */
 public class FloatSelectionMenu {
 
-    private ArrayList<Pair<Integer, Integer>> mSelection;
+    // The range selection is only assigned once
+    private final ArrayList<Pair<Integer, Integer>> mSelection;
 
     public FloatSelectionMenu(ArrayList<Pair<Integer, Integer>> selection) {
 

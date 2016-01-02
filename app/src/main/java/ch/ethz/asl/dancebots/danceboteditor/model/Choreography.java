@@ -11,13 +11,12 @@ import java.util.UUID;
  */
 public class Choreography<T extends BeatElement> {
 
-    // TODO:
-    // TODO: Some neat datastructure hash, that maps UUID to (StartIdx, Length)
-
     private static final String LOG_TAG = "CHOREOGRAPHY";
 
     private ArrayList<T> mBeatElements;
+
     private int mNumBeats;
+    // Hash map that stores unique ids with the corresponding dance sequence
     private HashMap<UUID, DanceSequence<T>> mDanceSequences;
 
     public Choreography(ArrayList<T> elems) {
@@ -168,7 +167,6 @@ public class Choreography<T extends BeatElement> {
 
         // Remove dance sequence from hash table
         mDanceSequences.remove(danceSequenceID);
-
     }
 
     /**

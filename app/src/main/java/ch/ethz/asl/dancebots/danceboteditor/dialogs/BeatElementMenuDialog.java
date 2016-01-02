@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -187,9 +188,9 @@ public class BeatElementMenuDialog extends DialogFragment {
     }
 
     /**
-     *
-     * @param id
-     * @param menuList
+     * Build the sub menu for value selection
+     * @param id layout id of the menu that is inflated
+     * @param menuList menu string values needed for this sub menu
      */
     private void buildSubMenu(int id, final int elemIdx, final String[] menuList, final MENU_TYPE menuType, final String menuTag) {
 
@@ -273,7 +274,9 @@ public class BeatElementMenuDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        // Create new alert dialog builder
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
@@ -294,51 +297,80 @@ public class BeatElementMenuDialog extends DialogFragment {
         // Compose AlertDialog with custom elements
         builder.setTitle("Element: " + mBeatElement.getBeatPositionAsString());
 
+        // Get beat element menu OK button
+        Button btnOk = (Button) mBeatElementMenuView.findViewById(R.id.beatmenu_btn_ok);
+
+        // Add OK button on click listener
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Process all check boxes
+                processCheckBoxes();
+
+                mProjectFile.getChoreoManager().processPositiveClick(
+                        mBeatElement,
+                        mSelectedChoreoLengthIdx,
+                        mChoreoLengthMenu/*.getValAt(mSelectedChoreoLengthIdx)*/,
+                        mSelectedMotionTypeIdx,
+                        mSelectedFrequencyIdx,
+                        mLedTypeMenu/*.getValAt(mSelectedMotionTypeIdx)*/,
+                        mLedFrequencyMenu/*.getValAt(mSelectedFrequencyIdx)*/,
+                        mLedLightSwitches,
+                        mMotorTypeMenu/*.getValAt(mSelectedMotionTypeIdx)*/,
+                        mMotorFrequencyMenu/*.getValAt(mSelectedFrequencyIdx)*/,
+                        mSelectedVelocityLeftIdx,
+                        mSelectedVelocityRightIdx,
+                        mVelocityMenu/*.getValAt(mSelectedVelocityLeftIdx)*/,
+                        mVelocityMenu);/*.getValAt(mSelectedVelocityRightIdx)*/
+
+                // Notify the list adapter to update the modified list elements
+                mBeatElementAdapter.notifyDataSetChanged();
+
+                // Dismiss dialog after OK button is pressed and data is passed to choreography manager
+                dismiss();
+            }
+        });
+
+        // Get beat element menu CANCEL button
+        Button btnCancel = (Button) mBeatElementMenuView.findViewById(R.id.beatmenu_btn_cancel);
+
+        // Add CANCEL button on click listener
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Do nothing
+                dismiss();
+            }
+        });
+
+        // Get beat element menu DISCARD button
+        Button btnDiscard = (Button) mBeatElementMenuView.findViewById(R.id.beatmenu_btn_discard);
+
+        // Add DISCARD button on click listener
+        btnDiscard.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                // Discard BeatElement properties
+                mProjectFile.getChoreoManager().processNegativeClick(mBeatElement);
+
+                // Notify the list adapter to update the modified list elements
+                mBeatElementAdapter.notifyDataSetChanged();
+
+                // After DISCARD button is pressed dismiss dialog
+                dismiss();
+            }
+        });
+
+        // Only show discard button if selected beat element already belongs to a dance sequence
+        if (mBeatElement.getChoreographyID() == null) {
+            mBeatElementMenuView.findViewById(R.id.beatmenu_btn_discard).setVisibility(View.GONE);
+        }
+
         // Build final view with positive and negative buttons
-        builder.setView(mBeatElementMenuView)
-
-                // Add action buttons
-                .setPositiveButton(R.string.txt_save, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-
-                        // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        // TODO:
-                        // TODO make classes for LedElementMenuProperties, MotorElementMenuProperties!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-                        // Process all check boxes
-                        processCheckBoxes();
-
-                        mProjectFile.getChoreoManager().processPositiveClick(
-                                mBeatElement,
-                                mSelectedChoreoLengthIdx,
-                                mChoreoLengthMenu/*.getValAt(mSelectedChoreoLengthIdx)*/,
-                                mSelectedMotionTypeIdx,
-                                mSelectedFrequencyIdx,
-                                mLedTypeMenu/*.getValAt(mSelectedMotionTypeIdx)*/,
-                                mLedFrequencyMenu/*.getValAt(mSelectedFrequencyIdx)*/,
-                                mLedLightSwitches,
-                                mMotorTypeMenu/*.getValAt(mSelectedMotionTypeIdx)*/,
-                                mMotorFrequencyMenu/*.getValAt(mSelectedFrequencyIdx)*/,
-                                mSelectedVelocityLeftIdx,
-                                mSelectedVelocityRightIdx,
-                                mVelocityMenu/*.getValAt(mSelectedVelocityLeftIdx)*/,
-                                mVelocityMenu);/*.getValAt(mSelectedVelocityRightIdx)*/
-
-                        // Notify the list adapter to update the modified list elements
-                        mBeatElementAdapter.notifyDataSetChanged();
-                    }
-                })
-                .setNegativeButton(R.string.txt_delete, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
-                        // Discard BeatElement properties
-                        mProjectFile.getChoreoManager().processNegativeClick(mBeatElement);
-
-                        // Notify the list adapter to update the modified list elements
-                        mBeatElementAdapter.notifyDataSetChanged();
-                    }
-                });
+        builder.setView(mBeatElementMenuView);
 
         return builder.create();
     }

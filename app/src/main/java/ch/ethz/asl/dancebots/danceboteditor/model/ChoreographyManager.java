@@ -69,19 +69,6 @@ public class ChoreographyManager {
     }
 
 
-    /*public void processMenuData(BeatElement beatElem) {
-
-        if (beatElem.getChoreographyID() == null) {
-
-            addNewDanceSequence(beatElem);
-
-        } else {
-
-            updateSequence(beatElem);
-
-        }
-    }*/
-
     public void processPositiveClick(
             BeatElement selectedBeatElem,
             int selectedChoreoLengthIdx,
