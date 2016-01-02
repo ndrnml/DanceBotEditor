@@ -69,7 +69,7 @@ public class BeatElementMenuDialog extends DialogFragment {
     /**
      * Ensure that this method is called directly after instantiation of the menu
      * It loads all relevant information (menu lists) for setting up the menu
-     * @param elem
+     * @param elem the element for which the menu gets built
      */
     public void initializeMenuFromElement(BeatElementAdapter adapter, BeatElement elem) {
 
@@ -90,9 +90,7 @@ public class BeatElementMenuDialog extends DialogFragment {
         mMenuListVelocities = mVelocityMenu.getStrings();
         mMenuChoreoLengths = mChoreoLengthMenu.getStrings();
 
-        // TODO:  ...
-        // TODO: USE INSTANCEOF???
-        // TODO
+        // TODO: USE INSTANCEOF?
         // Further menu lists based on motion type
         if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE
 
