@@ -9,7 +9,8 @@
         <RelativeLayout
             android:id="@+id/song_details"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/light_orange">
 
             <ImageView
                 android:layout_width="80dp"

@@ -8,9 +8,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
@@ -23,6 +27,10 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     private static final String LOG_TAG = "DANCE_BOT_MEDIA_PLAYER";
 
     private final Activity mActivity;
+    private final int mSeekBarCurrentTime;
+    private final int mSeekBarTotalTime;
+    private final TextView mSeekBarTotalTimeView;
+    private final TextView mSeekBarCurrentTimeView;
     private SeekBar mSeekBar;
     private final MediaPlayer mMediaPlayer;
     private boolean mIsReady = false;
@@ -43,6 +51,16 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         // Attach on click listener to play/pause button
         Button btn = (Button) mActivity.findViewById(R.id.btn_play);
         btn.setOnClickListener(this);
+
+        // Init seek bar labels
+        mSeekBarCurrentTime = 0;
+        mSeekBarTotalTime = 0;
+
+        mSeekBarCurrentTimeView = (TextView) mActivity.findViewById(R.id.seekbar_current_time);
+        mSeekBarTotalTimeView = (TextView) mActivity.findViewById(R.id.seekbar_total_time);
+
+        mSeekBarCurrentTimeView.setText(songTimeFormat(mSeekBarCurrentTime));
+        mSeekBarTotalTimeView.setText(songTimeFormat(mSeekBarTotalTime));
     }
 
     public void openMusicFile(DanceBotMusicFile musicFile) {
@@ -72,6 +90,17 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
         // Store other important music file properties
         mTotalTime = mMusicFile.getDurationInMiliSecs();
+
+        // Update total time view
+        mSeekBarTotalTimeView.setText(songTimeFormat(mTotalTime));
+    }
+
+    private String songTimeFormat(int timeInMiliseconds) {
+        return String.format(
+                "%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(timeInMiliseconds),
+                TimeUnit.MILLISECONDS.toSeconds(timeInMiliseconds) -
+                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeInMiliseconds)));
     }
 
     /************************************
@@ -90,7 +119,11 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
     @Override
     public void setSeekBarProgress(int progress) {
+        // Update seek bar
         mSeekBar.setProgress(progress);
+
+        // Update seek bar text
+        mSeekBarCurrentTimeView.setText(songTimeFormat(progress));
     }
 
     @Override

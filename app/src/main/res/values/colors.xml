@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="dark_orange">#ce6700</color>
-    <color name="light_orange">#ffb66d</color>
+    <color name="dark_orange">#b65b00</color>
+    <color name="light_orange">#f79737</color>
 
     <color name="btn_negative">#C62828</color>
 
