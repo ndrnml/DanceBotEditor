@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,10 +27,8 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     private final MediaPlayer mMediaPlayer;
     private boolean mIsReady = false;
     private boolean mIsPlaying = false; // TODO change to mMediaPlayer.isPlaying(); ?
-    private boolean mSeekbarChanged = false;
     private int mStartTime;
     private int mTotalTime;
-    private int mNumBeats;
     private DanceBotMusicFile mMusicFile;
     private Button mPlayPauseButton;
 
@@ -73,14 +70,14 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         mSeekBar.setClickable(true);
         mSeekBar.setOnSeekBarChangeListener(this);
         mSeekBar.setMax(mMediaPlayer.getDuration());
-    }
 
-    @Override
-    public void preparePlayback() {
         // Store other important music file properties
         mTotalTime = mMusicFile.getDurationInMiliSecs();
-        mNumBeats = mMusicFile.getNumberOfBeatsDetected();
     }
+
+    /************************************
+     * ScrollMediaPlayerMethods Interface
+     ************************************/
 
     @Override
     public boolean isPlaying() {
@@ -98,12 +95,18 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     }
 
     @Override
+    public int getSeekBarProgress() {
+        return mSeekBar.getProgress();
+    }
+
+    @Override
     public SeekBar getSeekBarView() {
         return mSeekBar;
     }
 
-    public void pause() {
-        mMediaPlayer.pause();
+    @Override
+    public int getTotalTime() {
+        return mTotalTime;
     }
 
     @Override
@@ -144,7 +147,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-        Log.d(LOG_TAG, "seekbar: on progress changed");
+        Log.d(LOG_TAG, "seekBar: on progress changed");
 
         // Notify automatic scroll listener when media player progressed
         if (DanceBotEditorManager.getInstance().getAutomaticScrollHandler() != null) {
@@ -153,8 +156,8 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
         // If user interaction, set media player progress
         if (fromUser) {
-            Log.d(LOG_TAG, "fromUser: on progress changed");
             mMediaPlayer.seekTo(progress);
+            Log.d(LOG_TAG, "fromUser: on progress changed");
         }
     }
 

@@ -23,7 +23,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
 
     private final Context mContext;
     private ArrayList<T> mBeatElements;
-    private Toast mToast;
+    private int mSelectedItem;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -42,6 +42,11 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
 
         mContext = context;
         mBeatElements = elems;
+        mSelectedItem = 0;
+    }
+
+    public void setSelected(int position) {
+        mSelectedItem = position;
     }
 
     // Create new views (invoked by the layout manager)
@@ -53,9 +58,6 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
 
         // Set the view's size, margins, paddings and layout parameters
         final SimpleViewHolder vh = new SimpleViewHolder((TextView) v);
-
-        mToast = Toast.makeText(parent.getContext(), "", Toast.LENGTH_SHORT);
-        mToast.setGravity(Gravity.CENTER, 0, 0);
 
         // TODO Ensure long clicks are also registered
         vh.mTextView.setLongClickable(true);
@@ -97,14 +99,16 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
 
         // Stylize list item according to type
         holder.mTextView.setBackgroundColor(mBeatElements.get(position).getMotionType().getColor());
+
+        // Set selected item
+        if (mSelectedItem == position) {
+            holder.mTextView.setBackgroundColor(mContext.getResources().getColor(R.color.item_activated_color));
+        }
+
     }
 
     @Override
     public int getItemCount() {
         return mBeatElements.size();
-    }
-
-    public BeatElement getItem(int position) {
-        return mBeatElements.get(position);
     }
 }

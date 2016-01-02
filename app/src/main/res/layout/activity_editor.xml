@@ -53,16 +53,12 @@
             android:id="@+id/motor_element_list"
             android:layout_width="wrap_content"
             android:layout_height="200dp"
-            android:drawSelectorOnTop="true"
-            android:background="@color/item_border_color"
             tools:context=".EditorActivity" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/led_element_list"
             android:layout_width="wrap_content"
             android:layout_height="200dp"
-            android:drawSelectorOnTop="true"
-            android:background="@color/item_border_color"
             tools:context=".EditorActivity" />
 
     </LinearLayout>

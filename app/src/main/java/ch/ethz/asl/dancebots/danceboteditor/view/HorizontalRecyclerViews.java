@@ -165,4 +165,31 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         // Notify adapter that list content changed
         motorAdapter.notifyDataSetChanged();
     }
+
+    /******************************
+     * ScrollViewMethods Interface
+     ******************************/
+
+    @Override
+    public void scrollToPosition(int position) {
+
+        LinearLayoutManager llm = (LinearLayoutManager) mMotorView.getLayoutManager();
+        llm.scrollToPositionWithOffset(position, 60);
+
+        LinearLayoutManager llm2 = (LinearLayoutManager) mLedView.getLayoutManager();
+        llm2.scrollToPositionWithOffset(position, 60);
+
+        BeatElementAdapter motorAdapter = (BeatElementAdapter) mMotorView.getAdapter();
+        motorAdapter.setSelected(position);
+        motorAdapter.notifyDataSetChanged();
+
+        BeatElementAdapter ledAdapter = (BeatElementAdapter) mLedView.getAdapter();
+        ledAdapter.setSelected(position);
+        ledAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public int getNumElements() {
+        return mMotorView.getAdapter().getItemCount();
+    }
 }

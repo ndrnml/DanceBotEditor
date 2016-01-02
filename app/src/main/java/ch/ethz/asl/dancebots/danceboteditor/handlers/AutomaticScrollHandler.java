@@ -4,7 +4,6 @@ package ch.ethz.asl.dancebots.danceboteditor.handlers;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.SeekBar;
 
 /**
  * Created by andrin on 22.10.15.
@@ -20,17 +19,22 @@ public class AutomaticScrollHandler implements Runnable {
 
     private final Handler mScrollHandler;
 
-    private ScrollViewMethods mBeatViews;
+    private ScrollViewMethods mScrollViews;
 
     private ScrollMediaPlayerMethods mDanceBotMediaPlayer;
 
     private boolean mIsRunning;
+
+    private int mSeekBarProgress;
 
     /**
      * INTERFACE
      */
     public interface ScrollViewMethods {
 
+        void scrollToPosition(int position);
+
+        int getNumElements();
     }
 
     /**
@@ -38,31 +42,48 @@ public class AutomaticScrollHandler implements Runnable {
      */
     public interface ScrollMediaPlayerMethods {
 
-        void preparePlayback();
-
         boolean isPlaying();
-
-        int getCurrentPosition();
 
         void setSeekBarProgress(int progress);
 
+        int getSeekBarProgress();
+
+        int getCurrentPosition();
+
         View getSeekBarView();
+
+        int getTotalTime();
     }
 
-    public AutomaticScrollHandler(ScrollViewMethods beatViews, ScrollMediaPlayerMethods mediaPlayer) {
+    /**
+     * AutomaticScrollHandler creates a self removing scroll handler that updates the media
+     * player, the seek bar state and the scroll state
+     * Handler removes itself, when user is inactive
+     * @param scrollViews scrollable view interface
+     * @param mediaPlayer media player interface
+     */
+    public AutomaticScrollHandler(ScrollViewMethods scrollViews, ScrollMediaPlayerMethods mediaPlayer) {
 
-        mBeatViews = beatViews;
+        mScrollViews = scrollViews;
         mDanceBotMediaPlayer = mediaPlayer;
 
         mScrollHandler = new Handler();
 
+        // Keep track of user interaction to register user inactivity
         mLastInteraction = System.currentTimeMillis();
+
+        // Initialize seek bar progress
+        mSeekBarProgress = 0;
     }
 
+    /**
+     *
+     */
     public void startListening() {
 
         // Check if handler not already running to prevent postDelayed flood
         if (!mIsRunning) {
+
             // Post this handler runnable for later execution
             mScrollHandler.postDelayed(this, 0);
 
@@ -74,6 +95,9 @@ public class AutomaticScrollHandler implements Runnable {
         }
     }
 
+    /**
+     *
+     */
     private void stopListening() {
         mScrollHandler.removeCallbacks(this);
     }
@@ -103,6 +127,15 @@ public class AutomaticScrollHandler implements Runnable {
         // Update seek bar
         int currentTime = mDanceBotMediaPlayer.getCurrentPosition();
         mDanceBotMediaPlayer.setSeekBarProgress(currentTime);
+
+        if (mDanceBotMediaPlayer.isPlaying() || seekBarChanged()) {
+
+            int currentBeatElement = (int) (((float) mScrollViews.getNumElements() / (float) mDanceBotMediaPlayer.getTotalTime()) * (float) currentTime);
+
+            mScrollViews.scrollToPosition(currentBeatElement);
+
+            Log.d(LOG_TAG, "update scroll to element: " + currentBeatElement);
+        }
 
 /*
         if (mIsPlaying || mSeekbarChanged) {
@@ -137,5 +170,21 @@ public class AutomaticScrollHandler implements Runnable {
         }
 */
         mScrollHandler.postDelayed(this, 200);
+    }
+
+    /**
+     *
+     * @return
+     */
+    private boolean seekBarChanged() {
+
+        int currentSeekBarProgress = mDanceBotMediaPlayer.getSeekBarProgress();
+
+        if (mSeekBarProgress == currentSeekBarProgress) {
+            return false;
+        } else {
+            mSeekBarProgress = currentSeekBarProgress;
+            return true;
+        }
     }
 }
