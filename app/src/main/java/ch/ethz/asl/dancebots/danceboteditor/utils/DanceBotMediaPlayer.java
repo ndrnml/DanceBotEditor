@@ -95,12 +95,17 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         mSeekBarTotalTimeView.setText(songTimeFormat(mTotalTime));
     }
 
-    private String songTimeFormat(int timeInMiliseconds) {
+    /**
+     * Get song time hh:ss format from milliseconds
+     * @param timeInMilliseconds time in milliseconds
+     * @return string format mm:ss
+     */
+    private String songTimeFormat(int timeInMilliseconds) {
         return String.format(
                 "%02d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(timeInMiliseconds),
-                TimeUnit.MILLISECONDS.toSeconds(timeInMiliseconds) -
-                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeInMiliseconds)));
+                TimeUnit.MILLISECONDS.toMinutes(timeInMilliseconds),
+                TimeUnit.MILLISECONDS.toSeconds(timeInMilliseconds) -
+                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeInMilliseconds)));
     }
 
     /************************************
