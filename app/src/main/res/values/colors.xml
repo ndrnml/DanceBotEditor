@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="dark_orange">#ce6700</color>
+    <color name="light_orange">#ffb66d</color>
+
+    <color name="btn_negative">#C62828</color>
+
     <color name="item_border_color">#666666</color>
     <color name="item_default_color">#FFB163</color>
     <color name="item_pressed_color">#CCCCCC</color>

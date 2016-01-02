@@ -2,227 +2,165 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    style="@style/DialogMenuView">
 
     <RelativeLayout
+        android:id="@+id/menu_item_motion_type"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:id="@+id/menu_item_motion_type">
+        android:layout_height="wrap_content">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Bewegungsstil"
+            style="@style/DialogMenuElement"
+            android:text="@string/menu_motion_type"
             android:id="@+id/txt_motion_type"
-            android:layout_alignParentLeft="true"
-            android:padding="32dp" />
+            android:layout_alignParentLeft="true"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="@style/DialogMenuElement"
             android:text="defaultMotion"
             android:id="@+id/txt_motion_type_default"
-            android:layout_alignParentRight="true"
-            android:padding="32dp" />
-
+            android:layout_alignParentRight="true"/>
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/menu_item_frequency"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:id="@+id/menu_item_frequency">
+        android:layout_height="wrap_content">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Frequenz"
+            style="@style/DialogMenuElement"
+            android:text="@string/menu_frequency"
             android:id="@+id/txt_frequency"
-            android:layout_alignParentLeft="true"
-            android:padding="32dp" />
+            android:layout_alignParentLeft="true"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="@style/DialogMenuElement"
             android:text="defaultLength"
             android:id="@+id/txt_frequency_default"
-            android:layout_alignParentRight="true"
-            android:padding="32dp" />
-
+            android:layout_alignParentRight="true"/>
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/menu_item_velocity_left"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:id="@+id/menu_item_velocity_left">
+        android:layout_height="wrap_content">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Geschwindigkeit Links"
+            style="@style/DialogMenuElement"
+            android:text="@string/menu_velocity_left"
             android:id="@+id/txt_velocity_left"
-            android:layout_alignParentLeft="true"
-            android:padding="32dp" />
+            android:layout_alignParentLeft="true"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="@style/DialogMenuElement"
             android:text="defaultVelocity"
             android:id="@+id/txt_velocity_left_default"
-            android:layout_alignParentRight="true"
-            android:padding="32dp" />
-
+            android:layout_alignParentRight="true"/>
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/menu_item_velocity_right"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:id="@+id/menu_item_velocity_right">
+        android:layout_height="wrap_content">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/txt_velocity_right"
+            style="@style/DialogMenuElement"
+            android:text="@string/menu_velocity_right"
             android:id="@+id/txt_velocity_right"
-            android:layout_alignParentLeft="true"
-            android:padding="32dp" />
+            android:layout_alignParentLeft="true"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="@style/DialogMenuElement"
             android:text="defaultVelocity"
             android:id="@+id/txt_velocity_right_default"
-            android:layout_alignParentRight="true"
-            android:padding="32dp" />
-
+            android:layout_alignParentRight="true"/>
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/menu_item_lights"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:id="@+id/menu_item_lights">
+        android:layout_height="wrap_content">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Lichter"
+            style="@style/DialogMenuElement"
+            android:text="@string/menu_lights"
             android:id="@+id/txt_lights"
-            android:layout_alignParentLeft="true"
-            android:padding="32dp" />
+            android:layout_alignParentLeft="true"/>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/txt_lights"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="false"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentBottom="false"
-            android:layout_alignWithParentIfMissing="false">
+            style="@style/DialogMenuElement"
+            android:layout_alignParentRight="true">
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1"
                 android:id="@+id/light_check_box1"
-                android:checked="false"
-                android:layout_toEndOf="@+id/txt_lights" />
+                android:checked="false" />
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="2"
                 android:id="@+id/light_check_box2"
-                android:checked="false"
-                android:layout_toEndOf="@+id/light_check_box1" />
+                android:checked="false" />
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="3"
                 android:id="@+id/light_check_box3"
-                android:checked="false"
-                android:layout_toEndOf="@+id/light_check_box2" />
+                android:checked="false" />
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="4"
-                android:id="@+id/light_check_box4"
-                android:layout_toEndOf="@+id/light_check_box3" />
+                android:id="@+id/light_check_box4" />
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="5"
-                android:id="@+id/light_check_box5"
-                android:layout_toEndOf="@+id/light_check_box4" />
+                android:id="@+id/light_check_box5" />
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="6"
-                android:id="@+id/light_check_box6"
-                android:layout_toEndOf="@+id/light_check_box5" />
+                android:id="@+id/light_check_box6" />
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="7"
-                android:id="@+id/light_check_box7"
-                android:layout_toEndOf="@+id/light_check_box6" />
+                android:id="@+id/light_check_box7" />
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="8"
-                android:id="@+id/light_check_box8"
-                android:layout_toEndOf="@+id/light_check_box7" />
-
+                android:id="@+id/light_check_box8" />
         </LinearLayout>
-
-
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/menu_item_length"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:id="@+id/menu_item_length">
+        android:layout_height="wrap_content">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Länge"
+            style="@style/DialogMenuElement"
+            android:text="@string/menu_lengths"
             android:id="@+id/txt_length"
-            android:layout_alignParentLeft="true"
-            android:padding="32dp" />
+            android:layout_alignParentLeft="true"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            style="@style/DialogMenuElement"
             android:text="defaultLength"
             android:id="@+id/txt_length_default"
-            android:layout_alignParentRight="true"
-            android:padding="32dp" />
-
+            android:layout_alignParentRight="true"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -231,27 +169,22 @@
         android:id="@+id/menu_item_buttons">
 
         <Button
+            style="@style/MenuButtonNegative"
             android:id="@+id/beatmenu_btn_discard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/led_elem_color1"
             android:text="@string/btn_beatmenu_txt_discard" />
 
         <Button
+            style="@style/MenuButtonPositive"
             android:id="@+id/beatmenu_btn_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="@string/btn_beatmenu_txt_cancel"
             android:layout_alignParentTop="true"
             android:layout_toStartOf="@+id/beatmenu_btn_ok" />
 
         <Button
+            style="@style/MenuButtonPositive"
             android:id="@+id/beatmenu_btn_ok"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="@string/btn_beatmenu_txt_ok"
             android:layout_alignParentRight="true" />
-
     </RelativeLayout>
 
 </LinearLayout>

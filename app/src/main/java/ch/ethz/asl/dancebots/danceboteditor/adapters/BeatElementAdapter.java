@@ -92,9 +92,11 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(SimpleViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        // Populate the data into the template view using the data object
+        /*
+         * Get element from dataset at this position
+         * Replace the contents of the view with that element
+         * Populate the data into the template view using the data object
+         */
         holder.mTextView.setText(Integer.toString(position)/*mBeatElements.get(position).getMotionType().getTag()*/);
 
         // Stylize list item according to type
@@ -104,7 +106,6 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         if (mSelectedItem == position) {
             holder.mTextView.setBackgroundColor(mContext.getResources().getColor(R.color.item_activated_color));
         }
-
     }
 
     @Override
