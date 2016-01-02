@@ -10,7 +10,6 @@ import android.view.View;
  */
 public class AutomaticScrollHandler implements Runnable {
 
-    // TODO FINISH THIS CLASS, make use of stopListening
     private static final String LOG_TAG = "SCROLL_HANDLER";
 
     private final int TIME_TO_LIVE = 10000;
@@ -28,7 +27,9 @@ public class AutomaticScrollHandler implements Runnable {
     private int mSeekBarProgress;
 
     /**
-     * INTERFACE
+     * An interface that defines methods that the scroll views implement. An instance of
+     * HorizontalRecyclerViews passes itself to the AutomaticScrollHandler. This is needed
+     * to handle scroll events correctly and communicate between scroll views and seek bars.
      */
     public interface ScrollViewMethods {
 
@@ -38,7 +39,9 @@ public class AutomaticScrollHandler implements Runnable {
     }
 
     /**
-     * INTERFACE
+     * An interface that defines methods that the media player implements. An instance of
+     * DanceBotMediaPlayer passes itself to the AutomaticScrollHandler. This is needed to handle
+     * communication between scroll views and seek bars correctly.
      */
     public interface ScrollMediaPlayerMethods {
 
@@ -49,8 +52,6 @@ public class AutomaticScrollHandler implements Runnable {
         int getSeekBarProgress();
 
         int getCurrentPosition();
-
-        View getSeekBarView();
 
         int getTotalTime();
     }
@@ -77,7 +78,7 @@ public class AutomaticScrollHandler implements Runnable {
     }
 
     /**
-     *
+     * Start handler on user activity
      */
     public void startListening() {
 
@@ -96,7 +97,7 @@ public class AutomaticScrollHandler implements Runnable {
     }
 
     /**
-     *
+     * Stop handler while user is inactive
      */
     private void stopListening() {
         mScrollHandler.removeCallbacks(this);
@@ -137,44 +138,12 @@ public class AutomaticScrollHandler implements Runnable {
             Log.d(LOG_TAG, "update scroll to element: " + currentBeatElement);
         }
 
-/*
-        if (mIsPlaying || mSeekbarChanged) {
-
-            mSeekbarChanged = false;
-
-            // Automatic scrolling of beat element views
-            int currentBeatElement = (int) (((float) mNumBeats / (float) mTotalTime) * (float) currentTime);
-
-            LinearLayoutManager llm = (LinearLayoutManager) mMotorView.getLayoutManager();
-            llm.scrollToPositionWithOffset(currentBeatElement, 20);
-            //mMotorView.scrollToPosition(currentBeatElement);
-
-            LinearLayoutManager llm2 = (LinearLayoutManager) mLedView.getLayoutManager();
-            llm2.smoothScrollToPosition(mLedView, null, currentBeatElement);
-            //mLedView.scrollToPosition(currentBeatElement);
-
-            // TODO
-
-                BeatElementAdapter adapter = (BeatElementAdapter) mMotorView.getAdapter();
-
-                // TODO
-                if (currentBeatElement > 0 && currentBeatElement < adapter.getItemCount()) {
-                    adapter.getItem(currentBeatElement).setFocus(true);
-                }
-                if (currentBeatElement - 1 > 0 && currentBeatElement - 1 < adapter.getItemCount()) {
-                    adapter.getItem(currentBeatElement - 1).setFocus(false);
-                }
-
-            //Log.d(LOG_TAG, "update scroll to element: " + currentBeatElement);
-
-        }
-*/
         mScrollHandler.postDelayed(this, 200);
     }
 
     /**
-     *
-     * @return
+     * Check if seek bar changed
+     * @return state of seek bar state
      */
     private boolean seekBarChanged() {
 

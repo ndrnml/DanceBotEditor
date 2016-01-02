@@ -17,12 +17,9 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
 /**
  * Created by andrin on 24.10.15.
  */
-// TODO Can you make this class a bit more dynamic? With lists e.g.?
 public class HorizontalRecyclerViews implements ChoreographyManager.ChoreographyViewManager, AutomaticScrollHandler.ScrollViewMethods {
 
     private static final String LOG_TAG = "RECYCLER_VIEW";
-
-    private Activity mActivity;
 
     private LinearLayoutManager mMotorLayoutManager;
     private LinearLayoutManager mLedLayoutManager;
@@ -48,21 +45,18 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
     public HorizontalRecyclerViews(Activity activity) {
 
-        // Keep host activity
-        mActivity = activity;
-
         // Initialize and setup linear layout manager
-        mMotorLayoutManager = new LinearLayoutManager(mActivity.getApplicationContext());
-        mLedLayoutManager = new LinearLayoutManager(mActivity.getApplicationContext());
+        mMotorLayoutManager = new LinearLayoutManager(activity.getApplicationContext());
+        mLedLayoutManager = new LinearLayoutManager(activity.getApplicationContext());
 
         mMotorLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mLedLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
         // Get divider drawable
-        Drawable divider = mActivity.getResources().getDrawable(R.drawable.divider);
+        Drawable divider = activity.getResources().getDrawable(R.drawable.divider);
 
         // Attach motor adapter and linear layout manager to the horizontal recycler view
-        mMotorView = (RecyclerView) mActivity.findViewById(R.id.motor_element_list);
+        mMotorView = (RecyclerView) activity.findViewById(R.id.motor_element_list);
         mMotorView.setHasFixedSize(true);
         mMotorView.setLayoutManager(mMotorLayoutManager);
         mMotorView.addItemDecoration(new DividerItemDecoration(divider));
@@ -104,7 +98,7 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         });
 
         // Attach led adapter and linear layout manager
-        mLedView = (RecyclerView) mActivity.findViewById(R.id.led_element_list);
+        mLedView = (RecyclerView) activity.findViewById(R.id.led_element_list);
         mLedView.setHasFixedSize(true);
         mLedView.setLayoutManager(mLedLayoutManager);
         mLedView.addItemDecoration(new DividerItemDecoration(divider));
@@ -173,16 +167,18 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
     @Override
     public void scrollToPosition(int position) {
 
-        LinearLayoutManager llm = (LinearLayoutManager) mMotorView.getLayoutManager();
-        llm.scrollToPositionWithOffset(position, 60);
+        // Scroll motor view
+        mMotorLayoutManager.scrollToPositionWithOffset(position, 60);
 
-        LinearLayoutManager llm2 = (LinearLayoutManager) mLedView.getLayoutManager();
-        llm2.scrollToPositionWithOffset(position, 60);
+        // Scroll led view
+        mLedLayoutManager.scrollToPositionWithOffset(position, 60);
 
+        // Set focus of current beat element in motor view
         BeatElementAdapter motorAdapter = (BeatElementAdapter) mMotorView.getAdapter();
         motorAdapter.setSelected(position);
         motorAdapter.notifyDataSetChanged();
 
+        // Set focus of current beat element in led view
         BeatElementAdapter ledAdapter = (BeatElementAdapter) mLedView.getAdapter();
         ledAdapter.setSelected(position);
         ledAdapter.notifyDataSetChanged();

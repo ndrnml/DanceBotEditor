@@ -26,8 +26,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     private SeekBar mSeekBar;
     private final MediaPlayer mMediaPlayer;
     private boolean mIsReady = false;
-    private boolean mIsPlaying = false; // TODO change to mMediaPlayer.isPlaying(); ?
-    private int mStartTime;
+    private boolean mIsPlaying = false;
     private int mTotalTime;
     private DanceBotMusicFile mMusicFile;
     private Button mPlayPauseButton;
@@ -97,11 +96,6 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     @Override
     public int getSeekBarProgress() {
         return mSeekBar.getProgress();
-    }
-
-    @Override
-    public SeekBar getSeekBarView() {
-        return mSeekBar;
     }
 
     @Override
@@ -180,52 +174,4 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
             mMediaPlayer.seekTo(0);
         }
     }
-
-/*
-    private Runnable updateSongTime = new Runnable() {
-
-        @Override
-        public void run() {
-
-            Log.d(LOG_TAG, "update song time");
-
-            // Update seek bar
-            // TODO change mStartTime to local variable?
-            int currentTime = mMediaPlayer.getCurrentPosition();
-            mSeekBar.setProgress(currentTime);
-
-            if (mIsPlaying || mSeekbarChanged) {
-
-                mSeekbarChanged = false;
-
-                // Automatic scrolling of beat element views
-                int currentBeatElement = (int) (((float) mNumBeats / (float) mTotalTime) * (float) currentTime);
-
-                LinearLayoutManager llm = (LinearLayoutManager) mMotorView.getLayoutManager();
-                llm.scrollToPositionWithOffset(currentBeatElement, 20);
-                //mMotorView.scrollToPosition(currentBeatElement);
-
-                LinearLayoutManager llm2 = (LinearLayoutManager) mLedView.getLayoutManager();
-                llm2.smoothScrollToPosition(mLedView, null, currentBeatElement);
-                //mLedView.scrollToPosition(currentBeatElement);
-
-                // TODO
-
-                BeatElementAdapter adapter = (BeatElementAdapter) mMotorView.getAdapter();
-
-                // TODO
-                if (currentBeatElement > 0 && currentBeatElement < adapter.getItemCount()) {
-                    adapter.getItem(currentBeatElement).setFocus(true);
-                }
-                if (currentBeatElement - 1 > 0 && currentBeatElement - 1 < adapter.getItemCount()) {
-                    adapter.getItem(currentBeatElement - 1).setFocus(false);
-                }
-
-                Log.d(LOG_TAG, "update scroll to element: " + currentBeatElement);
-
-            }
-
-            mSeekBarHandler.postDelayed(this, 100);
-        }
-    };*/
 }
