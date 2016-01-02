@@ -27,8 +27,6 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     private static final String LOG_TAG = "DANCE_BOT_MEDIA_PLAYER";
 
     private final Activity mActivity;
-    private final int mSeekBarCurrentTime;
-    private final int mSeekBarTotalTime;
     private final TextView mSeekBarTotalTimeView;
     private final TextView mSeekBarCurrentTimeView;
     private SeekBar mSeekBar;
@@ -53,14 +51,11 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         btn.setOnClickListener(this);
 
         // Init seek bar labels
-        mSeekBarCurrentTime = 0;
-        mSeekBarTotalTime = 0;
-
         mSeekBarCurrentTimeView = (TextView) mActivity.findViewById(R.id.seekbar_current_time);
         mSeekBarTotalTimeView = (TextView) mActivity.findViewById(R.id.seekbar_total_time);
 
-        mSeekBarCurrentTimeView.setText(songTimeFormat(mSeekBarCurrentTime));
-        mSeekBarTotalTimeView.setText(songTimeFormat(mSeekBarTotalTime));
+        mSeekBarCurrentTimeView.setText(songTimeFormat(0));
+        mSeekBarTotalTimeView.setText(songTimeFormat(0));
     }
 
     public void openMusicFile(DanceBotMusicFile musicFile) {
@@ -127,7 +122,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         // Update seek bar
         mSeekBar.setProgress(progress);
 
-        // Update seek bar text
+        // Update seek bar text view current time
         mSeekBarCurrentTimeView.setText(songTimeFormat(progress));
     }
 
