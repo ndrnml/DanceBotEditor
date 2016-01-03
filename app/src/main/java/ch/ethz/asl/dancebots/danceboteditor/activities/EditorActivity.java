@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
@@ -143,10 +145,12 @@ public class EditorActivity extends Activity {
                 String songArtist = data.getStringExtra("ARTIST");
                 String songPath = data.getStringExtra("PATH");
                 int songDuration = data.getIntExtra("DURATION", 0); // Duration in ms
+                String songAlbumArtPath = data.getStringExtra("ALBUM_ART_PATH");
 
                 Log.v(LOG_TAG, "title: " + songTitle);
                 Log.v(LOG_TAG, "path: " + songPath);
                 Log.v(LOG_TAG, "duration: " + songDuration);
+                Log.v(LOG_TAG, "album art: " + songAlbumArtPath);
 
                 // Selected music file is attached to the current project file
                 DanceBotMusicFile dbMusicFile = new DanceBotMusicFile(songTitle, songArtist, songPath, songDuration);
@@ -170,7 +174,12 @@ public class EditorActivity extends Activity {
 
                 // Update Duration view
                 TextView selectedSongDuration = (TextView) findViewById(R.id.id_song_duration);
-                selectedSongDuration.setText(mProjectManager.getDanceBotMusicFile().getDurationReadable());
+                selectedSongDuration.setText(mProjectManager.getDanceBotMusicFile().getDurationReadable()); // TODO change this line
+
+                if (songAlbumArtPath != null) {
+                    ImageView selectedSongAlbumArt = (ImageView) findViewById(R.id.song_album_art_image);
+                    selectedSongAlbumArt.setImageDrawable(Drawable.createFromPath(songAlbumArtPath));
+                }
 
                 // Update Editor activity state
                 mProjectManager.setEditorState(DanceBotEditorManager.State.NEW);

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.adapters.SongListAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.LoadMediaLibraryTask;
+import ch.ethz.asl.dancebots.danceboteditor.model.Song;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 
@@ -28,12 +29,7 @@ public class MediaLibraryActivity extends ListActivity {
 
     private static final String LOG_TAG = "MEDIA_LIBRARY_ACTIVITY";
 
-    private ArrayList<String> mSongListTitle = new ArrayList<>();
-    private ArrayList<String> mSongListArtist = new ArrayList<>();
-    private ArrayList<String> mSongListPath = new ArrayList<>();
-    private ArrayList<Integer> mSongListDuration = new ArrayList<>();
-
-    private SongListAdapter mSongListAdpt;
+    private ArrayList<Song> mSongList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +39,8 @@ public class MediaLibraryActivity extends ListActivity {
         setContentView(R.layout.activity_media_library);
 
         // Create song list view adapter, initialized with empty arrays
-        mSongListAdpt = new SongListAdapter(this, mSongListTitle, mSongListArtist, mSongListPath, mSongListDuration);
+        //SongListAdapter mSongListAdpt = new SongListAdapter(this, mSongListTitle, mSongListArtist, mSongListPath, mSongListDuration);
+        SongListAdapter mSongListAdpt = new SongListAdapter(this, mSongList);
         setListAdapter(mSongListAdpt);
 
         // Execute asynchronous audio file loading task
@@ -57,10 +54,12 @@ public class MediaLibraryActivity extends ListActivity {
 
         // Create return results for intent
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("TITLE", mSongListTitle.get(position));
-        returnIntent.putExtra("ARTIST", mSongListArtist.get(position));
-        returnIntent.putExtra("PATH", mSongListPath.get(position));
-        returnIntent.putExtra("DURATION", mSongListDuration.get(position));
+        Song s = mSongList.get(position);
+        returnIntent.putExtra("TITLE", s.mTitle);
+        returnIntent.putExtra("ARTIST", s.mArtist);
+        returnIntent.putExtra("PATH", s.mPath);
+        returnIntent.putExtra("DURATION", s.mDuration);
+        returnIntent.putExtra("ALBUM_ART_PATH", s.mAlbumArtPath);
 
         setResult(RESULT_OK, returnIntent);
         finish();

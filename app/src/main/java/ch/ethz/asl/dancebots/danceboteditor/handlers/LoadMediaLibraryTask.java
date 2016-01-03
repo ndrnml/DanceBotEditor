@@ -21,11 +21,8 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integer> {
 
     private SongListAdapter mSongListAdapter;
-    private ArrayList<String> mSongListTitle;
-    private ArrayList<String> mSongListArtist;
-    private ArrayList<String> mSongListPath;
-    private ArrayList<Integer> mSongListDuration;
 
+    private ArrayList<Song> mSongList;
 
     @Override
     protected void onPreExecute() {
@@ -50,10 +47,7 @@ public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integ
          * must be called in this method
          */
         Song currentSong = songs[0];
-        mSongListTitle.add(currentSong.mTitle);
-        mSongListArtist.add(currentSong.mArtist);
-        mSongListPath.add(currentSong.mPath);
-        mSongListDuration.add(currentSong.mDuration);
+        mSongList.add(currentSong);
 
         // After all data is changed notify the adapter
         mSongListAdapter.notifyDataSetChanged();
@@ -69,16 +63,16 @@ public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integ
         // Load current context
         Context context = mSongListAdapter.getContext();
 
-        // Get references to adapter lists
-        mSongListTitle = mSongListAdapter.getSongListTitle();
-        mSongListArtist = mSongListAdapter.getSongListArtist();
-        mSongListPath = mSongListAdapter.getSongListPath();
-        mSongListDuration = mSongListAdapter.getSongListDuratoin();
+        // Get references to adapter list
+        mSongList = mSongListAdapter.getSongList();
 
         // Initialize content resolver
         ContentResolver musicResolver = context.getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+
+        Uri albumUri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
+        Cursor albumCursor = musicResolver.query(albumUri, null, null, null, null);
 
         // Check if media resolver cursor is at a valid position
         if (musicCursor != null && musicCursor.moveToFirst()) {
@@ -92,6 +86,13 @@ public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integ
                     (MediaStore.Audio.Media.ARTIST);
             int durationColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.DURATION);
+            int albumArtColumn = -1;
+
+            // Check if media resolver cursor is at a valid position
+            if (albumCursor != null && albumCursor.moveToFirst()) {
+                albumArtColumn = albumCursor.getColumnIndex
+                        (MediaStore.Audio.Albums.ALBUM_ART);
+            }
 
             // Add audio information to list
             do {
@@ -104,9 +105,17 @@ public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integ
                 String thisPath = getRealPathFromURI(context, path);
                 int thisDuration = musicCursor.getInt(durationColumn);
 
+                // Iterate over all AlbumsColumns
+                String thisAlbumArtPath;
+                if (albumArtColumn != -1) {
+                    thisAlbumArtPath = musicCursor.getString(albumArtColumn);
+                } else {
+                    thisAlbumArtPath = null;
+                }
+
                 // Check audio format of selected song
                 if (correctAudioFormat(thisPath)) {
-                    publishProgress(new Song(thisTitle, thisArtist, thisPath, thisDuration));
+                    publishProgress(new Song(thisTitle, thisArtist, thisPath, thisDuration, thisAlbumArtPath));
                 }
             }
             while (musicCursor.moveToNext());

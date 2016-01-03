@@ -1,5 +1,6 @@
 package ch.ethz.asl.dancebots.danceboteditor.adapters;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.model.Song;
 
 /**
  * Created by andrin on 06.07.15.
@@ -19,28 +21,25 @@ public class SongListAdapter extends BaseAdapter {
 
     private Context mContext;
 
-    private ArrayList<String> mSongTitles;
-    private ArrayList<String> mSongArtists;
-    private ArrayList<String> mSongPaths;
-    private ArrayList<Integer> mSongDurations;
+    private ArrayList<Song> mSongList;
 
     private LayoutInflater mSongElementInflater;
 
-    public SongListAdapter(Context context, ArrayList<String> titles, ArrayList<String> artists, ArrayList<String> paths, ArrayList<Integer> durations) {
+    public SongListAdapter(Context context, ArrayList<Song> songs) {
 
+        // Save current context
         mContext = context;
 
-        mSongTitles = titles;
-        mSongArtists = artists;
-        mSongPaths = paths;
-        mSongDurations = durations;
+        // Save song list
+        mSongList = songs;
 
+        // Inflate layout
         mSongElementInflater = LayoutInflater.from(context);
     }
 
     @Override
     public int getCount() {
-        return mSongTitles.size();
+        return mSongList.size();
     }
 
     @Override
@@ -58,7 +57,7 @@ public class SongListAdapter extends BaseAdapter {
 
         //map to song layout
         LinearLayout songLayout = (LinearLayout) mSongElementInflater.inflate
-                (R.layout.song_list_details, null);
+                (R.layout.song_list_details, null); // TODO use recycled view
 
         //get title and artist views
         TextView songView = (TextView)songLayout.findViewById(R.id.song_title);
@@ -66,14 +65,15 @@ public class SongListAdapter extends BaseAdapter {
         TextView dirView = (TextView)songLayout.findViewById(R.id.song_dir);
 
         // Retrieve song details using position
-        String currTitle = mSongTitles.get(position);
-        String currArtist = mSongArtists.get(position);
-        String currDir = mSongPaths.get(position);
+        Song s = mSongList.get(position);
+        String currTitle = s.mTitle;
+        String currArtist = s.mArtist;
+        String currPah = s.mPath; // TODO change dir to path
 
         // Display all relevant properties of this song
         songView.setText(currTitle);
         artistView.setText(currArtist);
-        dirView.setText(currDir);
+        dirView.setText(currPah);
 
         return songLayout;
     }
@@ -82,19 +82,7 @@ public class SongListAdapter extends BaseAdapter {
         return mContext;
     }
 
-    public ArrayList<String> getSongListTitle() {
-        return mSongTitles;
-    }
-
-    public ArrayList<String> getSongListArtist() {
-        return mSongArtists;
-    }
-
-    public ArrayList<String> getSongListPath() {
-        return mSongPaths;
-    }
-
-    public ArrayList<Integer> getSongListDuratoin() {
-        return mSongDurations;
+    public ArrayList<Song> getSongList() {
+        return mSongList;
     }
 }

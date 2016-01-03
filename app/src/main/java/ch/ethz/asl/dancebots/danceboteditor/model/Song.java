@@ -9,11 +9,13 @@ public class Song {
     public String mArtist;
     public String mPath;
     public int mDuration;
+    public String mAlbumArtPath;
 
-    public Song(String title, String artist, String path, int duration) {
+    public Song(String title, String artist, String path, int duration, String albumArtPath) {
         mTitle = title;
         mArtist = artist;
         mPath = path;
         mDuration = duration;
+        mAlbumArtPath = albumArtPath;
     }
 }
