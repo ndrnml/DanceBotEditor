@@ -85,7 +85,7 @@ public class Decoder {
         return mSoundFileHandle;
     }
     public int getSampleRate() {
-        return (int)getSampleRate(mSoundFileHandle);
+        return (int) getSampleRate(mSoundFileHandle);
     }
     public long getNumberOfSamples() {
         return getNumberOfSamples(mSoundFileHandle);

@@ -101,7 +101,7 @@ public class SoundDecodeRunnable implements Runnable {
             Log.v(LOG_TAG, "opening mp3 file...");
             mp3Decoder.openFile(musicFile.getSongPath());
 
-            // Decode the opened music file, if no error occured
+            // Decode the opened music file, if no error occurred
             Log.v(LOG_TAG, "start decoding...");
             int result = mp3Decoder.decode();
 

@@ -9,7 +9,7 @@
     <color name="item_border_color">#666666</color>
     <color name="item_default_color">#FFB163</color>
     <color name="item_pressed_color">#CCCCCC</color>
-    <color name="item_activated_color">#ff8c00</color>
+    <color name="item_activated_color">#3467c6</color>
 
     <color name="motor_list_default_color">#FFB163</color>
     <color name="motor_elem_color1">#C62828</color>

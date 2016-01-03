@@ -168,10 +168,37 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
     public void scrollToPosition(int position) {
 
         // Scroll motor view
-        mMotorLayoutManager.scrollToPositionWithOffset(position, 60);
+        mMotorLayoutManager.scrollToPositionWithOffset(position, 20);
 
         // Scroll led view
-        mLedLayoutManager.scrollToPositionWithOffset(position, 60);
+        mLedLayoutManager.scrollToPositionWithOffset(position, 20);
+
+        // Set focus on current element
+        setFocus(position);
+    }
+
+    @Override
+    public int getNumElements() {
+        return mMotorView.getAdapter().getItemCount();
+    }
+
+    @Override
+    public long getSampleAt(int position) {
+        return ((BeatElementAdapter) mMotorView.getAdapter()).getItem(position).getSamplePosition();
+    }
+
+    @Override
+    public int getFirstVisibleItem() {
+        return mMotorLayoutManager.findFirstVisibleItemPosition();
+    }
+
+    @Override
+    public int getLastVisibleItem() {
+        return mMotorLayoutManager.findLastVisibleItemPosition();
+    }
+
+    @Override
+    public void setFocus(int position) {
 
         // Set focus of current beat element in motor view
         BeatElementAdapter motorAdapter = (BeatElementAdapter) mMotorView.getAdapter();
@@ -182,10 +209,5 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         BeatElementAdapter ledAdapter = (BeatElementAdapter) mLedView.getAdapter();
         ledAdapter.setSelected(position);
         ledAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public int getNumElements() {
-        return mMotorView.getAdapter().getItemCount();
     }
 }

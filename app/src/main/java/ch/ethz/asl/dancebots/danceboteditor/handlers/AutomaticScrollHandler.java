@@ -3,7 +3,6 @@ package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 
 /**
  * Created by andrin on 22.10.15.
@@ -36,6 +35,14 @@ public class AutomaticScrollHandler implements Runnable {
         void scrollToPosition(int position);
 
         int getNumElements();
+
+        long getSampleAt(int position);
+
+        int getFirstVisibleItem();
+
+        int getLastVisibleItem();
+
+        void setFocus(int position);
     }
 
     /**
@@ -54,6 +61,8 @@ public class AutomaticScrollHandler implements Runnable {
         int getCurrentPosition();
 
         int getTotalTime();
+
+        int getSampleRate();
     }
 
     /**
@@ -103,6 +112,10 @@ public class AutomaticScrollHandler implements Runnable {
         mScrollHandler.removeCallbacks(this);
     }
 
+    /**
+     * This is the main loop of the scroll handler. It is executed repetitively until time to live
+     * is reached.
+     */
     @Override
     public void run() {
 
@@ -126,19 +139,60 @@ public class AutomaticScrollHandler implements Runnable {
         }
 
         // Update seek bar
-        int currentTime = mDanceBotMediaPlayer.getCurrentPosition();
-        mDanceBotMediaPlayer.setSeekBarProgress(currentTime);
+        int currentTimeInMilliseconds = mDanceBotMediaPlayer.getCurrentPosition();
+        mDanceBotMediaPlayer.setSeekBarProgress(currentTimeInMilliseconds);
 
+        // Update the HorizontalRecyclerViews when the player is playing or the seek bar has changed
         if (mDanceBotMediaPlayer.isPlaying() || seekBarChanged()) {
 
-            int currentBeatElement = (int) (((float) mScrollViews.getNumElements() / (float) mDanceBotMediaPlayer.getTotalTime()) * (float) currentTime);
+            // Estimate beat position
+            int estimatedBeatElement = (int) (((float) mScrollViews.getNumElements() / (float) mDanceBotMediaPlayer.getTotalTime()) * (float) currentTimeInMilliseconds);
 
-            mScrollViews.scrollToPosition(currentBeatElement);
+            // Compute current sample
+            long currentSample = (long) ((float) currentTimeInMilliseconds * 0.001 * (float) mDanceBotMediaPlayer.getSampleRate());
 
-            Log.d(LOG_TAG, "update scroll to element: " + currentBeatElement);
+            int exactBeatElement = estimatedBeatElement;
+
+            // Check exact beat position for previous, current and next beat
+            for (int i = -1; i <= 1; ++i) {
+                
+                // Check boundaries
+                if (estimatedBeatElement + i > 0 && estimatedBeatElement + i < mScrollViews.getNumElements() - 1) {
+
+                    // Get start and end beat sample positions
+                    long estimatedBeatStartSample = mScrollViews.getSampleAt(estimatedBeatElement + i);
+                    long estimatedBeatEndSample = mScrollViews.getSampleAt(estimatedBeatElement + i + 1);
+
+                    // Check if current sample is in range
+                    if (isInRange(estimatedBeatStartSample, estimatedBeatEndSample, currentSample)) {
+                        exactBeatElement = estimatedBeatElement + i;
+                        if (i == 0) {
+                            Log.d(LOG_TAG, "i == 0");
+                        }
+                        break;
+                    }
+                }
+            }
+
+            //int currentBeatElement = (int) (((float) mScrollViews.getNumElements() / (float) mDanceBotMediaPlayer.getTotalTime()) * (float) currentTimeInMilliseconds);
+
+            int firstVisibleItem = mScrollViews.getFirstVisibleItem();
+            int lastVisibleItem = mScrollViews.getLastVisibleItem();
+
+            if (exactBeatElement <= firstVisibleItem || exactBeatElement >= lastVisibleItem) {
+                mScrollViews.scrollToPosition(exactBeatElement);
+            } else {
+                mScrollViews.setFocus(exactBeatElement);
+            }
+
+            Log.d(LOG_TAG, "update scroll to element: " + exactBeatElement);
         }
 
         mScrollHandler.postDelayed(this, 200);
+    }
+
+    private boolean isInRange(long estimatedBeatStartSample, long estimatedBeatEndSample, long currentSample) {
+        return (currentSample <= estimatedBeatEndSample && currentSample >= estimatedBeatStartSample);
     }
 
     /**

@@ -3,12 +3,10 @@ package ch.ethz.asl.dancebots.danceboteditor.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -54,7 +52,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
     public BeatElementAdapter.SimpleViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
 
         // Create a new view
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.beat_grid_element, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.beat_element, parent, false);
 
         // Set the view's size, margins, paddings and layout parameters
         final SimpleViewHolder vh = new SimpleViewHolder((TextView) v);
@@ -104,12 +102,16 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
 
         // Set selected item
         if (mSelectedItem == position) {
-            holder.mTextView.setBackgroundColor(mContext.getResources().getColor(R.color.item_activated_color));
+            holder.mTextView.setBackground(mContext.getDrawable(R.drawable.selected_item));
         }
     }
 
     @Override
     public int getItemCount() {
         return mBeatElements.size();
+    }
+
+    public BeatElement getItem(int position) {
+        return mBeatElements.get(position);
     }
 }

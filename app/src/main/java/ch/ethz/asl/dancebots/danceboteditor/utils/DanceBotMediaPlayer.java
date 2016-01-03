@@ -92,7 +92,9 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
     /**
      * Get song time hh:ss format from milliseconds
+     *
      * @param timeInMilliseconds time in milliseconds
+     *
      * @return string format mm:ss
      */
     private String songTimeFormat(int timeInMilliseconds) {
@@ -112,6 +114,11 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         return mIsPlaying;
     }
 
+    /**
+     * Get the current playback position in milliseconds
+     *
+     * @return position in milliseconds
+     */
     @Override
     public int getCurrentPosition() {
         return mMediaPlayer.getCurrentPosition();
@@ -134,6 +141,11 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     @Override
     public int getTotalTime() {
         return mTotalTime;
+    }
+
+    @Override
+    public int getSampleRate() {
+        return mMusicFile.getSampleRate();
     }
 
     @Override
