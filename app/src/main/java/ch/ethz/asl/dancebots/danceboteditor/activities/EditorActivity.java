@@ -176,10 +176,10 @@ public class EditorActivity extends Activity {
                 TextView selectedSongDuration = (TextView) findViewById(R.id.id_song_duration);
                 selectedSongDuration.setText(mProjectManager.getDanceBotMusicFile().getDurationReadable()); // TODO change this line
 
-                if (songAlbumArtPath != null) {
+                /*if (songAlbumArtPath != null) {
                     ImageView selectedSongAlbumArt = (ImageView) findViewById(R.id.song_album_art_image);
                     selectedSongAlbumArt.setImageDrawable(Drawable.createFromPath(songAlbumArtPath));
-                }
+                }*/
 
                 // Update Editor activity state
                 mProjectManager.setEditorState(DanceBotEditorManager.State.NEW);

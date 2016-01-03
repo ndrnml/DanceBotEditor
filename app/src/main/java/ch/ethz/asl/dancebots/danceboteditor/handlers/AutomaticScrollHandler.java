@@ -188,7 +188,7 @@ public class AutomaticScrollHandler implements Runnable {
             Log.d(LOG_TAG, "update scroll to element: " + exactBeatElement);
         }
 
-        mScrollHandler.postDelayed(this, 200);
+        mScrollHandler.postDelayed(this, 100);
     }
 
     private boolean isInRange(long estimatedBeatStartSample, long estimatedBeatEndSample, long currentSample) {

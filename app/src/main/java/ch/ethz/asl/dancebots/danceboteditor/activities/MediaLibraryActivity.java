@@ -59,7 +59,7 @@ public class MediaLibraryActivity extends ListActivity {
         returnIntent.putExtra("ARTIST", s.mArtist);
         returnIntent.putExtra("PATH", s.mPath);
         returnIntent.putExtra("DURATION", s.mDuration);
-        returnIntent.putExtra("ALBUM_ART_PATH", s.mAlbumArtPath);
+        //returnIntent.putExtra("ALBUM_ART_PATH", s.mAlbumArtPath);
 
         setResult(RESULT_OK, returnIntent);
         finish();
