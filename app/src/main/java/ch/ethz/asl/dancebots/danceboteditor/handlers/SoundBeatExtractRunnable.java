@@ -152,7 +152,7 @@ public class SoundBeatExtractRunnable implements Runnable {
             }*/
 
             // Check the result of the beat extraction
-            if (mNumBeatsDetected < 0) {
+            if (mNumBeatsDetected <= 0) {
 
                 Log.v(LOG_TAG, "Error while extracting beats");
 
@@ -169,9 +169,9 @@ public class SoundBeatExtractRunnable implements Runnable {
 
             // Does nothing
 
-            // In all cases, handle the results
         } finally {
 
+            // In all cases, handle the results
             Log.v(LOG_TAG, "BeatExtractThread: " + mThreadId + " finished.");
         }
     }

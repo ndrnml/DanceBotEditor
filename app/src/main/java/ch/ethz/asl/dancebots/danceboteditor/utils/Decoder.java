@@ -63,22 +63,21 @@ public class Decoder {
         }
     }
 
-    public void dispose()
+    public void cleanUp()
     {
         if(mSoundFileHandle != 0)
         {
-            delete(mSoundFileHandle);
+            cleanUp(mSoundFileHandle);
             mSoundFileHandle = 0;
         }
     }
 
-    /* TODO: IS THIS CALL SAFE?
+    // TODO: IS THIS CALL SAFE?
     @Override
     protected void finalize() throws Throwable {
+        cleanUp();
         super.finalize();
-        dispose();
     }
-    */
 
     // TODO should this method be static, if mSoundFileHandle is static?
     public long getHandle() {
@@ -99,7 +98,7 @@ public class Decoder {
     private native static int decode(long soundFileHandle);
     private native static int transfer(long soundFileHandle, short[] pcmBuffer);
     // Delete native sound file
-    private native static int delete(long mSoundFileHandle);
+    private native static int cleanUp(long mSoundFileHandle);
     // Check audio format
     private native static int checkFormat(String filePath);
 

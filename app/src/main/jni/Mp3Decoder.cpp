@@ -24,7 +24,8 @@ Mp3Decoder::~Mp3Decoder() {
 /**
  * TODO comment
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_initialize(JNIEnv *env, jobject self)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_initialize
+        (JNIEnv *env, jobject self)
 {
     // Initialize mpg123 library
     return mpg123_init();
@@ -33,7 +34,8 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_i
 /**
  * TODO
  */
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_open(JNIEnv *env, jobject self, jstring path_to_file)
+JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_open
+        (JNIEnv *env, jobject self, jstring path_to_file)
 {
 
     // Error code
@@ -51,6 +53,7 @@ JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "mpg123_new: %p", m_Mp3Decoder.m_mh);
 
     if (err == MPG123_OK && m_Mp3Decoder.m_mh != NULL) {
+
         // Get the utf-8 string
         const char *file_path = env->GetStringUTFChars(path_to_file, JNI_FALSE);
 
@@ -121,7 +124,8 @@ JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_
 /**
  * TODO: The hole method is fixed to short encoding
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_decode(JNIEnv *env, jobject self, jlong sound_file_handle)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_decode
+        (JNIEnv *env, jobject self, jlong sound_file_handle)
 {
     // Load sound file TODO: Check for NULL?
     SoundFile *sound_file = (SoundFile *)sound_file_handle;
@@ -137,6 +141,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_d
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "total number of samples to process: %li", total_samples);
 
     int idx = 0;
+
     // TODO: For some songs processed number of samples does not match expected number to process
     while (idx != total_samples && err == MPG123_OK)
     {
@@ -184,7 +189,8 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_d
 }
 
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_transfer(JNIEnv *env, jobject self, jlong sound_file_handle, jshortArray pcm)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_transfer
+        (JNIEnv *env, jobject self, jlong sound_file_handle, jshortArray pcm)
 {
 
     SoundFile *sound_file = (SoundFile *)sound_file_handle;
@@ -209,14 +215,16 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_t
 /**
  *
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_delete(JNIEnv *env, jobject self, jlong sound_file_handle)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_cleanUp
+        (JNIEnv *env, jobject self, jlong sound_file_handle)
 {
     SoundFile *sound_file = (SoundFile *)sound_file_handle;
 
     delete sound_file;
 }
 
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_checkFormat(JNIEnv *env, jobject self, jstring path_to_file)
+JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_checkFormat
+        (JNIEnv *env, jobject self, jstring path_to_file)
 {
 
     // Error code

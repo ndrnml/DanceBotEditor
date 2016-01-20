@@ -27,7 +27,7 @@ public:
     // The number of process samples for beat extraction can be accessed by multiple threads
     long num_of_proc_beat_extract_samples;
 
-    // Other fields TODO: COMMMMEENT!!!!!!
+    // Other fields
     int channels;
     long rate;
     long num_samples;

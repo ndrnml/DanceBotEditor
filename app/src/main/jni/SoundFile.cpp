@@ -73,10 +73,6 @@ int SoundFile::interleaveChannels()
         {
             // TODO: is this possible with short?
             music_buffer[i] = (pcm_buffer[2*i] + pcm_buffer[2*i + 1]) / 2;
-
-            /*if (i % 200000 == 0) {
-                __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "sample: %d", i);
-            }*/
         }
 
         __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "interpolated left and right pcm channels");
@@ -92,28 +88,32 @@ int SoundFile::interleaveChannels()
 
 }
 
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getSampleRate(JNIEnv *env, jobject self, jlong sound_file_handle)
+JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getSampleRate
+        (JNIEnv *env, jobject self, jlong sound_file_handle)
 {
     SoundFile *sound_file = (SoundFile *)sound_file_handle;
 
     return sound_file->rate;
 }
 
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getNumberOfSamples(JNIEnv *env, jobject self, jlong sound_file_handle)
+JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getNumberOfSamples
+        (JNIEnv *env, jobject self, jlong sound_file_handle)
 {
     SoundFile *sound_file = (SoundFile *)sound_file_handle;
 
     return sound_file->num_samples;
 }
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_getNumBeatsDetected(JNIEnv *env, jobject self, jlong sound_file_handle)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_getNumBeatsDetected
+        (JNIEnv *env, jobject self, jlong sound_file_handle)
 {
     SoundFile *sound_file = (SoundFile *)sound_file_handle;
 
     return sound_file->number_beats_detected;
 }
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_getNumSamplesProcessed(JNIEnv *env, jobject self, jlong sound_file_handle)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_getNumSamplesProcessed
+        (JNIEnv *env, jobject self, jlong sound_file_handle)
 {
     SoundFile *sound_file = (SoundFile *)sound_file_handle;
 
