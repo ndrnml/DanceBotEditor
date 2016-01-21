@@ -21,7 +21,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.Encoder;
  */
 public class SoundEncodeRunnable implements Runnable {
 
-    private static final String LOG_TAG = "ENCODE_RUNNABLE";
+    private static final String LOG_TAG = SoundEncodeRunnable.class.getSimpleName();
 
     // TODO: MOVE THIS CONSTS
     private static final int SAMPLE_FREQUENCY_NOMINAL = 44100;

@@ -33,6 +33,9 @@ public class SoundBeatExtractRunnable implements Runnable {
     private int mThreadId;
     private int mNumThreads;
 
+    // Number of beats detected
+    private int mNumBeatsDetected;
+
     // Defines the field that contains the calling object of type SoundTask
     public final TaskRunnableBeatExtractionMethods mSoundTask;
 
@@ -145,7 +148,7 @@ public class SoundBeatExtractRunnable implements Runnable {
              * Call to native beat extraction algorithm.
              * mBeatBuffer is filled with detected beats
              */
-            int mNumBeatsDetected = BeatExtractor.extract(mSoundFileHandle, mBeatBuffer, mStartSample, mEndSample);
+            mNumBeatsDetected = BeatExtractor.extract(mSoundFileHandle, mBeatBuffer, mStartSample, mEndSample);
 
             /*for (int b = 0; b < result; ++b) {
                 Log.v(LOG_TAG, "IntBuffer at " + b + ": " + buf.get(b));
@@ -157,12 +160,9 @@ public class SoundBeatExtractRunnable implements Runnable {
                 Log.v(LOG_TAG, "Error while extracting beats");
 
             } else {
+
                 // If no error occurred, the beat extraction will have found zero or more beats
                 Log.v(LOG_TAG, "Thread: " + mThreadId + " Successfully decoded and beats extracted: " + mNumBeatsDetected);
-
-                // Set feedback to the SoundTask that this Thread finished execution
-                mSoundTask.setBeatExtractionRunnableStatus(mThreadId, mNumBeatsDetected);
-                mSoundTask.setBeatBuffer(mThreadId, mBeatBuffer);
             }
 
         } catch (InterruptedException e1) {
@@ -170,6 +170,10 @@ public class SoundBeatExtractRunnable implements Runnable {
             // Does nothing
 
         } finally {
+
+            // Set feedback to the SoundTask that this Thread finished execution
+            mSoundTask.setBeatExtractionRunnableStatus(mThreadId, mNumBeatsDetected);
+            mSoundTask.setBeatBuffer(mThreadId, mBeatBuffer);
 
             // In all cases, handle the results
             Log.v(LOG_TAG, "BeatExtractThread: " + mThreadId + " finished.");

@@ -3,10 +3,12 @@ package ch.ethz.asl.dancebots.danceboteditor.handlers;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
@@ -14,6 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import ch.ethz.asl.dancebots.danceboteditor.activities.EditorActivity;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
@@ -24,7 +27,7 @@ import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
  */
 public class SoundManager {
 
-    private static final String LOG_TAG = "SOUND_MANAGER";
+    private static final String LOG_TAG = SoundManager.class.getSimpleName();
 
     /*
      * Status indicators
@@ -127,6 +130,9 @@ public class SoundManager {
                 // Get the progress dialog
                 ProgressDialog dialog = soundTask.getProgressDialog();
 
+                // Get the info toast
+                Toast infoToast = soundTask.getInfoToast();
+
                 // Get the current state of the SoundTask
                 int state = inputMessage.what;
 
@@ -134,6 +140,7 @@ public class SoundManager {
 
                     case DECODING_STARTED:
 
+                        // Update progress dialog
                         dialog.setMessage("PREPARING YOUR ABSOLUTE FAVORITE SONG ;)");
                         dialog.show();
 
@@ -148,6 +155,15 @@ public class SoundManager {
 
                     case DECODING_FAILED:
 
+                        // Update progress dialog
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+
+                        // Inform user
+                        infoToast.setText("Decoding failed :(");
+                        infoToast.show();
+
                         Log.v(LOG_TAG, "handleMessage: DECODING_FAILED");
                         break;
 
@@ -155,6 +171,7 @@ public class SoundManager {
 
                         int progress = soundTask.getProgress();
                         dialog.setProgress(progress);
+
                         Log.v(LOG_TAG, "handleMessage: " + "UPDATE_PROGRESS: " + progress);
                         break;
 
@@ -174,6 +191,7 @@ public class SoundManager {
                         if (dialog.isShowing()) {
                             dialog.dismiss();
                         }
+
 
                         Log.v(LOG_TAG, "handleMessage: TASK_COMPLETE");
                         break;
@@ -286,7 +304,7 @@ public class SoundManager {
         return decodeTask;
     }
 
-    static public SoundTask startEncoding(Activity activity, DanceBotMusicFile musicFile, ChoreographyManager choreoManager) {
+    static public SoundTask startEncoding(Context context, DanceBotMusicFile musicFile, ChoreographyManager choreoManager) {
 
         // Ensure that at least one Thread is invoked
         int numThreads = 1;
@@ -295,7 +313,7 @@ public class SoundManager {
         SoundTask encodingTask = new SoundTask(numThreads);
 
         // Initialize the encoding task
-        encodingTask.initializeEncoderTask(activity, musicFile, choreoManager);
+        encodingTask.initializeEncoderTask(context, musicFile, choreoManager);
 
         /*
          * Executes the tasks' encode Runnable in order to encode raw music data and choreography

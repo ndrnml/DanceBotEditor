@@ -2,7 +2,9 @@ package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -24,7 +26,11 @@ public class SoundTask implements
 
     private static final String LOG_TAG = "SOUND_TASK";
 
+    // UI Thread dialog
     private ProgressDialog mSoundTaskProgressDialog;
+
+    // UI Thread info toast
+    private Toast mInfoToast;
 
     // The DanceBotMusicFile, which keeps all relevant information about the selected song
     private DanceBotMusicFile mMusicFile;
@@ -105,21 +111,19 @@ public class SoundTask implements
         mMusicFile = musicFile;
 
         // Initialize progress dialog on UI thread
-        mSoundTaskProgressDialog = new ProgressDialog(activity);
-        mSoundTaskProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mSoundTaskProgressDialog.setCancelable(false);
-        mSoundTaskProgressDialog.setCanceledOnTouchOutside(false);
-        mSoundTaskProgressDialog.setIndeterminate(true);
-        mSoundTaskProgressDialog.setProgress(0);
+        initializeProgressDialog(activity);
+
+        // Initialize error toast
+        initializeErrorToast(activity);
     }
 
     /**
      * Initialize the encoder task
-     * @param activity
+     * @param context
      * @param musicFile
      * @param choreoManager
      */
-    public void initializeEncoderTask(Activity activity, DanceBotMusicFile musicFile, ChoreographyManager choreoManager) {
+    public void initializeEncoderTask(Context context, DanceBotMusicFile musicFile, ChoreographyManager choreoManager) {
 
         // Sets the selected dance bot editor music file
         mMusicFile = musicFile;
@@ -128,7 +132,20 @@ public class SoundTask implements
         mChoreoManager = choreoManager;
 
         // Initialize progress dialog on UI thread
-        mSoundTaskProgressDialog = new ProgressDialog(activity);
+        initializeProgressDialog(context);
+
+        // Initialize error toast
+        initializeErrorToast(context);
+    }
+
+    private void initializeErrorToast(Context context) {
+        // Initialize error toast
+        mInfoToast = Toast.makeText(context, "", Toast.LENGTH_LONG);
+    }
+
+    private void initializeProgressDialog(Context context) {
+        // Initialize progress dialog on UI thread
+        mSoundTaskProgressDialog = new ProgressDialog(context);
         mSoundTaskProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mSoundTaskProgressDialog.setCancelable(false);
         mSoundTaskProgressDialog.setCanceledOnTouchOutside(false);
@@ -146,7 +163,7 @@ public class SoundTask implements
 
     private void postProcessExtractedBeats() {
 
-        // TODO: What happens if one worker Thread gets lost?
+        // TODO: What happens if one worker Thread gets terminated?
         // Main decoder Thread actively waits for worker (BeatExtraction) Threads to finish
         while (!allBeatExtractionRunnablesDone()) {
 
@@ -433,5 +450,9 @@ public class SoundTask implements
     @Override
     public int getNumBeats() {
         return mMusicFile.getNumberOfBeatsDetected();
+    }
+
+    public Toast getInfoToast() {
+        return mInfoToast;
     }
 }

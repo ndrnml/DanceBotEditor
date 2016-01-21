@@ -119,12 +119,13 @@ public class DanceBotEditorManager {
      * If app closes. Cleanup, especially native objects (no garbage collector there)
      */
     public void cleanUp() {
+        if (mDanceBotMusicFile != null) {
+            // Cleanup DanceBotMusicFile
+            mDanceBotMusicFile.cleanUp();
 
-        // Cleanup DanceBotMusicFile
-        mDanceBotMusicFile.cleanUp();
-
-        // Detach from DanceBotEditorManager
-        mDanceBotMusicFile = null;
+            // Detach from DanceBotEditorManager
+            mDanceBotMusicFile = null;
+        }
     }
 
     ///////////

@@ -11,7 +11,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 public class SoundDecodeRunnable implements Runnable {
 
     // Sets the log tag
-    private static final String LOG_TAG = "DECODE_RUNNABLE";
+    private static final String LOG_TAG = SoundDecodeRunnable.class.getSimpleName();
 
     // Constants for indicating the state of the decoding
     public static final int DECODE_STATE_FAILED = -1;
@@ -107,29 +107,36 @@ public class SoundDecodeRunnable implements Runnable {
 
             // Check result of the decoded music file
             if (result <= 0) {
+
                 Log.v(LOG_TAG, "Error: Decoding failed.");
+
+                // Handle the state of the decoding Thread
+                mSoundTask.handleDecodeState(DECODE_STATE_FAILED);
+
+            } else {
+
+                // Get native sound file handle pointer to the decoded sound file
+                long soundFileHandle = mp3Decoder.getHandle();
+
+                // Set the handle in the SoundTask instance, such that other Threads can access it
+                mSoundTask.setSoundFileHandler(soundFileHandle);
+
+                // Extract sample rate from decoded file
+                musicFile.setSampleRate(mp3Decoder.getSampleRate());
+                Log.v(LOG_TAG, "sample rate: " + musicFile.getSampleRate());
+
+                // Get the total number of samples, which were decoded
+                musicFile.setTotalNumberOfSamples(mp3Decoder.getNumberOfSamples());
+                Log.v(LOG_TAG, "total number of samples: " + musicFile.getNumberOfSamples());
+
+                // Handle the state of the decoding Thread
+                mSoundTask.handleDecodeState(DECODE_STATE_COMPLETED);
             }
-
-            // Get native sound file handle pointer to the decoded sound file
-            long soundFileHandle = mp3Decoder.getHandle();
-
-            // Set the handle in the SoundTask instance, such that other Threads can access it
-            mSoundTask.setSoundFileHandler(soundFileHandle);
-
-            // Extract sample rate from decoded file
-            musicFile.setSampleRate(mp3Decoder.getSampleRate());
-            Log.v(LOG_TAG, "sample rate: " + musicFile.getSampleRate());
-
-            // Get the total number of samples, which were decoded
-            musicFile.setTotalNumberOfSamples(mp3Decoder.getNumberOfSamples());
-            Log.v(LOG_TAG, "total number of samples: " + musicFile.getNumberOfSamples());
-
-            // Handle the state of the decoding Thread
-            mSoundTask.handleDecodeState(DECODE_STATE_COMPLETED);
 
         } catch (InterruptedException e1) {
 
             // Does nothing
+            Log.d(LOG_TAG, "ERROR: DecodeThread InterruptedException." + e1);
 
             // In all cases, handle the results
         } finally {
