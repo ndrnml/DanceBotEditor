@@ -13,7 +13,8 @@ static const char* LOG_TAG = "NATIVE_BEAT_EXTRACTOR";
  * This method computes the features (beat peaks) at sample positions for a selected song
  * which soundFileHandle is pointing to
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_extractBeats(JNIEnv *env, jobject self, jlong soundFileHandle, jobject intBuffer, jint intBufferSize)
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_extractBeats
+        (JNIEnv *env, jobject self, jlong soundFileHandle, jobject intBuffer, jint intBufferSize)
 {
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "start BeatExtractor::extractBeats");
 
@@ -91,7 +92,6 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
 			++j;
 
             //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "plugbuf %i: %f", (j+i), (static_cast<float>(sound_file->pcm_buffer[j + i]))/32768.0f);
-
         }
 
         // if j is less than the block size fill with zeros (zero padding)
@@ -359,4 +359,18 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
     //sound_file->number_beats_detected = number_of_beats_detected;
 
     return number_of_beats_detected;
+}
+
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_cleanUp
+        (JNIEnv *env, jobject self, jlong sound_file_handle)
+{
+    if (sound_file_handle != 0)
+    {
+        SoundFile *sound_file = (SoundFile *)sound_file_handle;
+        delete sound_file;
+    }
+    else
+    {
+        __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Error: sound file handle clean up failed, sound_file_handle: %lld", sound_file_handle);
+    }
 }

@@ -16,21 +16,11 @@ import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
  */
 public class DanceBotEditorManager {
 
-    // Possible states of the editor
-    public enum State {
-        START, NEW, EDITING
-    }
-
-    public boolean musicFileSelected = false;
-    public boolean beatExtractionDone = false;
-    public boolean startedEditing = false;
-
     // Singleton instance
     private static DanceBotEditorManager instance = null;
 
     private Context mContext;
-    private State mEditorState;
-    private DanceBotMusicFile mMusicFile;
+    private DanceBotMusicFile mDanceBotMusicFile;
     private ChoreographyManager mChoreoManager;
     private DanceBotMediaPlayer mMediaPlayer;
     private HorizontalRecyclerViews mBeatViews;
@@ -77,7 +67,7 @@ public class DanceBotEditorManager {
     }
 
     /**
-     * Init menus
+     * Init all contextual menus
      */
     public void initSelectionMenus() {
 
@@ -110,19 +100,31 @@ public class DanceBotEditorManager {
      * Based on the detected beats, create a new choreography manager
      */
     public void initChoreography() {
-        mChoreoManager = new ChoreographyManager(mContext, mBeatViews, mMusicFile);
+        mChoreoManager = new ChoreographyManager(mContext, mBeatViews, mDanceBotMusicFile);
     }
 
     /**
-     * TODO comment
+     * Attach the selected music file
      * @param dbMusicFile
      */
     public void attachMusicFile(DanceBotMusicFile dbMusicFile) {
-        mMusicFile = dbMusicFile;
+        mDanceBotMusicFile = dbMusicFile;
     }
 
     public void attachMediaPlayer(DanceBotMediaPlayer mediaPlayer) {
         mMediaPlayer = mediaPlayer;
+    }
+
+    /**
+     * If app closes. Cleanup, especially native objects (no garbage collector there)
+     */
+    public void cleanUp() {
+
+        // Cleanup DanceBotMusicFile
+        mDanceBotMusicFile.cleanUp();
+
+        // Detach from DanceBotEditorManager
+        mDanceBotMusicFile = null;
     }
 
     ///////////
@@ -134,9 +136,6 @@ public class DanceBotEditorManager {
     public void setBeatViews(HorizontalRecyclerViews beatViews) {
         mBeatViews = beatViews;
     }
-    public void setEditorState(State s) {
-        mEditorState = s;
-    }
     public void setContext(Context c) {
         mContext = c;
     }
@@ -147,13 +146,10 @@ public class DanceBotEditorManager {
         return mContext;
     }
     public DanceBotMusicFile getDanceBotMusicFile() {
-        return mMusicFile;
+        return mDanceBotMusicFile;
     }
     public ChoreographyManager getChoreoManager() {
         return mChoreoManager;
-    }
-    public State getEditorState() {
-        return mEditorState;
     }
     public LedTypeSelectionMenu getLedTypeMenu() {
         return mLedTypeMenu;

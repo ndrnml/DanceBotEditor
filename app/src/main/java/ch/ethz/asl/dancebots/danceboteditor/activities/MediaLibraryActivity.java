@@ -39,7 +39,6 @@ public class MediaLibraryActivity extends ListActivity {
         setContentView(R.layout.activity_media_library);
 
         // Create song list view adapter, initialized with empty arrays
-        //SongListAdapter mSongListAdpt = new SongListAdapter(this, mSongListTitle, mSongListArtist, mSongListPath, mSongListDuration);
         SongListAdapter mSongListAdpt = new SongListAdapter(this, mSongList);
         setListAdapter(mSongListAdpt);
 
@@ -59,6 +58,7 @@ public class MediaLibraryActivity extends ListActivity {
         returnIntent.putExtra("ARTIST", s.mArtist);
         returnIntent.putExtra("PATH", s.mPath);
         returnIntent.putExtra("DURATION", s.mDuration);
+        // TODO: enable album image
         //returnIntent.putExtra("ALBUM_ART_PATH", s.mAlbumArtPath);
 
         setResult(RESULT_OK, returnIntent);

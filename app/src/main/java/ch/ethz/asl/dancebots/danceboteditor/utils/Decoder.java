@@ -1,15 +1,16 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
+import android.util.Log;
+
 /**
  * Created by andrin on 25.10.15.
  */
-// TODO
-// TODO THIS CLASS SHOULD BE STATIC, NOT?
 public class Decoder {
 
     private static final String LOG_TAG = "DECODER";
 
-    private static long mSoundFileHandle; // TODO: I don't think static is what we want here?!
+    // TODO: Is static what we want?
+    private static long mSoundFileHandle;
 
     public Decoder()
     {
@@ -63,10 +64,12 @@ public class Decoder {
         }
     }
 
-    public void cleanUp()
-    {
-        if(mSoundFileHandle != 0)
-        {
+    /**
+     * This function is really important.
+     * It cleans up all internally (native) used data structures and objects.
+     */
+    public static void cleanUp() {
+        if (mSoundFileHandle != 0) {
             cleanUp(mSoundFileHandle);
             mSoundFileHandle = 0;
         }
@@ -75,7 +78,8 @@ public class Decoder {
     // TODO: IS THIS CALL SAFE?
     @Override
     protected void finalize() throws Throwable {
-        cleanUp();
+        //cleanUp();
+        Log.d(LOG_TAG, "Decoder finalize()");
         super.finalize();
     }
 

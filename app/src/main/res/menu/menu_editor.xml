@@ -2,10 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="ch.ethz.asl.dancebots.danceboteditor.activities.EditorActivity">
 
-    <item
+    <!--<item
         android:id="@+id/editor_action_open"
         android:title="@string/menu_editor_txt_open_music_file"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="ifRoom" />-->
 
     <item
         android:id="@+id/editor_action_save"

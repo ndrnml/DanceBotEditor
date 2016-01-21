@@ -27,6 +27,7 @@ public class EditorActivity extends Activity {
 
     private static final String LOG_TAG = "EDITOR_ACTIVITY";
 
+    // On activity result identifier
     private static final int PICK_SONG_REQUEST = 1;
 
     private DanceBotEditorManager mProjectManager;
@@ -36,12 +37,6 @@ public class EditorActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
-
-        // TODO: getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // TODO: DO all initialization stuff here?
-
-        // TODO: initialize dance bot project file, beat grid, music files etc...
 
         // Project file initialization
         mProjectManager = DanceBotEditorManager.getInstance();
@@ -66,10 +61,7 @@ public class EditorActivity extends Activity {
         super.onStart();
         // The activity is about to become visible.
 
-        // TODO: DO all initialization stuff here?
-
-        if (mProjectManager.getEditorState() == DanceBotEditorManager.State.START) {
-
+        if (mProjectManager.getDanceBotMusicFile() == null) {
             // Start intent that loads the editor view and starts pick-song-activity
             Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
             startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
@@ -81,38 +73,16 @@ public class EditorActivity extends Activity {
         super.onResume();
         // The activity has become visible (it is now "resumed").
 
-        // When a song is selected, start decoding and beat extraction in the background
-        // Skip this process, if the beat extraction has already been performed
-        // TODO: Check that the beat extraction was performed for the currently selected song
-        if (mProjectManager.getEditorState() == DanceBotEditorManager.State.NEW) {
-
-            Log.v(LOG_TAG, "resumed EditorActivity with a song loaded");
-
-            // TODO: Test with 1 thread, compare results
-            // Perform beat extraction in async task
-            SoundManager.startDecoding(this, mProjectManager.getDanceBotMusicFile(), null, 1);
-
-            // TODO remove or change this (THIS WAS ADDED FOR THE LONG CLICK CAPABILITY)
-            //registerForContextMenu(mMotorView);
-
-            // Set the editor state to decoding (sensitive phase)
-            mProjectManager.setEditorState(DanceBotEditorManager.State.EDITING);
-        }
+        Log.d(LOG_TAG, "onResume");
     }
 
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_editor, menu);
-    }
 
     @Override
     protected void onPause() {
         super.onPause();
         // Another activity is taking focus (this activity is about to be "paused").
 
+        Log.d(LOG_TAG, "onPause");
     }
 
     @Override
@@ -120,15 +90,19 @@ public class EditorActivity extends Activity {
         super.onStop();
         // The activity is no longer visible (it is now "stopped")
 
-        // If the editor is currently decoding, editing or encoding ask user to leave
-        if (true/*mEditorState == DanceBotEditorManager.State.DECODING || mEditorState == DanceBotEditorManager.State.ENCODING*/) {
-
-            // TODO abort/cancel all async tasks and background threads IMPORTANT!!!!
-            //AutomaticScrollHandler ah = new AutomaticScrollHandler();
-            //ah.stopListening();
-        }
+        Log.d(LOG_TAG, "onStop");
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // The activity is going to be destroyed
+
+        // TODO: Clean up all files
+        mProjectManager.cleanUp();
+
+        Log.d(LOG_TAG, "onDestroy");
+    }
 
     /**
      * Song selection in media library activity is resolved here
@@ -156,9 +130,6 @@ public class EditorActivity extends Activity {
                 DanceBotMusicFile dbMusicFile = new DanceBotMusicFile(songTitle, songArtist, songPath, songDuration);
                 mProjectManager.attachMusicFile(dbMusicFile);
 
-                // Notify project file handler that a music file was picked
-                mProjectManager.musicFileSelected = true;
-
                 // Update music file information
                 // Update Title
                 TextView selectedSongTitle = (TextView) findViewById(R.id.id_song_title);
@@ -176,26 +147,25 @@ public class EditorActivity extends Activity {
                 TextView selectedSongDuration = (TextView) findViewById(R.id.id_song_duration);
                 selectedSongDuration.setText(mProjectManager.getDanceBotMusicFile().getDurationReadable()); // TODO change this line
 
+                // TODO enable album cover images
                 /*if (songAlbumArtPath != null) {
                     ImageView selectedSongAlbumArt = (ImageView) findViewById(R.id.song_album_art_image);
                     selectedSongAlbumArt.setImageDrawable(Drawable.createFromPath(songAlbumArtPath));
                 }*/
 
-                // Update Editor activity state
-                mProjectManager.setEditorState(DanceBotEditorManager.State.NEW);
-
                 // Open file in media player
                 mProjectManager.getMediaPlayer().openMusicFile(dbMusicFile);
+
+                // TODO: Test with 1 thread, compare results
+                // Perform beat extraction in async task
+                SoundManager.startDecoding(this, mProjectManager.getDanceBotMusicFile(), null, 1);
 
             } else {
 
                 // resultCode == RESULT_CANCEL
-                Log.v(LOG_TAG, "resultCode != RESULT_OK");
+                Log.v(LOG_TAG, "onActivityResult() ERROR: resultCode != RESULT_OK");
 
-                // TODO finish activity
-                mProjectManager.setEditorState(DanceBotEditorManager.State.EDITING);
                 finish();
-
             }
         }
     }
@@ -208,9 +178,7 @@ public class EditorActivity extends Activity {
         Log.v(LOG_TAG, "Back button is pressed.");
 
         // Popup alert dialog to confirm users decision
-        //askExit(); // TODO uncomment if needed
-
-        finish();
+        askExit();
     }
 
 
@@ -225,8 +193,7 @@ public class EditorActivity extends Activity {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
-                mProjectManager.setEditorState(DanceBotEditorManager.State.NEW);
+                // Finish EditorActivity
                 finish();
             }
         });
@@ -236,8 +203,6 @@ public class EditorActivity extends Activity {
         alertDialog.setTitle(R.string.app_name);
         alertDialog.show();
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -253,10 +218,10 @@ public class EditorActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        // TODO: Handle all menu actions
+        // Handle all menu options here
         switch (id) {
 
-            case R.id.editor_action_open:
+            /*case R.id.editor_action_open:
 
                 // TODO: move this to the ask open dialog
                 // TODO: This should only be possible if the user want's it -> State == NEW
@@ -264,6 +229,7 @@ public class EditorActivity extends Activity {
                 startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
 
                 return true;
+            */
 
             case R.id.editor_action_save:
 

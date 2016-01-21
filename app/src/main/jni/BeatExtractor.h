@@ -13,6 +13,9 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
 JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_extract(
         JNIEnv*, jobject, jlong, jobject, jint, jlong, jlong);
 
+JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_cleanUp
+        (JNIEnv*, jobject, jlong);
+
 #ifdef __cplusplus
 }
 #endif

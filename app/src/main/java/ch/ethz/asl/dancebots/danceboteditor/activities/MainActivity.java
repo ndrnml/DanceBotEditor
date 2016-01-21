@@ -21,9 +21,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Instantiate and initialize the dance bot editor project file
-        // All static variables should be set within the project file
-        DanceBotEditorManager.getInstance().setEditorState(DanceBotEditorManager.State.START);
+        // TODO: Instantiate and initialize the dance bot editor project file
     }
 
     @Override
@@ -63,6 +61,7 @@ public class MainActivity extends Activity {
         return true;
     }
 
+    // TODO: This menu is optional (maybe remove?)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -78,18 +77,18 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Start the media library activity. This function is coupled to the button.
+     * @param view calling view
+     */
     public void startMediaLibraryActivity(View view) {
-
         Intent editorIntent = new Intent(this, EditorActivity.class);
         startActivity(editorIntent);
     }
 
-
     /**
-     *
-     * LOAD NATIVE LIBRARIES AND FUNCTIONS
+     * Load native libraries and functions
      */
-
     static {
         System.loadLibrary("dancebot_module");
         Log.d(LOG_TAG, "Loaded native library: dancebot_module.");

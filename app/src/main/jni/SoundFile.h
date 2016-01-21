@@ -12,6 +12,19 @@ class SoundFile {
 
 public:
 
+    // Other fields
+    int channels;
+    long rate;
+    long num_samples;
+    int encoding;
+    size_t buffer_size;
+    unsigned char* buffer;
+    size_t left_samples;
+    size_t offset;
+    short* pcm_buffer;
+    short* music_buffer;
+
+    // Constructor / destructor
     SoundFile(const char* file_path_);
     ~SoundFile();
 
@@ -26,18 +39,6 @@ public:
 
     // The number of process samples for beat extraction can be accessed by multiple threads
     long num_of_proc_beat_extract_samples;
-
-    // Other fields
-    int channels;
-    long rate;
-    long num_samples;
-    int encoding;
-    size_t buffer_size;
-    unsigned char* buffer;
-    size_t left_samples;
-    size_t offset;
-    short* pcm_buffer;
-    short* music_buffer;
 };
 
 #ifdef __cplusplus

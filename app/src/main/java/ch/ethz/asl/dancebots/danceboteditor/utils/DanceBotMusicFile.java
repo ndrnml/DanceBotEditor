@@ -33,6 +33,14 @@ public class DanceBotMusicFile {
         mDurationInMiliSeconds = duration;
     }
 
+    /**
+     * Clean up decoder
+     */
+    public void cleanUp() {
+        if (mSongPath != null) {
+            Decoder.cleanUp();
+        }
+    }
 
     public void setSampleRate(int rate) {
         mSampleRate = rate;
