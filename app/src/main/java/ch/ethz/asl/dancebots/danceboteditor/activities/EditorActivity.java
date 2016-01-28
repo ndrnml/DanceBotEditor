@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicStream;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 
@@ -53,7 +55,20 @@ public class EditorActivity extends Activity {
 
         // Create new media player instance, be sure to pass the current activity to resolve
         // all necessary view elements
+        // TODO: Shouldn't the player only be created when a valid music file is present?
         mProjectManager.attachMediaPlayer(new DanceBotMediaPlayer(this));
+
+        // TODO: This is for testing purposes only
+        Button streamBnt = (Button) findViewById(R.id.btn_stream);
+        streamBnt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mProjectManager.getDanceBotMusicFile().getSongPath() != null) {
+                    DanceBotMusicStream stream = new DanceBotMusicStream(mProjectManager.getDanceBotMusicFile().getSongPath());
+                    stream.run();
+                }
+            }
+        });
     }
 
     @Override

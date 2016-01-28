@@ -126,6 +126,10 @@ public class DanceBotEditorManager {
             // Detach from DanceBotEditorManager
             mDanceBotMusicFile = null;
         }
+
+        if (mMediaPlayer != null) {
+            mMediaPlayer.cleanUp();
+        }
     }
 
     ///////////

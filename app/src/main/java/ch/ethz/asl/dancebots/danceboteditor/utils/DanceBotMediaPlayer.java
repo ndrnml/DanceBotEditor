@@ -1,7 +1,12 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import android.app.Activity;
+import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioTrack;
+import android.media.MediaCodec;
+import android.media.MediaExtractor;
+import android.media.MediaFormat;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
@@ -12,8 +17,12 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
@@ -30,12 +39,13 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     private final TextView mSeekBarTotalTimeView;
     private final TextView mSeekBarCurrentTimeView;
     private SeekBar mSeekBar;
-    private final MediaPlayer mMediaPlayer;
+    private MediaPlayer mMediaPlayer;
     private boolean mIsReady = false;
     private boolean mIsPlaying = false;
     private int mTotalTime;
     private DanceBotMusicFile mMusicFile;
     private Button mPlayPauseButton;
+    private AudioTrack audioTrack;
 
     public DanceBotMediaPlayer(Activity activity) {
 
@@ -62,7 +72,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
         // Bind music file as a lot information is needed later
         mMusicFile = musicFile;
-        String songPath = mMusicFile.getSongPath();
+        final String songPath = mMusicFile.getSongPath();
 
         // Retrieve song from song path and resolve to URI
         Uri songUri = Uri.fromFile(new File(songPath));
@@ -88,6 +98,96 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
         // Update total time view
         mSeekBarTotalTimeView.setText(songTimeFormat(mTotalTime));
+
+        /**
+         * TODO
+         */
+        /*AssetFileDescriptor sampleFD = getResources().openRawResourceFd(R.raw.sample);
+
+        MediaExtractor extractor;
+        MediaCodec codec = null;
+        ByteBuffer[] codecInputBuffers;
+        ByteBuffer[] codecOutputBuffers;
+
+        extractor = new MediaExtractor();
+        extractor.setDataSource(sampleFD.getFileDescriptor(), sampleFD.getStartOffset(), sampleFD.getLength());
+
+        Log.d(LOG_TAG, String.format("TRACKS #: %d", extractor.getTrackCount()));
+        MediaFormat format = extractor.getTrackFormat(0);
+        String mime = format.getString(MediaFormat.KEY_MIME);
+        Log.d(LOG_TAG, String.format("MIME TYPE: %s", mime));
+
+        try {
+            codec = MediaCodec.createDecoderByType(mime);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        codec.configure(format, null, null, 0);
+        codec.start();
+        codecInputBuffers = codec.getInputBuffers();
+        codecOutputBuffers = codec.getOutputBuffers();
+
+        extractor.selectTrack(0); // <= You must select a track. You will read samples from the media from this track!
+
+        int inputBufIndex = codec.dequeueInputBuffer(TIMEOUT_US);
+        if (inputBufIndex >= 0) {
+            ByteBuffer dstBuf = codecInputBuffers[inputBufIndex];
+
+            int sampleSize = extractor.readSampleData(dstBuf, 0);
+            long presentationTimeUs = 0;
+            if (sampleSize < 0) {
+                sawInputEOS = true;
+                sampleSize = 0;
+            } else {
+                presentationTimeUs = extractor.getSampleTime();
+            }
+
+            codec.queueInputBuffer(inputBufIndex,
+                    0, //offset
+                    sampleSize,
+                    presentationTimeUs,
+                    sawInputEOS ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : 0);
+            if (!sawInputEOS) {
+                extractor.advance();
+            }
+        }
+
+        Button btn = (Button) mActivity.findViewById(R.id.btn_stream);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final int res = codec.dequeueOutputBuffer(info, TIMEOUT_US);
+                if (res >= 0) {
+                    int outputBufIndex = res;
+                    ByteBuffer buf = codecOutputBuffers[outputBufIndex];
+
+                    final byte[] chunk = new byte[info.size];
+                    buf.get(chunk); // Read the buffer all at once
+                    buf.clear(); // ** MUST DO!!! OTHERWISE THE NEXT TIME YOU GET THIS SAME BUFFER BAD THINGS WILL HAPPEN
+
+                    if (chunk.length > 0) {
+                        audioTrack.write(chunk, 0, chunk.length);
+                    }
+                    codec.releaseOutputBuffer(outputBufIndex, false);
+
+                    if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                        sawOutputEOS = true;
+                    }
+                } else if (res == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                    codecOutputBuffers = codec.getOutputBuffers();
+                } else if (res == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                    final MediaFormat oformat = codec.getOutputFormat();
+                    Log.d(LOG_TAG, "Output format has changed to " + oformat);
+                    mAudioTrack.setPlaybackRate(oformat.getInteger(MediaFormat.KEY_SAMPLE_RATE));
+                }
+            }
+        });
+        */
+        /**
+         * TODO END
+         */
+
     }
 
     /**
@@ -217,6 +317,19 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
             mPlayPauseButton.setText(R.string.txt_play);
             // Rewind media player to the start
             mMediaPlayer.seekTo(0);
+        }
+    }
+
+    /**
+     * Stop media player playback and release resource
+     */
+    public void cleanUp() {
+        if (mMediaPlayer != null) {
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+            }
+            mMediaPlayer.release();
+            mMediaPlayer = null;
         }
     }
 }
