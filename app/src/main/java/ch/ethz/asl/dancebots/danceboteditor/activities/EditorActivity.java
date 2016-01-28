@@ -65,7 +65,7 @@ public class EditorActivity extends Activity {
             public void onClick(View v) {
                 if (mProjectManager.getDanceBotMusicFile().getSongPath() != null) {
                     DanceBotMusicStream stream = new DanceBotMusicStream(mProjectManager.getDanceBotMusicFile().getSongPath());
-                    stream.run();
+                    stream.play();
                 }
             }
         });

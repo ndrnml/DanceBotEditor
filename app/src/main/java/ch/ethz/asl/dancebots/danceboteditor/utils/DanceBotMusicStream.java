@@ -19,15 +19,30 @@ public class DanceBotMusicStream implements Runnable {
     private String LOG_TAG = this.getClass().getSimpleName();
 
     private String sourcePath;
+    boolean stop = true;
+    Thread thread = null;
 
     public DanceBotMusicStream(String pathToSoundFile) {
 
         sourcePath = pathToSoundFile;
     }
 
+    public void play() {
+
+        if (stop) {
+            stop = false;
+            thread = new Thread(this);
+            thread.start();
+        } else {
+            stop = false;
+            thread.stop();
+        }
+    }
+
     @Override
     public void run() {
 
+        // Set thread priority to audio
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
 
         AudioTrack audioTrack;
@@ -35,7 +50,7 @@ public class DanceBotMusicStream implements Runnable {
         String mime = null;
         int sampleRate = 0, channels = 0, bitrate = 0;
         long presentationTimeUs = 0, duration = 0;
-        boolean stop = false;
+        boolean isAudioMime = false;
 
         // extractor gets information about the stream
         MediaExtractor extractor = new MediaExtractor();
@@ -60,6 +75,7 @@ public class DanceBotMusicStream implements Runnable {
             // if duration is 0, we are probably playing a live stream
             duration = format.getLong(MediaFormat.KEY_DURATION);
             bitrate = format.getInteger(MediaFormat.KEY_BIT_RATE);
+            isAudioMime = mime.startsWith("audio/");
         } catch (Exception e) {
             Log.e(LOG_TAG, "Reading format parameters exception:" + e.getMessage());
             // don't exit, tolerate this error, we'll fail later if this is critical
@@ -67,10 +83,12 @@ public class DanceBotMusicStream implements Runnable {
         Log.d(LOG_TAG, "Track info: mime:" + mime + " sampleRate:" + sampleRate + " channels:" + channels + " bitrate:" + bitrate + " duration:" + duration);
 
         // check we have audio content we know
-        if (format == null || !mime.startsWith("audio/")) {
+        if (format == null || !isAudioMime) {
             //if (events != null) handler.post(new Runnable() { @Override public void run() { events.onError();  } });
+            Log.d(LOG_TAG, "Error: Format or MIME incorrect");
             return;
         }
+
         // create the actual decoder, using the mime to select
         try {
             codec = MediaCodec.createDecoderByType(mime);
