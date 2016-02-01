@@ -4,6 +4,9 @@ package ch.ethz.asl.dancebots.danceboteditor.handlers;
 import android.os.Handler;
 import android.util.Log;
 
+import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerScrollListener;
+import ch.ethz.asl.dancebots.danceboteditor.listener.RecyclerViewScrollListener;
+
 /**
  * Created by andrin on 22.10.15.
  */
@@ -17,65 +20,25 @@ public class AutomaticScrollHandler implements Runnable {
 
     private final Handler mScrollHandler;
 
-    private ScrollViewMethods mScrollViews;
+    private RecyclerViewScrollListener mRecyclerViewScrollListener;
 
-    private ScrollMediaPlayerMethods mDanceBotMediaPlayer;
+    private MediaPlayerScrollListener mMediaPlayerListener;
 
     private boolean mIsRunning;
 
     private int mSeekBarProgress;
 
     /**
-     * An interface that defines methods that the scroll views implement. An instance of
-     * HorizontalRecyclerViews passes itself to the AutomaticScrollHandler. This is needed
-     * to handle scroll events correctly and communicate between scroll views and seek bars.
-     */
-    public interface ScrollViewMethods {
-
-        void scrollToPosition(int position);
-
-        int getNumElements();
-
-        long getSampleAt(int position);
-
-        int getFirstVisibleItem();
-
-        int getLastVisibleItem();
-
-        void setFocus(int position);
-    }
-
-    /**
-     * An interface that defines methods that the media player implements. An instance of
-     * DanceBotMediaPlayer passes itself to the AutomaticScrollHandler. This is needed to handle
-     * communication between scroll views and seek bars correctly.
-     */
-    public interface ScrollMediaPlayerMethods {
-
-        boolean isPlaying();
-
-        void setSeekBarProgress(int progress);
-
-        int getSeekBarProgress();
-
-        int getCurrentPosition();
-
-        int getTotalTime();
-
-        int getSampleRate();
-    }
-
-    /**
      * AutomaticScrollHandler creates a self removing scroll handler that updates the media
      * player, the seek bar state and the scroll state
      * Handler removes itself, when user is inactive
-     * @param scrollViews scrollable view interface
-     * @param mediaPlayer media player interface
+     * @param scrollViewListener scrollable view interface
+     * @param mediaPlayerListener media player interface
      */
-    public AutomaticScrollHandler(ScrollViewMethods scrollViews, ScrollMediaPlayerMethods mediaPlayer) {
+    public AutomaticScrollHandler(RecyclerViewScrollListener scrollViewListener, MediaPlayerScrollListener mediaPlayerListener) {
 
-        mScrollViews = scrollViews;
-        mDanceBotMediaPlayer = mediaPlayer;
+        mRecyclerViewScrollListener = scrollViewListener;
+        mMediaPlayerListener = mediaPlayerListener;
 
         mScrollHandler = new Handler();
 
@@ -110,6 +73,7 @@ public class AutomaticScrollHandler implements Runnable {
      */
     private void stopListening() {
         mScrollHandler.removeCallbacks(this);
+        Log.d(LOG_TAG, "stop listening, remove callbacks.");
     }
 
     /**
@@ -122,7 +86,7 @@ public class AutomaticScrollHandler implements Runnable {
         Log.d(LOG_TAG, "run automatic scroll handler");
 
         // Check if media player is playing the song
-        if (!mDanceBotMediaPlayer.isPlaying()) {
+        if (!mMediaPlayerListener.isPlaying()) {
 
             Log.d(LOG_TAG, "song is not playing");
 
@@ -139,17 +103,17 @@ public class AutomaticScrollHandler implements Runnable {
         }
 
         // Update seek bar
-        int currentTimeInMilliseconds = mDanceBotMediaPlayer.getCurrentPosition();
-        mDanceBotMediaPlayer.setSeekBarProgress(currentTimeInMilliseconds);
+        int currentTimeInMilliseconds = mMediaPlayerListener.getCurrentPosition();
+        mMediaPlayerListener.setSeekBarProgress(currentTimeInMilliseconds);
 
         // Update the HorizontalRecyclerViews when the player is playing or the seek bar has changed
-        if (mDanceBotMediaPlayer.isPlaying() || seekBarChanged()) {
+        if (mMediaPlayerListener.isPlaying() || seekBarChanged()) {
 
             // Estimate beat position
-            int estimatedBeatElement = (int) (((float) mScrollViews.getNumElements() / (float) mDanceBotMediaPlayer.getTotalTime()) * (float) currentTimeInMilliseconds);
+            int estimatedBeatElement = (int) (((float) mRecyclerViewScrollListener.getNumElements() / (float) mMediaPlayerListener.getTotalTime()) * (float) currentTimeInMilliseconds);
 
             // Compute current sample
-            long currentSample = (long) ((float) currentTimeInMilliseconds * 0.001 * (float) mDanceBotMediaPlayer.getSampleRate());
+            long currentSample = (long) ((float) currentTimeInMilliseconds * 0.001 * (float) mMediaPlayerListener.getSampleRate());
 
             int exactBeatElement = estimatedBeatElement;
 
@@ -157,11 +121,11 @@ public class AutomaticScrollHandler implements Runnable {
             for (int i = -1; i <= 1; ++i) {
                 
                 // Check boundaries
-                if (estimatedBeatElement + i > 0 && estimatedBeatElement + i < mScrollViews.getNumElements() - 1) {
+                if (estimatedBeatElement + i > 0 && estimatedBeatElement + i < mRecyclerViewScrollListener.getNumElements() - 1) {
 
                     // Get start and end beat sample positions
-                    long estimatedBeatStartSample = mScrollViews.getSampleAt(estimatedBeatElement + i);
-                    long estimatedBeatEndSample = mScrollViews.getSampleAt(estimatedBeatElement + i + 1);
+                    long estimatedBeatStartSample = mRecyclerViewScrollListener.getSampleAt(estimatedBeatElement + i);
+                    long estimatedBeatEndSample = mRecyclerViewScrollListener.getSampleAt(estimatedBeatElement + i + 1);
 
                     // Check if current sample is in range
                     if (isInRange(estimatedBeatStartSample, estimatedBeatEndSample, currentSample)) {
@@ -174,15 +138,14 @@ public class AutomaticScrollHandler implements Runnable {
                 }
             }
 
-            //int currentBeatElement = (int) (((float) mScrollViews.getNumElements() / (float) mDanceBotMediaPlayer.getTotalTime()) * (float) currentTimeInMilliseconds);
-
-            int firstVisibleItem = mScrollViews.getFirstVisibleItem();
-            int lastVisibleItem = mScrollViews.getLastVisibleItem();
+            //int currentBeatElement = (int) (((float) mRecyclerViewScrollListener.getNumElements() / (float) mMediaPlayerListener.getTotalTime()) * (float) currentTimeInMilliseconds);
+            int firstVisibleItem = mRecyclerViewScrollListener.getFirstVisibleItem();
+            int lastVisibleItem = mRecyclerViewScrollListener.getLastVisibleItem();
 
             if (exactBeatElement <= firstVisibleItem || exactBeatElement >= lastVisibleItem) {
-                mScrollViews.scrollToPosition(exactBeatElement);
+                mRecyclerViewScrollListener.scrollToPosition(exactBeatElement);
             } else {
-                mScrollViews.setFocus(exactBeatElement);
+                mRecyclerViewScrollListener.setFocus(exactBeatElement);
             }
 
             Log.d(LOG_TAG, "update scroll to element: " + exactBeatElement);
@@ -201,7 +164,7 @@ public class AutomaticScrollHandler implements Runnable {
      */
     private boolean seekBarChanged() {
 
-        int currentSeekBarProgress = mDanceBotMediaPlayer.getSeekBarProgress();
+        int currentSeekBarProgress = mMediaPlayerListener.getSeekBarProgress();
 
         if (mSeekBarProgress == currentSeekBarProgress) {
             return false;
@@ -209,5 +172,9 @@ public class AutomaticScrollHandler implements Runnable {
             mSeekBarProgress = currentSeekBarProgress;
             return true;
         }
+    }
+
+    public void cleanUp() {
+        stopListening();
     }
 }

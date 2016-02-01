@@ -4,16 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
@@ -40,6 +37,10 @@ public class EditorActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
+        /*
+         * All initializations here must be independent of the loaded/selected music file
+         */
+
         // Project file initialization
         mProjectManager = DanceBotEditorManager.getInstance();
 
@@ -56,15 +57,21 @@ public class EditorActivity extends Activity {
         // Create new media player instance, be sure to pass the current activity to resolve
         // all necessary view elements
         // TODO: Shouldn't the player only be created when a valid music file is present?
-        mProjectManager.attachMediaPlayer(new DanceBotMediaPlayer(this));
+        DanceBotMediaPlayer mediaPlayer = new DanceBotMediaPlayer(this);
+        mediaPlayer.attachMediaPlayerSeekBar(
+                (SeekBar) findViewById(R.id.seekbar_media_player),
+                (TextView) findViewById(R.id.seekbar_current_time),
+                (TextView) findViewById(R.id.seekbar_total_time));
+
+        mProjectManager.attachMediaPlayer(mediaPlayer);
 
         // TODO: This is for testing purposes only
         Button streamBnt = (Button) findViewById(R.id.btn_stream);
         streamBnt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mProjectManager.getDanceBotMusicFile().getSongPath() != null) {
-                    DanceBotMusicStream stream = new DanceBotMusicStream(mProjectManager.getDanceBotMusicFile().getSongPath());
+                if (mProjectManager.getDanceBotMusicFile() != null) {
+                    DanceBotMusicStream stream = new DanceBotMusicStream(mProjectManager.getDanceBotMusicFile());
                     stream.play();
                 }
             }
@@ -104,6 +111,8 @@ public class EditorActivity extends Activity {
     protected void onStop() {
         super.onStop();
         // The activity is no longer visible (it is now "stopped")
+
+        // TODO: clean up project files
 
         Log.d(LOG_TAG, "onStop");
     }
@@ -170,6 +179,8 @@ public class EditorActivity extends Activity {
 
                 // Open file in media player
                 mProjectManager.getMediaPlayer().openMusicFile(dbMusicFile);
+
+                // TODO: stream player
 
                 // TODO: Test with 1 thread, compare results
                 // Perform beat extraction in async task

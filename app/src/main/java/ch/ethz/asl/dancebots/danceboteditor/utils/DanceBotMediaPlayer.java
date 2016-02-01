@@ -27,17 +27,18 @@ import java.util.concurrent.TimeUnit;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
+import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerScrollListener;
 
 /**
  * Created by andrin on 21.10.15.
  */
-public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener, AutomaticScrollHandler.ScrollMediaPlayerMethods {
+public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener, MediaPlayerScrollListener {
 
     private static final String LOG_TAG = "DANCE_BOT_MEDIA_PLAYER";
 
     private final Activity mActivity;
-    private final TextView mSeekBarTotalTimeView;
-    private final TextView mSeekBarCurrentTimeView;
+    private TextView mSeekBarTotalTimeView;
+    private TextView mSeekBarCurrentTimeView;
     private SeekBar mSeekBar;
     private MediaPlayer mMediaPlayer;
     private boolean mIsReady = false;
@@ -59,15 +60,27 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         // Attach on click listener to play/pause button
         Button btn = (Button) mActivity.findViewById(R.id.btn_play);
         btn.setOnClickListener(this);
-
-        // Init seek bar labels
-        mSeekBarCurrentTimeView = (TextView) mActivity.findViewById(R.id.seekbar_current_time);
-        mSeekBarTotalTimeView = (TextView) mActivity.findViewById(R.id.seekbar_total_time);
-
-        mSeekBarCurrentTimeView.setText(songTimeFormat(0));
-        mSeekBarTotalTimeView.setText(songTimeFormat(0));
     }
 
+    public void attachMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
+
+        // Prepare seek bar for the selected song
+        mSeekBar = seekBar;
+        mSeekBar.setClickable(true);
+        mSeekBar.setOnSeekBarChangeListener(this);
+
+        // Init seek bar labels
+        mSeekBarCurrentTimeView = currentTime;
+        mSeekBarTotalTimeView = totalTime;
+
+        mSeekBarCurrentTimeView.setText(Helper.songTimeFormat(0));
+        mSeekBarTotalTimeView.setText(Helper.songTimeFormat(0));
+    }
+
+    /**
+     *
+     * @param musicFile
+     */
     public void openMusicFile(DanceBotMusicFile musicFile) {
 
         // Bind music file as a lot information is needed later
@@ -87,122 +100,18 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
             e.printStackTrace();
         }
 
-        // Prepare seek bar for the selected song
-        mSeekBar = (SeekBar) mActivity.findViewById(R.id.seekbar_media_player);
-        mSeekBar.setClickable(true);
-        mSeekBar.setOnSeekBarChangeListener(this);
-        mSeekBar.setMax(mMediaPlayer.getDuration());
-
         // Store other important music file properties
         mTotalTime = mMusicFile.getDurationInMiliSecs();
 
+        // Update max seekbar
+        if (mSeekBar != null) {
+            mSeekBar.setMax(mMediaPlayer.getDuration());
+        }
+
         // Update total time view
-        mSeekBarTotalTimeView.setText(songTimeFormat(mTotalTime));
-
-        /**
-         * TODO
-         */
-        /*AssetFileDescriptor sampleFD = getResources().openRawResourceFd(R.raw.sample);
-
-        MediaExtractor extractor;
-        MediaCodec codec = null;
-        ByteBuffer[] codecInputBuffers;
-        ByteBuffer[] codecOutputBuffers;
-
-        extractor = new MediaExtractor();
-        extractor.setDataSource(sampleFD.getFileDescriptor(), sampleFD.getStartOffset(), sampleFD.getLength());
-
-        Log.d(LOG_TAG, String.format("TRACKS #: %d", extractor.getTrackCount()));
-        MediaFormat format = extractor.getTrackFormat(0);
-        String mime = format.getString(MediaFormat.KEY_MIME);
-        Log.d(LOG_TAG, String.format("MIME TYPE: %s", mime));
-
-        try {
-            codec = MediaCodec.createDecoderByType(mime);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (mSeekBarTotalTimeView != null) {
+            mSeekBarTotalTimeView.setText(Helper.songTimeFormat(mTotalTime));
         }
-        codec.configure(format, null, null, 0);
-        codec.start();
-        codecInputBuffers = codec.getInputBuffers();
-        codecOutputBuffers = codec.getOutputBuffers();
-
-        extractor.selectTrack(0); // <= You must select a track. You will read samples from the media from this track!
-
-        int inputBufIndex = codec.dequeueInputBuffer(TIMEOUT_US);
-        if (inputBufIndex >= 0) {
-            ByteBuffer dstBuf = codecInputBuffers[inputBufIndex];
-
-            int sampleSize = extractor.readSampleData(dstBuf, 0);
-            long presentationTimeUs = 0;
-            if (sampleSize < 0) {
-                sawInputEOS = true;
-                sampleSize = 0;
-            } else {
-                presentationTimeUs = extractor.getSampleTime();
-            }
-
-            codec.queueInputBuffer(inputBufIndex,
-                    0, //offset
-                    sampleSize,
-                    presentationTimeUs,
-                    sawInputEOS ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : 0);
-            if (!sawInputEOS) {
-                extractor.advance();
-            }
-        }
-
-        Button btn = (Button) mActivity.findViewById(R.id.btn_stream);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final int res = codec.dequeueOutputBuffer(info, TIMEOUT_US);
-                if (res >= 0) {
-                    int outputBufIndex = res;
-                    ByteBuffer buf = codecOutputBuffers[outputBufIndex];
-
-                    final byte[] chunk = new byte[info.size];
-                    buf.get(chunk); // Read the buffer all at once
-                    buf.clear(); // ** MUST DO!!! OTHERWISE THE NEXT TIME YOU GET THIS SAME BUFFER BAD THINGS WILL HAPPEN
-
-                    if (chunk.length > 0) {
-                        audioTrack.write(chunk, 0, chunk.length);
-                    }
-                    codec.releaseOutputBuffer(outputBufIndex, false);
-
-                    if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                        sawOutputEOS = true;
-                    }
-                } else if (res == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                    codecOutputBuffers = codec.getOutputBuffers();
-                } else if (res == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                    final MediaFormat oformat = codec.getOutputFormat();
-                    Log.d(LOG_TAG, "Output format has changed to " + oformat);
-                    mAudioTrack.setPlaybackRate(oformat.getInteger(MediaFormat.KEY_SAMPLE_RATE));
-                }
-            }
-        });
-        */
-        /**
-         * TODO END
-         */
-
-    }
-
-    /**
-     * Get song time hh:ss format from milliseconds
-     *
-     * @param timeInMilliseconds time in milliseconds
-     *
-     * @return string format mm:ss
-     */
-    private String songTimeFormat(int timeInMilliseconds) {
-        return String.format(
-                "%02d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(timeInMilliseconds),
-                TimeUnit.MILLISECONDS.toSeconds(timeInMilliseconds) -
-                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeInMilliseconds)));
     }
 
     /************************************
@@ -221,21 +130,31 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
      */
     @Override
     public int getCurrentPosition() {
-        return mMediaPlayer.getCurrentPosition();
+        if (mMediaPlayer != null) {
+            return mMediaPlayer.getCurrentPosition();
+        }
+        return 0;
     }
 
     @Override
     public void setSeekBarProgress(int progress) {
         // Update seek bar
-        mSeekBar.setProgress(progress);
+        if (mSeekBar != null) {
+            mSeekBar.setProgress(progress);
+        }
 
         // Update seek bar text view current time
-        mSeekBarCurrentTimeView.setText(songTimeFormat(progress));
+        if (mSeekBarCurrentTimeView != null) {
+            mSeekBarCurrentTimeView.setText(Helper.songTimeFormat(progress));
+        }
     }
 
     @Override
     public int getSeekBarProgress() {
-        return mSeekBar.getProgress();
+        if (mSeekBar != null) {
+            return mSeekBar.getProgress();
+        }
+        return 0;
     }
 
     @Override
@@ -259,8 +178,11 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
                 // Set seek bar progress to current song position
                 int currentTime = mMediaPlayer.getCurrentPosition();
-                mSeekBar.setProgress(currentTime);
+                if (mSeekBar != null) {
+                    mSeekBar.setProgress(currentTime);
+                }
 
+                // TODO: More elegant solution?
                 // Notify automatic scroll listener when media player progressed
                 if (DanceBotEditorManager.getInstance().getAutomaticScrollHandler() != null) {
                     DanceBotEditorManager.getInstance().notifyAutomaticScrollHandler();

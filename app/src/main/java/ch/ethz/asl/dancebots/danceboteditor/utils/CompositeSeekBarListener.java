@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by andrin on 20.11.15.
  */
-class CompositeSeekBarListener implements SeekBar.OnSeekBarChangeListener {
+public class CompositeSeekBarListener implements SeekBar.OnSeekBarChangeListener {
 
     // A single instance of PhotoManager, used to implement the singleton pattern
     private static CompositeSeekBarListener sInstance = null;

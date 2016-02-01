@@ -6,10 +6,16 @@ import android.media.AudioTrack;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
+import android.os.*;
+import android.os.Process;
 import android.util.Log;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
+import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
 
 /**
  * Created by andrin on 28.01.16.
@@ -18,13 +24,52 @@ public class DanceBotMusicStream implements Runnable {
 
     private String LOG_TAG = this.getClass().getSimpleName();
 
-    private String sourcePath;
+    private AutomaticScrollHandler streamPlayerEvents = null;
+    private Handler handler = new Handler();
+
+    private final DanceBotMusicFile mMusicFile;
+
+    private TextView mSeekBarTotalTimeView;
+    private TextView mSeekBarCurrentTimeView;
+    private SeekBar mSeekBar;
+
+    private MediaExtractor mMediaExtractor;
+    private String mSourcePath;
     boolean stop = true;
     Thread thread = null;
 
-    public DanceBotMusicStream(String pathToSoundFile) {
+    String mime = null;
+    int sampleRate = 0, channels = 0, bitrate = 0;
+    long presentationTimeUs = 0, duration = 0;
 
-        sourcePath = pathToSoundFile;
+    /**
+     * Constructor
+     * @param musicFile
+     */
+    public DanceBotMusicStream(DanceBotMusicFile musicFile) {
+
+        mMusicFile = musicFile;
+        mSourcePath = mMusicFile.getSongPath();
+    }
+
+    public void setEventListener(AutomaticScrollHandler eventListener) {
+        streamPlayerEvents = eventListener;
+    }
+
+    public void attachMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
+/*
+        // Prepare seek bar for the selected song
+        mSeekBar = seekBar;
+        mSeekBar.setClickable(true);
+        mSeekBar.setOnSeekBarChangeListener(this);
+        mSeekBar.setMax(mMediaPlayer.getDuration());
+
+        // Init seek bar labels
+        mSeekBarCurrentTimeView = currentTime;
+        mSeekBarTotalTimeView = totalTime;
+
+        mSeekBarCurrentTimeView.setText(songTimeFormat(0));
+        mSeekBarTotalTimeView.setText(songTimeFormat(0));*/
     }
 
     public void play() {
@@ -39,25 +84,36 @@ public class DanceBotMusicStream implements Runnable {
         }
     }
 
+    public void stop() {
+        stop = true;
+    }
+
+    public void pause() {
+        //state.set(PlayerStates.READY_TO_PLAY);
+    }
+
+    public void seek(long position) {
+        if (mMediaExtractor != null) {
+            mMediaExtractor.seekTo(position, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+        }
+    }
+
     @Override
     public void run() {
 
         // Set thread priority to audio
-        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
+        Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
 
         AudioTrack audioTrack;
         MediaCodec codec = null;
-        String mime = null;
-        int sampleRate = 0, channels = 0, bitrate = 0;
-        long presentationTimeUs = 0, duration = 0;
         boolean isAudioMime = false;
 
-        // extractor gets information about the stream
-        MediaExtractor extractor = new MediaExtractor();
+        // mMediaExtractor gets information about the stream
+        mMediaExtractor = new MediaExtractor();
 
         // try to set the source, this might fail
         try {
-            if (sourcePath != null) extractor.setDataSource(this.sourcePath);
+            if (mSourcePath != null) mMediaExtractor.setDataSource(this.mSourcePath);
         } catch (Exception e) {
             Log.e(LOG_TAG, "exception:" + e.getMessage());
             //if (events != null) handler.post(new Runnable() { @Override public void run() { events.onError();  } });
@@ -68,7 +124,7 @@ public class DanceBotMusicStream implements Runnable {
         MediaFormat format = null;
 
         try {
-            format = extractor.getTrackFormat(0);
+            format = mMediaExtractor.getTrackFormat(0);
             mime = format.getString(MediaFormat.KEY_MIME);
             sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
             channels = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
@@ -117,7 +173,7 @@ public class DanceBotMusicStream implements Runnable {
 
         // start playing, we will feed the AudioTrack later
         audioTrack.play();
-        extractor.selectTrack(0);
+        mMediaExtractor.selectTrack(0);
 
         // start decoding
         final long kTimeOutUs = 1000;
@@ -139,21 +195,21 @@ public class DanceBotMusicStream implements Runnable {
                 int inputBufIndex = codec.dequeueInputBuffer(kTimeOutUs);
                 if (inputBufIndex >= 0) {
                     ByteBuffer dstBuf = codecInputBuffers[inputBufIndex];
-                    int sampleSize = extractor.readSampleData(dstBuf, 0);
+                    int sampleSize = mMediaExtractor.readSampleData(dstBuf, 0);
 
                     if (sampleSize < 0) {
                         Log.d(LOG_TAG, "saw input EOS. Stopping playback");
                         sawInputEOS = true;
                         sampleSize = 0;
                     } else {
-                        presentationTimeUs = extractor.getSampleTime();
+                        presentationTimeUs = mMediaExtractor.getSampleTime();
                         final int percent = (duration == 0) ? 0 : (int) (100 * presentationTimeUs / duration);
-                        //if (events != null) handler.post(new Runnable() { @Override public void run() { events.onPlayUpdate(percent, presentationTimeUs / 1000, duration / 1000);  } });
+                        //if (streamPlayerEvents != null) handler.post(new Runnable() { @Override public void run() { streamPlayerEvents.onPlayUpdate(percent, presentationTimeUs / 1000, duration / 1000);  } });
                     }
 
                     codec.queueInputBuffer(inputBufIndex, 0, sampleSize, presentationTimeUs, sawInputEOS ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : 0);
 
-                    if (!sawInputEOS) extractor.advance();
+                    if (!sawInputEOS) mMediaExtractor.advance();
 
                 } else {
                     Log.e(LOG_TAG, "inputBufIndex " + inputBufIndex);
@@ -212,7 +268,7 @@ public class DanceBotMusicStream implements Runnable {
         }
 
         // clear source and the other globals
-        sourcePath = null;
+        mSourcePath = null;
         duration = 0;
         mime = null;
         sampleRate = 0; channels = 0; bitrate = 0;
