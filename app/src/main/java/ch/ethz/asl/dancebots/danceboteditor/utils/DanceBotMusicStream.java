@@ -28,6 +28,7 @@ public class DanceBotMusicStream implements Runnable {
     private Handler handler = new Handler();
 
     private final DanceBotMusicFile mMusicFile;
+    private MusicStreamStates mStreamStates;
 
     private TextView mSeekBarTotalTimeView;
     private TextView mSeekBarCurrentTimeView;
@@ -36,7 +37,7 @@ public class DanceBotMusicStream implements Runnable {
     private MediaExtractor mMediaExtractor;
     private String mSourcePath;
     boolean stop = true;
-    Thread thread = null;
+    Thread mThread = null;
 
     String mime = null;
     int sampleRate = 0, channels = 0, bitrate = 0;
@@ -48,6 +49,7 @@ public class DanceBotMusicStream implements Runnable {
      */
     public DanceBotMusicStream(DanceBotMusicFile musicFile) {
 
+        mStreamStates = new MusicStreamStates();
         mMusicFile = musicFile;
         mSourcePath = mMusicFile.getSongPath();
     }
@@ -74,13 +76,30 @@ public class DanceBotMusicStream implements Runnable {
 
     public void play() {
 
-        if (stop) {
+        if (mStreamStates.getState() == MusicStreamStates.STOPPED) {
             stop = false;
-            thread = new Thread(this);
-            thread.start();
-        } else {
-            stop = false;
-            thread.stop();
+            mThread = new Thread(this);
+            mThread.start();
+        }
+
+        if (mStreamStates.getState() == MusicStreamStates.READY_TO_PLAY) {
+            mStreamStates.setState(MusicStreamStates.PLAYING);
+            syncNotify();
+        }
+    }
+
+    public synchronized void syncNotify() {
+        notify();
+    }
+
+    public synchronized void waitPlay() {
+
+        while (mStreamStates.getState() == MusicStreamStates.READY_TO_PLAY) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -89,10 +108,10 @@ public class DanceBotMusicStream implements Runnable {
     }
 
     public void pause() {
-        //state.set(PlayerStates.READY_TO_PLAY);
+        mStreamStates.setState(MusicStreamStates.READY_TO_PLAY);
     }
 
-    public void seek(long position) {
+    public void seekTo(long position) {
         if (mMediaExtractor != null) {
             mMediaExtractor.seekTo(position, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
         }
@@ -106,7 +125,6 @@ public class DanceBotMusicStream implements Runnable {
 
         AudioTrack audioTrack;
         MediaCodec codec = null;
-        boolean isAudioMime = false;
 
         // mMediaExtractor gets information about the stream
         mMediaExtractor = new MediaExtractor();
@@ -123,7 +141,11 @@ public class DanceBotMusicStream implements Runnable {
         // Read track header
         MediaFormat format = null;
 
+        mMediaExtractor.getTrackFormat(0);
+
+        // Read media codec information
         try {
+
             format = mMediaExtractor.getTrackFormat(0);
             mime = format.getString(MediaFormat.KEY_MIME);
             sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
@@ -131,15 +153,16 @@ public class DanceBotMusicStream implements Runnable {
             // if duration is 0, we are probably playing a live stream
             duration = format.getLong(MediaFormat.KEY_DURATION);
             bitrate = format.getInteger(MediaFormat.KEY_BIT_RATE);
-            isAudioMime = mime.startsWith("audio/");
+
         } catch (Exception e) {
             Log.e(LOG_TAG, "Reading format parameters exception:" + e.getMessage());
             // don't exit, tolerate this error, we'll fail later if this is critical
         }
+
         Log.d(LOG_TAG, "Track info: mime:" + mime + " sampleRate:" + sampleRate + " channels:" + channels + " bitrate:" + bitrate + " duration:" + duration);
 
         // check we have audio content we know
-        if (format == null || !isAudioMime) {
+        if (format == null || !mime.startsWith("audio/")) {
             //if (events != null) handler.post(new Runnable() { @Override public void run() { events.onError();  } });
             Log.d(LOG_TAG, "Error: Format or MIME incorrect");
             return;
@@ -162,6 +185,7 @@ public class DanceBotMusicStream implements Runnable {
 
         codec.configure(format, null, null, 0);
         codec.start();
+
         ByteBuffer[] codecInputBuffers = codec.getInputBuffers();
         ByteBuffer[] codecOutputBuffers = codec.getOutputBuffers();
 
@@ -183,24 +207,31 @@ public class DanceBotMusicStream implements Runnable {
         int noOutputCounter = 0;
         int noOutputCounterLimit = 10;
 
-        //state.set(PlayerStates.PLAYING);
+        mStreamStates.setState(MusicStreamStates.PLAYING);
+
         while (!sawOutputEOS && noOutputCounter < noOutputCounterLimit && !stop) {
 
             // pause implementation
-            //waitPlay();
+            waitPlay();
 
             noOutputCounter++;
+
             // read a buffer before feeding it to the decoder
             if (!sawInputEOS) {
+
                 int inputBufIndex = codec.dequeueInputBuffer(kTimeOutUs);
+
                 if (inputBufIndex >= 0) {
+
                     ByteBuffer dstBuf = codecInputBuffers[inputBufIndex];
                     int sampleSize = mMediaExtractor.readSampleData(dstBuf, 0);
 
                     if (sampleSize < 0) {
+
                         Log.d(LOG_TAG, "saw input EOS. Stopping playback");
                         sawInputEOS = true;
                         sampleSize = 0;
+
                     } else {
                         presentationTimeUs = mMediaExtractor.getSampleTime();
                         final int percent = (duration == 0) ? 0 : (int) (100 * presentationTimeUs / duration);
@@ -228,13 +259,14 @@ public class DanceBotMusicStream implements Runnable {
                 final byte[] chunk = new byte[info.size];
                 buf.get(chunk);
                 buf.clear();
+
                 if (chunk.length > 0) {
                     audioTrack.write(chunk, 0, chunk.length);
-                	/*if(this.state.get() != PlayerStates.PLAYING) {
-                		if (events != null) handler.post(new Runnable() { @Override public void run() { events.onPlay();  } });
-            			state.set(PlayerStates.PLAYING);
-                	}*/
 
+                    if (mStreamStates.getState() != MusicStreamStates.PLAYING) {
+                        // if (events != null) handler.post(new Runnable() { @Override public void run() { events.onPlay();  } });
+                        mStreamStates.setState(MusicStreamStates.PLAYING);
+                    }
                 }
 
                 codec.releaseOutputBuffer(outputBufIndex, false);
@@ -274,8 +306,7 @@ public class DanceBotMusicStream implements Runnable {
         sampleRate = 0; channels = 0; bitrate = 0;
         presentationTimeUs = 0; duration = 0;
 
-
-        //state.set(PlayerStates.STOPPED);
+        mStreamStates.setState(MusicStreamStates.STOPPED);
         stop = true;
 
         /*if(noOutputCounter >= noOutputCounterLimit) {
@@ -283,5 +314,9 @@ public class DanceBotMusicStream implements Runnable {
         } else {
             if (events != null) handler.post(new Runnable() { @Override public void run() { events.onStop();  } });
         }*/
+    }
+
+    public boolean isPlaying() {
+        return mStreamStates.isPlaying();
     }
 }

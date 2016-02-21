@@ -1,12 +1,8 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import android.app.Activity;
-import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.media.MediaCodec;
-import android.media.MediaExtractor;
-import android.media.MediaFormat;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
@@ -15,18 +11,10 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.util.concurrent.TimeUnit;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerScrollListener;
 
 /**
@@ -114,9 +102,9 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         }
     }
 
-    /************************************
-     * ScrollMediaPlayerMethods Interface
-     ************************************/
+    /**************************************
+     * MediaPlayerScrollListener Interface
+     **************************************/
 
     @Override
     public boolean isPlaying() {
@@ -210,7 +198,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
         Log.d(LOG_TAG, "seekBar: on progress changed");
 
-        // Notify automatic scroll listener when media player progressed
+        // Notify automatic scroll listener when seek bar progressed
         if (DanceBotEditorManager.getInstance().getAutomaticScrollHandler() != null) {
             DanceBotEditorManager.getInstance().notifyAutomaticScrollHandler();
         }

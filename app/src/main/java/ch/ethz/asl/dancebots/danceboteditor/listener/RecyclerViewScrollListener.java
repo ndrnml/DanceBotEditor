@@ -5,9 +5,9 @@ package ch.ethz.asl.dancebots.danceboteditor.listener;
  */
 
 /**
- * An interface that defines methods that the scroll views implement. An instance of
- * HorizontalRecyclerViews passes itself to the AutomaticScrollHandler. This is needed
- * to handle scroll events correctly and communicate between scroll views and seek bars.
+ * An interface that implements a recycler view scroll change listener. It listens for recycler
+ * view scroll changes. This is used to update the recycler view state on media player progress or
+ * seek bar progress.
  */
 public interface RecyclerViewScrollListener {
 
