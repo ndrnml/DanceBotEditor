@@ -7,21 +7,31 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 
 
 public class MainActivity extends Activity {
 
     private static final String LOG_TAG = "MAIN_ACTIVITY";
 
+    // On activity result identifier
+    private static final int PICK_SONG_REQUEST = 1;
+
+    private DanceBotEditorManager mProjectManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // TODO: Instantiate and initialize the dance bot editor project file
+        // Project file initialization
+        mProjectManager = DanceBotEditorManager.getInstance();
+        mProjectManager.setContext(this);
     }
 
     @Override
@@ -61,7 +71,6 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    // TODO: This menu is optional (maybe remove?)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -82,9 +91,53 @@ public class MainActivity extends Activity {
      * @param view calling view
      */
     public void startMediaLibraryActivity(View view) {
-        Intent editorIntent = new Intent(this, EditorActivity.class);
+/*        Intent editorIntent = new Intent(this, EditorActivity.class);
         startActivity(editorIntent);
+*/
+        // Start intent that loads the editor view and starts pick-song-activity
+        Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
+        startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
     }
+
+    /**
+     * Song selection in media library activity is resolved here
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        // Check which request we're responding to
+        if (requestCode == PICK_SONG_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+
+                String songTitle = data.getStringExtra("TITLE");
+                String songArtist = data.getStringExtra("ARTIST");
+                String songPath = data.getStringExtra("PATH");
+                int songDuration = data.getIntExtra("DURATION", 0); // Duration in ms
+                String songAlbumArtPath = data.getStringExtra("ALBUM_ART_PATH");
+
+                Log.v(LOG_TAG, "title: " + songTitle);
+                Log.v(LOG_TAG, "path: " + songPath);
+                Log.v(LOG_TAG, "duration: " + songDuration);
+                Log.v(LOG_TAG, "album art: " + songAlbumArtPath);
+
+                // Selected music file is attached to the current project file
+                DanceBotMusicFile dbMusicFile = new DanceBotMusicFile(songTitle, songArtist, songPath, songDuration);
+                mProjectManager.attachMusicFile(dbMusicFile);
+
+                // Perform beat extraction in async task
+                SoundManager.startDecoding(this, mProjectManager.getDanceBotMusicFile(), null, 1);
+
+            } else {
+
+                // resultCode == RESULT_CANCEL
+                Log.v(LOG_TAG, "onActivityResult() ERROR: resultCode != RESULT_OK");
+
+                finish();
+            }
+        }
+    }
+
 
     /**
      * Load native libraries and functions

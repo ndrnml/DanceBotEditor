@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -24,6 +25,10 @@ import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
  * Created by andrin on 15.11.15.
+ */
+
+/**
+ * This class is the sound task manager for SoundTask thread factory.
  */
 public class SoundManager {
 
@@ -93,18 +98,13 @@ public class SoundManager {
          * Creates a work queue for the pool of Thread objects used for beat extraction,
          * using a linked list queue that blocks when the queue is empty.
          */
-        mBeatExtractionWorkQueue = new LinkedBlockingQueue<Runnable>();
+        mBeatExtractionWorkQueue = new LinkedBlockingQueue<>();
 
         /*
          * Creates a new pool of Thread objects for the beat extraction work queue
          */
         mBeatExtractionThreadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, mBeatExtractionWorkQueue);
-
-        /*
-         * Creates a single Thread object for decoding
-         */
-        //mDecodeThread = new Thread();
 
         /*
          * Instantiates a new anonymous Handler object and defines its
@@ -177,21 +177,20 @@ public class SoundManager {
 
                     case BEAT_EXTRACTION_COMPLETE:
 
-                        // TODO: THIS IS THE PLACE WHERE ALL INITIALIZATION STUFF ETC. SHOULD HAPPEN
-                        // TODO: AFTER POSTPROECESSING ALL THREADS
-                        // TODO: is this a good place to instantiate these things?
-                        DanceBotEditorManager.getInstance().initChoreography();
-                        DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
-
                         Log.v(LOG_TAG, "handleMessage: BEAT_EXTRACTION_COMPLETE");
                         break;
 
                     case TASK_COMPLETE:
 
+                        // Discard progress dialog if task completed successfully
                         if (dialog.isShowing()) {
                             dialog.dismiss();
                         }
 
+                        // Start new EditorActivity
+                        Context context = DanceBotEditorManager.getInstance().getContext();
+                        Intent editorIntent = new Intent(context, EditorActivity.class);
+                        context.startActivity(editorIntent);
 
                         Log.v(LOG_TAG, "handleMessage: TASK_COMPLETE");
                         break;
@@ -226,9 +225,9 @@ public class SoundManager {
     }
 
     /**
-     * TODO
-     * @param soundTask
-     * @param state
+     * Handle the SoundTask state and pass it on to the MainLooper (UI Thread)
+     * @param soundTask current worker task
+     * @param state worker task state
      */
     public void handleState(SoundTask soundTask, int state) {
 
@@ -236,8 +235,6 @@ public class SoundManager {
 
             // The task finished decoding and sound beat extraction
             case TASK_COMPLETE:
-
-                // TODO
 
                 // Gets a Message object, stores the state in it, and sends it to the Handler
                 Message completeMessage = mHandler.obtainMessage(state, soundTask);
@@ -271,13 +268,15 @@ public class SoundManager {
     }
 
     /**
-     * TODO
-     * @param musicFile
-     * @param beatView
-     * @param numThreads
-     * @return
+     * Decoding worker initialization. Successful decoding automatically triggers the beat
+     * extraction process.
+     *
+     * @param musicFile the music file, which will be decoded
+     * @param beatView the view, which will be updated after successful decoding
+     * @param numThreads number of threads that will be used for the decoding task
+     * @return the executing worker Thread
      */
-    static public SoundTask startDecoding(Activity activity, DanceBotMusicFile musicFile, HorizontalRecyclerViews beatView, int numThreads) {
+    static public SoundTask startDecoding(Context context, DanceBotMusicFile musicFile, HorizontalRecyclerViews beatView, int numThreads) {
 
         // Ensure that at least one Thread is invoked
         if (numThreads <= 0) {
@@ -288,7 +287,7 @@ public class SoundManager {
         SoundTask decodeTask = new SoundTask(numThreads);
 
         // Initializes the decoding task
-        decodeTask.initializeDecoderTask(activity, musicFile, beatView);
+        decodeTask.initializeDecoderTask(context, musicFile, beatView);
 
         /*
          * "Executes" the tasks' download Runnable in order to download the image. If no

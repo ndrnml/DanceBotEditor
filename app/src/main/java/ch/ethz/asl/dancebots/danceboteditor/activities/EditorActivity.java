@@ -21,7 +21,11 @@ import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicStream;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
-
+/**
+ * This class handles all dance and sound related tasks and features.
+ * EditorActivity will only be started if a valid song has been successfully be decoded and
+ * beats have been detected.
+ */
 public class EditorActivity extends Activity {
 
     private static final String LOG_TAG = "EDITOR_ACTIVITY";
@@ -37,15 +41,11 @@ public class EditorActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
-        /*
-         * All initializations here must be independent of the loaded/selected music file
-         */
-
         // Project file initialization
         mProjectManager = DanceBotEditorManager.getInstance();
 
         // Global application context is this (EditorActivity)
-        mProjectManager.init(this);
+        mProjectManager.setContext(this);
         mProjectManager.initSelectionMenus();
 
         // Initialize and setup recycler beat element views
@@ -56,14 +56,48 @@ public class EditorActivity extends Activity {
 
         // Create new media player instance, be sure to pass the current activity to resolve
         // all necessary view elements
-        // TODO: Shouldn't the player only be created when a valid music file is present?
         DanceBotMediaPlayer mediaPlayer = new DanceBotMediaPlayer(this);
         mediaPlayer.attachMediaPlayerSeekBar(
                 (SeekBar) findViewById(R.id.seekbar_media_player),
                 (TextView) findViewById(R.id.seekbar_current_time),
                 (TextView) findViewById(R.id.seekbar_total_time));
 
-        mProjectManager.attachMediaPlayer(mediaPlayer);
+        // Set media player
+        mProjectManager.setMediaPlayer(mediaPlayer);
+
+        // Open file in media player
+        mProjectManager.getMediaPlayer().openMusicFile(mProjectManager.getDanceBotMusicFile());
+
+        // Update music file information
+        // Update Title
+        TextView selectedSongTitle = (TextView) findViewById(R.id.id_song_title);
+        selectedSongTitle.setText(mProjectManager.getDanceBotMusicFile().getSongTitle());
+
+        // Update Artist view
+        TextView selectedSongArtist = (TextView) findViewById(R.id.id_song_artist);
+        selectedSongArtist.setText(mProjectManager.getDanceBotMusicFile().getSongArtist());
+
+        // Update Path view
+        TextView selectedSongFilePath = (TextView) findViewById(R.id.id_song_path);
+        selectedSongFilePath.setText(mProjectManager.getDanceBotMusicFile().getSongPath());
+
+        // Update Duration view
+        TextView selectedSongDuration = (TextView) findViewById(R.id.id_song_duration);
+        selectedSongDuration.setText(mProjectManager.getDanceBotMusicFile().getDurationReadable());
+
+        // TODO enable album cover images
+        /*if (songAlbumArtPath != null) {
+            ImageView selectedSongAlbumArt = (ImageView) findViewById(R.id.song_album_art_image);
+            selectedSongAlbumArt.setImageDrawable(Drawable.createFromPath(songAlbumArtPath));
+        }*/
+
+        // Initialize the beat views, the beat adapters and the dance bot choreography manager
+        DanceBotEditorManager.getInstance().initChoreography();
+
+        // TODO: make this more flexible. Maybe a scroll handler for views and one for seek bars
+        // TODO: AND don't call it in DanceBotEditorManager
+        DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
+
 
         // TODO: This is for testing purposes only
         Button streamBnt = (Button) findViewById(R.id.btn_stream);
@@ -82,12 +116,6 @@ public class EditorActivity extends Activity {
     protected void onStart() {
         super.onStart();
         // The activity is about to become visible.
-
-        if (mProjectManager.getDanceBotMusicFile() == null) {
-            // Start intent that loads the editor view and starts pick-song-activity
-            Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
-            startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
-        }
     }
 
     @Override
@@ -128,73 +156,6 @@ public class EditorActivity extends Activity {
         Log.d(LOG_TAG, "onDestroy");
     }
 
-    /**
-     * Song selection in media library activity is resolved here
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        // Check which request we're responding to
-        if (requestCode == PICK_SONG_REQUEST) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-
-                String songTitle = data.getStringExtra("TITLE");
-                String songArtist = data.getStringExtra("ARTIST");
-                String songPath = data.getStringExtra("PATH");
-                int songDuration = data.getIntExtra("DURATION", 0); // Duration in ms
-                String songAlbumArtPath = data.getStringExtra("ALBUM_ART_PATH");
-
-                Log.v(LOG_TAG, "title: " + songTitle);
-                Log.v(LOG_TAG, "path: " + songPath);
-                Log.v(LOG_TAG, "duration: " + songDuration);
-                Log.v(LOG_TAG, "album art: " + songAlbumArtPath);
-
-                // Selected music file is attached to the current project file
-                DanceBotMusicFile dbMusicFile = new DanceBotMusicFile(songTitle, songArtist, songPath, songDuration);
-                mProjectManager.attachMusicFile(dbMusicFile);
-
-                // Update music file information
-                // Update Title
-                TextView selectedSongTitle = (TextView) findViewById(R.id.id_song_title);
-                selectedSongTitle.setText(songTitle);
-
-                // Update Artist view
-                TextView selectedSongArtist = (TextView) findViewById(R.id.id_song_artist);
-                selectedSongArtist.setText(songArtist);
-
-                // Update Path view
-                TextView selectedSongFilePath = (TextView) findViewById(R.id.id_song_path);
-                selectedSongFilePath.setText(songPath);
-
-                // Update Duration view
-                TextView selectedSongDuration = (TextView) findViewById(R.id.id_song_duration);
-                selectedSongDuration.setText(mProjectManager.getDanceBotMusicFile().getDurationReadable()); // TODO change this line
-
-                // TODO enable album cover images
-                /*if (songAlbumArtPath != null) {
-                    ImageView selectedSongAlbumArt = (ImageView) findViewById(R.id.song_album_art_image);
-                    selectedSongAlbumArt.setImageDrawable(Drawable.createFromPath(songAlbumArtPath));
-                }*/
-
-                // Open file in media player
-                mProjectManager.getMediaPlayer().openMusicFile(dbMusicFile);
-
-                // TODO: stream player
-
-                // TODO: Test with 1 thread, compare results
-                // Perform beat extraction in async task
-                SoundManager.startDecoding(this, mProjectManager.getDanceBotMusicFile(), null, 1);
-
-            } else {
-
-                // resultCode == RESULT_CANCEL
-                Log.v(LOG_TAG, "onActivityResult() ERROR: resultCode != RESULT_OK");
-
-                finish();
-            }
-        }
-    }
 
     @Override
     public void onBackPressed() {

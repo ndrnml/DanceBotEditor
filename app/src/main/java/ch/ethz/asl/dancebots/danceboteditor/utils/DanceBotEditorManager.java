@@ -57,16 +57,6 @@ public class DanceBotEditorManager {
     }
 
     /**
-     * First init. This one is really important. It sets the application context, which is needed
-     * for a few objects, since some properties are constant encoded.
-     * This is not a pretty solution, but I have no clue how to make it better. I know, I am not a
-     * good programmer yet, but maybe once, I will understand the concepts.
-     */
-    public void init(Context context) {
-        setContext(context);
-    }
-
-    /**
      * Init all contextual menus
      */
     public void initSelectionMenus() {
@@ -111,7 +101,7 @@ public class DanceBotEditorManager {
         mDanceBotMusicFile = dbMusicFile;
     }
 
-    public void attachMediaPlayer(DanceBotMediaPlayer mediaPlayer) {
+    public void setMediaPlayer(DanceBotMediaPlayer mediaPlayer) {
         mMediaPlayer = mediaPlayer;
     }
 
@@ -132,7 +122,7 @@ public class DanceBotEditorManager {
         }
 
         // TODO: Is this necessary?
-        mAutomaticScrollHandler.cleanUp();
+        //mAutomaticScrollHandler.cleanUp();
 
     }
 
@@ -145,6 +135,13 @@ public class DanceBotEditorManager {
     public void setBeatViews(HorizontalRecyclerViews beatViews) {
         mBeatViews = beatViews;
     }
+
+    /**
+     * This method is really important. It sets the application context, which is needed
+     * for a few objects, since some properties are constant encoded.
+     * This is not a pretty solution, but I have no clue how to make it better. I know, I am not a
+     * good programmer yet, but maybe once, I will understand the concepts.
+     */
     public void setContext(Context c) {
         mContext = c;
     }

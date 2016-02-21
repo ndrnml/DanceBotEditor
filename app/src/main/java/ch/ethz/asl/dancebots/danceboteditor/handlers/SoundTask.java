@@ -19,6 +19,11 @@ import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 /**
  * Created by andrin on 14.11.15.
  */
+
+/**
+ * This class is the task factory for sound related tasks, like decoding, encoding and beat
+ * extraction.
+ */
 public class SoundTask implements
         SoundDecodeRunnable.TaskRunnableDecodeMethods,
         SoundBeatExtractRunnable.TaskRunnableBeatExtractionMethods,
@@ -59,7 +64,7 @@ public class SoundTask implements
     private Runnable mEncodeRunnable;
 
     // An object that contains the ThreadPool singleton.
-    private SoundManager sSoundManager;
+    private final SoundManager sSoundManager;
 
     private long t1,t2;
 
@@ -101,24 +106,27 @@ public class SoundTask implements
     }
 
     /**
-     * Initialize the decoder task
-     * @param musicFile
-     * @param beatView
+     * Initialize the decoder task.
+     *
+     * @param context pass the caller context
+     * @param musicFile the music file which will be decoded
+     * @param beatView the beat view which will be updated
      */
-    public void initializeDecoderTask(Activity activity, DanceBotMusicFile musicFile, HorizontalRecyclerViews beatView) {
+    public void initializeDecoderTask(Context context, DanceBotMusicFile musicFile, HorizontalRecyclerViews beatView) {
 
         // Sets the selected dance bot editor music file
         mMusicFile = musicFile;
 
         // Initialize progress dialog on UI thread
-        initializeProgressDialog(activity);
+        initializeProgressDialog(context);
 
         // Initialize error toast
-        initializeErrorToast(activity);
+        mInfoToast = Toast.makeText(context, "", Toast.LENGTH_LONG);
     }
 
     /**
      * Initialize the encoder task
+     *
      * @param context
      * @param musicFile
      * @param choreoManager
@@ -135,14 +143,14 @@ public class SoundTask implements
         initializeProgressDialog(context);
 
         // Initialize error toast
-        initializeErrorToast(context);
-    }
-
-    private void initializeErrorToast(Context context) {
-        // Initialize error toast
         mInfoToast = Toast.makeText(context, "", Toast.LENGTH_LONG);
     }
 
+
+    /**
+     * Initialize progress dialog for the SoundTasks
+     * @param context pass context to ProgressDialog
+     */
     private void initializeProgressDialog(Context context) {
         // Initialize progress dialog on UI thread
         mSoundTaskProgressDialog = new ProgressDialog(context);
@@ -161,6 +169,10 @@ public class SoundTask implements
         sSoundManager.handleState(this, state);
     }
 
+    /**
+     * Collect all detected beats from the different worker Threads and put them into the same
+     * data structure.
+     */
     private void postProcessExtractedBeats() {
 
         // TODO: What happens if one worker Thread gets terminated?
@@ -213,8 +225,7 @@ public class SoundTask implements
     }
 
     /**
-     * TODO
-     * @return
+     * @return state of all worker Runnables
      */
     private boolean allBeatExtractionRunnablesDone() {
         for (int status : mBeatExtractionRunnablesStatus) {
@@ -404,8 +415,9 @@ public class SoundTask implements
     }
 
     /**
+     * Handle SoundTask worker Thread state.
      *
-     * @param state
+     * @param state pass the current SoundTask state. The state will be processed by the SoundManager
      */
     @Override
     public void handleEncodeState(int state) {

@@ -91,4 +91,8 @@ public class DanceBotMusicFile {
     public int[] getBeatBuffer() {
         return mBeatBuffer;
     }
+
+    public String getSongArtist() {
+        return mSongArtist;
+    }
 }
