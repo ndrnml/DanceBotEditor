@@ -2,7 +2,6 @@ package ch.ethz.asl.dancebots.danceboteditor.view;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,6 +16,11 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
 /**
  * Created by andrin on 24.10.15.
  */
+
+/**
+ * The HorizontalRecyclerViews implements the motor and the led beat view. Scrolling of either
+ * view is synced with the other and blocked while the view itself is scrolling.
+ */
 public class HorizontalRecyclerViews implements ChoreographyManager.ChoreographyViewManager, RecyclerViewScrollListener {
 
     private static final String LOG_TAG = "RECYCLER_VIEW";
@@ -26,20 +30,23 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
     private RecyclerView mMotorView;
     private RecyclerView mLedView;
 
-    private final RecyclerView.OnScrollListener mTopOnScrollListener = new SelfRemovingOnScrollListener() {
+    private final RecyclerView.OnScrollListener mMotorViewOnScrollListener = new SelfRemovingOnScrollListener() {
+
         @Override
         public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
             super.onScrolled(recyclerView, dx, dy);
             mLedView.scrollBy(dx, dy);
+            //Log.d(LOG_TAG, "TOP: onScrolled: " + recyclerView.getScrollState());
         }
     };
 
-    private final RecyclerView.OnScrollListener mBottomOnScrollListener = new SelfRemovingOnScrollListener() {
+    private final RecyclerView.OnScrollListener mLedViewOnScrollListener = new SelfRemovingOnScrollListener() {
 
         @Override
         public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
             super.onScrolled(recyclerView, dx, dy);
             mMotorView.scrollBy(dx, dy);
+            //Log.d(LOG_TAG, "BOTTOM: onScrolled: " + recyclerView.getScrollState());
         }
     };
 
@@ -66,10 +73,15 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
             @Override
             public boolean onInterceptTouchEvent(final RecyclerView rv, final MotionEvent e) {
-                Log.v(LOG_TAG, "TOP: onInterceptTouchEvent");
+                Log.d(LOG_TAG, "TOP: onInterceptTouchEvent");
 
-                final Boolean ret = rv.getScrollState() != RecyclerView.SCROLL_STATE_IDLE;
-                if (!ret) {
+                // This is necessary to prevent the recycler views being desync
+                if (mLedView.getScrollState() != RecyclerView.SCROLL_STATE_IDLE) {
+                    return Boolean.TRUE;
+                }
+
+                if (rv.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+                    Log.v(LOG_TAG, "TOP: state idle");
                     onTouchEvent(rv, e);
                 }
                 return Boolean.FALSE;
@@ -77,23 +89,27 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
             @Override
             public void onTouchEvent(final RecyclerView rv, final MotionEvent e) {
-                Log.v(LOG_TAG, "TOP: onTouchEvent");
+                Log.d(LOG_TAG, "TOP: onTouchEvent");
 
                 final int action;
+
                 if ((action = e.getAction()) == MotionEvent.ACTION_DOWN && mLedView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+
                     mLastX = rv.getScrollX();
-                    rv.addOnScrollListener(mTopOnScrollListener);
+                    rv.addOnScrollListener(mMotorViewOnScrollListener);
 
                 } else {
+
+                    // If no scrolling detected remove scroll listener
                     if (action == MotionEvent.ACTION_UP && rv.getScrollX() == mLastX) {
-                        rv.removeOnScrollListener(mTopOnScrollListener);
+                        rv.removeOnScrollListener(mMotorViewOnScrollListener);
                     }
                 }
             }
 
             @Override
             public void onRequestDisallowInterceptTouchEvent(final boolean disallowIntercept) {
-                Log.v(LOG_TAG, "TOP: onRequestDisallowInterceptTouchEvent");
+                Log.d(LOG_TAG, "TOP: onRequestDisallowInterceptTouchEvent");
             }
         });
 
@@ -107,12 +123,16 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
             private int mLastX;
 
             @Override
-            public boolean onInterceptTouchEvent(@NonNull final RecyclerView rv, @NonNull final
+            public boolean onInterceptTouchEvent(final RecyclerView rv, final
             MotionEvent e) {
-                Log.v(LOG_TAG, "BOTTOM: onInterceptTouchEvent");
+                Log.d(LOG_TAG, "BOTTOM: onInterceptTouchEvent");
 
-                final Boolean ret = rv.getScrollState() != RecyclerView.SCROLL_STATE_IDLE;
-                if (!ret) {
+                // This is necessary to prevent the recycler views being desync
+                if (mMotorView.getScrollState() != RecyclerView.SCROLL_STATE_IDLE) {
+                    return Boolean.TRUE;
+                }
+
+                if (rv.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
                     onTouchEvent(rv, e);
                 }
                 return Boolean.FALSE;
@@ -120,23 +140,26 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
             @Override
             public void onTouchEvent(final RecyclerView rv, final MotionEvent e) {
-                Log.v(LOG_TAG, "BOTTOM: onTouchEvent");
+                Log.d(LOG_TAG, "BOTTOM: onTouchEvent");
 
                 final int action;
+
                 if ((action = e.getAction()) == MotionEvent.ACTION_DOWN && mMotorView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+
                     mLastX = rv.getScrollX();
-                    rv.addOnScrollListener(mBottomOnScrollListener);
-                }
-                else {
+                    rv.addOnScrollListener(mLedViewOnScrollListener);
+
+                } else {
+
                     if (action == MotionEvent.ACTION_UP && rv.getScrollX() == mLastX) {
-                        rv.removeOnScrollListener(mBottomOnScrollListener);
+                        rv.removeOnScrollListener(mLedViewOnScrollListener);
                     }
                 }
             }
 
             @Override
             public void onRequestDisallowInterceptTouchEvent(final boolean disallowIntercept) {
-                Log.v(LOG_TAG, "BOTTOM: onRequestDisallowInterceptTouchEvent");
+                Log.d(LOG_TAG, "BOTTOM: onRequestDisallowInterceptTouchEvent");
             }
         });
     }
@@ -160,9 +183,9 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         motorAdapter.notifyDataSetChanged();
     }
 
-    /******************************
-     * ScrollViewMethods Interface
-     ******************************/
+    /***************************************
+     * RecyclerViewScrollListener Interface
+     ***************************************/
 
     @Override
     public void scrollToPosition(int position) {
