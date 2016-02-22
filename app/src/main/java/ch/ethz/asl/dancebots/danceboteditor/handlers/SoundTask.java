@@ -1,6 +1,5 @@
 package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
@@ -395,7 +394,7 @@ public class SoundTask implements
 
     @Override
     public long getNumSamples() {
-        return mMusicFile.getNumberOfSamples();
+        return mMusicFile.getSampleCount();
     }
 
     @Override
@@ -461,7 +460,7 @@ public class SoundTask implements
 
     @Override
     public int getNumBeats() {
-        return mMusicFile.getNumberOfBeatsDetected();
+        return mMusicFile.getBeatCount();
     }
 
     public Toast getInfoToast() {

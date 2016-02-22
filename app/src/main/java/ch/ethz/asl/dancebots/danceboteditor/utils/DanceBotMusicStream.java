@@ -37,11 +37,14 @@ public class DanceBotMusicStream implements Runnable {
     private MediaExtractor mMediaExtractor;
     private String mSourcePath;
     boolean stop = true;
-    Thread mThread = null;
+    private Thread mThread = null;
 
-    String mime = null;
-    int sampleRate = 0, channels = 0, bitrate = 0;
-    long presentationTimeUs = 0, duration = 0;
+    private String mime = null;
+    private int sampleRate = 0, channels = 0, bitrate = 0;
+    private long presentationTimeUs = 0, duration = 0;
+
+    private byte[] mDataSource;
+    private boolean mDataSourceSet = false;
 
     /**
      * Constructor
@@ -58,7 +61,12 @@ public class DanceBotMusicStream implements Runnable {
         streamPlayerEvents = eventListener;
     }
 
-    public void attachMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
+    public void setDataSource(final byte[] dataSource) {
+        mDataSource = dataSource;
+        mDataSourceSet = true;
+    }
+
+    public void setMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
 /*
         // Prepare seek bar for the selected song
         mSeekBar = seekBar;
@@ -174,7 +182,8 @@ public class DanceBotMusicStream implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // check we have a valid codec instance
+
+        // Check we have a valid codec instance
         if (codec == null) {
             //if (events != null) handler.post(new Runnable() { @Override public void run() { events.onError();  } });
             return;
@@ -189,17 +198,18 @@ public class DanceBotMusicStream implements Runnable {
         ByteBuffer[] codecInputBuffers = codec.getInputBuffers();
         ByteBuffer[] codecOutputBuffers = codec.getOutputBuffers();
 
-        // configure AudioTrack
+        // Configure AudioTrack
         int channelConfiguration = channels == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO;
         int minSize = AudioTrack.getMinBufferSize(sampleRate, channelConfiguration, AudioFormat.ENCODING_PCM_16BIT);
-        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, channelConfiguration,
+        audioTrack = new AudioTrack(
+                AudioManager.STREAM_MUSIC, sampleRate, channelConfiguration,
                 AudioFormat.ENCODING_PCM_16BIT, minSize, AudioTrack.MODE_STREAM);
 
-        // start playing, we will feed the AudioTrack later
+        // Start playing, we will feed the AudioTrack later
         audioTrack.play();
         mMediaExtractor.selectTrack(0);
 
-        // start decoding
+        // Start decoding
         final long kTimeOutUs = 1000;
         MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
         boolean sawInputEOS = false;
@@ -211,12 +221,12 @@ public class DanceBotMusicStream implements Runnable {
 
         while (!sawOutputEOS && noOutputCounter < noOutputCounterLimit && !stop) {
 
-            // pause implementation
+            // Pause implementation
             waitPlay();
 
             noOutputCounter++;
 
-            // read a buffer before feeding it to the decoder
+            // Read a buffer before feeding it to the decoder
             if (!sawInputEOS) {
 
                 int inputBufIndex = codec.dequeueInputBuffer(kTimeOutUs);
@@ -247,7 +257,7 @@ public class DanceBotMusicStream implements Runnable {
                 }
             } // !sawInputEOS
 
-            // decode to PCM and push it to the AudioTrack player
+            // Decode to PCM and push it to the AudioTrack player
             int res = codec.dequeueOutputBuffer(info, kTimeOutUs);
 
             if (res >= 0) {
@@ -261,26 +271,41 @@ public class DanceBotMusicStream implements Runnable {
                 buf.clear();
 
                 if (chunk.length > 0) {
+
+                    // TODO: Check channels
+                    if (mDataSourceSet) {
+                        int mByteOffset = 0;
+                        int i = interleaveChannels(chunk, mDataSource, mByteOffset);
+                    }
+
+                    // Write decoded PCM to the AudioTrack
                     audioTrack.write(chunk, 0, chunk.length);
 
-                    if (mStreamStates.getState() != MusicStreamStates.PLAYING) {
+                    /*if (mStreamStates.getState() != MusicStreamStates.PLAYING) {
                         // if (events != null) handler.post(new Runnable() { @Override public void run() { events.onPlay();  } });
                         mStreamStates.setState(MusicStreamStates.PLAYING);
-                    }
+                    }*/
                 }
 
                 codec.releaseOutputBuffer(outputBufIndex, false);
+
                 if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
                     Log.d(LOG_TAG, "saw output EOS.");
                     sawOutputEOS = true;
                 }
+
             } else if (res == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+
                 codecOutputBuffers = codec.getOutputBuffers();
                 Log.d(LOG_TAG, "output buffers have changed.");
+
             } else if (res == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+
                 MediaFormat oformat = codec.getOutputFormat();
                 Log.d(LOG_TAG, "output format has changed to " + oformat);
+
             } else {
+
                 Log.d(LOG_TAG, "dequeueOutputBuffer returned " + res);
             }
         }
@@ -314,6 +339,13 @@ public class DanceBotMusicStream implements Runnable {
         } else {
             if (events != null) handler.post(new Runnable() { @Override public void run() { events.onStop();  } });
         }*/
+    }
+
+    private int interleaveChannels(byte[] chunk, byte[] DataSource, int ByteOffset) {
+
+
+
+        return 0;
     }
 
     public boolean isPlaying() {

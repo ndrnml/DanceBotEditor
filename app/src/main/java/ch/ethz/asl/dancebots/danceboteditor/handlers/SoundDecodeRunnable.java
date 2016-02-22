@@ -127,7 +127,7 @@ public class SoundDecodeRunnable implements Runnable {
 
                 // Get the total number of samples, which were decoded
                 musicFile.setTotalNumberOfSamples(mp3Decoder.getNumberOfSamples());
-                Log.v(LOG_TAG, "total number of samples: " + musicFile.getNumberOfSamples());
+                Log.v(LOG_TAG, "total number of samples: " + musicFile.getSampleCount());
 
                 // Handle the state of the decoding Thread
                 mSoundTask.handleDecodeState(DECODE_STATE_COMPLETED);

@@ -89,7 +89,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         }
 
         // Store other important music file properties
-        mTotalTime = mMusicFile.getDurationInMiliSecs();
+        mTotalTime = mMusicFile.getDurationInMilliSecs();
 
         // Update max seekbar
         if (mSeekBar != null) {

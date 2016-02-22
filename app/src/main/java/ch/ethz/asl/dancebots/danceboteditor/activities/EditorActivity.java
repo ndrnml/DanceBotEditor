@@ -99,13 +99,20 @@ public class EditorActivity extends Activity {
         DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
 
 
+
+
+
+
         // TODO: This is for testing purposes only
+        final DanceBotMusicStream stream = new DanceBotMusicStream(mProjectManager.getDanceBotMusicFile());
+
         Button streamBnt = (Button) findViewById(R.id.btn_stream);
         streamBnt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mProjectManager.getDanceBotMusicFile() != null) {
-                    DanceBotMusicStream stream = new DanceBotMusicStream(mProjectManager.getDanceBotMusicFile());
+                if (stream.isPlaying()) {
+                    stream.pause();
+                } else {
                     stream.play();
                 }
             }

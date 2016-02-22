@@ -23,7 +23,6 @@ public class DanceBotMusicFile {
     // Decoding and Beat Extraction
     private int mNumberOfBeatsDetected;
     private int[] mBeatBuffer;
-    private ByteBuffer mMP3Buffer;
 
     public DanceBotMusicFile(String songTitle, String songArtist, String songPath, int duration) {
 
@@ -67,16 +66,16 @@ public class DanceBotMusicFile {
             return Integer.toString(minutes) + ":" + Integer.toString(seconds);
         }
     }
-    public int getDurationInMiliSecs() {
+    public int getDurationInMilliSecs() {
         return mDurationInMiliSeconds;
     }
     public int getDurationInSecs() {
         return (mDurationInMiliSeconds / 1000);
     }
-    public int getNumberOfBeatsDetected() {
+    public int getBeatCount() {
         return mNumberOfBeatsDetected;
     }
-    public long getNumberOfSamples() {
+    public long getSampleCount() {
         return mNumberOfSamples;
     }
 
