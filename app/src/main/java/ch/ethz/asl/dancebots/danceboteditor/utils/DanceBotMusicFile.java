@@ -19,6 +19,8 @@ public class DanceBotMusicFile {
     private long mNumberOfSamples;
     private int mSampleRate;
     private int mChannels;
+    private final int mEncoding = Short.SIZE; // This is set in Mp3Decoder.cpp to MPG123_ENC_SIGNED_16 (short)
+
 
     // Decoding and Beat Extraction
     private int mNumberOfBeatsDetected;
@@ -93,5 +95,29 @@ public class DanceBotMusicFile {
 
     public String getSongArtist() {
         return mSongArtist;
+    }
+
+    public int getBeatFromByte(int bytes) {
+
+        int b = 0;
+        int i;
+
+        for (i = 0; i < mNumberOfBeatsDetected; ++i) {
+
+            int samplePos = mBeatBuffer[i];
+
+            // compute current byte from number of samples at beat position i
+            b += b + (samplePos * mEncoding);
+
+            if (b > bytes) {
+                break;
+            }
+        }
+
+        return i;
+    }
+
+    public int getEncodingSize() {
+        return mEncoding;
     }
 }

@@ -14,8 +14,10 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
+import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 
 /**
  * Created by andrin on 28.01.16.
@@ -43,8 +45,9 @@ public class DanceBotMusicStream implements Runnable {
     private int sampleRate = 0, channels = 0, bitrate = 0;
     private long presentationTimeUs = 0, duration = 0;
 
-    private byte[] mDataSource;
+    private ChoreographyManager mDataSource;
     private boolean mDataSourceSet = false;
+    private int mByteOffset;
 
     /**
      * Constructor
@@ -61,7 +64,7 @@ public class DanceBotMusicStream implements Runnable {
         streamPlayerEvents = eventListener;
     }
 
-    public void setDataSource(final byte[] dataSource) {
+    public void setDataSource(final ChoreographyManager dataSource) {
         mDataSource = dataSource;
         mDataSourceSet = true;
     }
@@ -86,6 +89,8 @@ public class DanceBotMusicStream implements Runnable {
 
         if (mStreamStates.getState() == MusicStreamStates.STOPPED) {
             stop = false;
+            // Set number of bytes written initially to zero
+            mByteOffset = 0;
             mThread = new Thread(this);
             mThread.start();
         }
@@ -176,7 +181,7 @@ public class DanceBotMusicStream implements Runnable {
             return;
         }
 
-        // create the actual decoder, using the mime to select
+        // Create the actual decoder, using the mime to select
         try {
             codec = MediaCodec.createDecoderByType(mime);
         } catch (IOException e) {
@@ -266,17 +271,17 @@ public class DanceBotMusicStream implements Runnable {
                 int outputBufIndex = res;
                 ByteBuffer buf = codecOutputBuffers[outputBufIndex];
 
-                final byte[] chunk = new byte[info.size];
-                buf.get(chunk);
+                short[] chunk = new short[info.size / 2];
+                buf.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(chunk);
                 buf.clear();
 
                 if (chunk.length > 0) {
 
                     // TODO: Check channels
-                    if (mDataSourceSet) {
-                        int mByteOffset = 0;
-                        int i = interleaveChannels(chunk, mDataSource, mByteOffset);
-                    }
+                    /*if (mDataSourceSet) {
+                        chunk = interleaveChannels(chunk, mDataSource, mByteOffset);
+                        mByteOffset += info.size;
+                    }*/
 
                     // Write decoded PCM to the AudioTrack
                     audioTrack.write(chunk, 0, chunk.length);
@@ -341,11 +346,31 @@ public class DanceBotMusicStream implements Runnable {
         }*/
     }
 
-    private int interleaveChannels(byte[] chunk, byte[] DataSource, int ByteOffset) {
+    private byte[] interleaveChannels(byte[] chunk, ChoreographyManager dataSource, int byteOffset) {
 
+        byte[] tmpBuffer = new byte[2 * chunk.length];
+        short[] tmpDataBuffer = new short[(chunk.length + 1) / 2];
+        byte[] tmpDataBufferByte = new byte[chunk.length];
 
+        dataSource.readDataChannel(tmpDataBuffer, byteOffset);
 
-        return 0;
+        int byteIdx = 0;
+
+        for (int shortIdx = 0; shortIdx < tmpDataBuffer.length; ++shortIdx) {
+
+            tmpDataBufferByte[byteIdx] = (byte) (tmpDataBuffer[shortIdx] & 0x00FF);
+            tmpDataBufferByte[byteIdx + 1] = (byte) ((tmpDataBuffer[shortIdx] & 0xFF00) >> 8);
+
+            byteIdx += 2;
+        }
+
+        for (int i = 0; i < chunk.length; ++i) {
+
+            tmpBuffer[(2 * i)] = chunk[i];
+            tmpBuffer[(2 * i) + 1] = tmpDataBufferByte[i];
+        }
+
+        return tmpBuffer;
     }
 
     public boolean isPlaying() {

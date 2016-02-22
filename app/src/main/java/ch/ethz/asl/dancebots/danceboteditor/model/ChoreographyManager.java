@@ -207,7 +207,7 @@ public class ChoreographyManager {
         return elems;
     }
 
-    private int readDataChannel(short[] pcmData, int byteOffset) {
+    public int readDataChannel(short[] pcmDataBuffer, int byteOffset) {
 
         // Get beat element lists for motor and led elements
         ArrayList<MotorBeatElement> motorElements = mMotorChoreography.getBeatElements();
@@ -240,8 +240,22 @@ public class ChoreographyManager {
         // Keep a state of the last sample written
         short lastSampleLevel = DanceBotConfiguration.DATA_LEVEL;
 
-        // Iterate over all detected beats in the song
-        for (int i = 0; i < numBeats - 1; ++i) {
+        int pcmDataByteCount = pcmDataBuffer.length;
+        int startBeat = mMusicFile.getBeatFromByte(byteOffset);
+        int endBeat = mMusicFile.getBeatFromByte(byteOffset + pcmDataByteCount);
+
+        // Get the start and end sample for the current selected beat
+        long startSample = motorElements.get(startBeat).getSamplePosition();
+        long endSample = motorElements.get(endBeat + 1).getSamplePosition();
+
+        // Compute the total number of samples to process for the current beat
+        int samples = (int) (endSample - startSample);
+
+        // At the moment all encoding variables are fixed to SIGNED_PCM_16_BIT
+        short[] pcmData = new short[samples * mMusicFile.getEncodingSize() / Short.SIZE];
+
+        // Iterate over beats
+        for (int i = startBeat; i < endBeat; ++i) {
 
             // Get the corresponding MotorBeatElement and LedBeatElement
             MotorBeatElement motorElement = motorElements.get(i);
@@ -304,7 +318,17 @@ public class ChoreographyManager {
             }
         }
 
-        return -1;
+        int idx = 0;
+        for (int i = 0; i < pcmData.length; ++i) {
+
+            if (pcmData[i] > byteOffset && pcmData[i] < (byteOffset + pcmDataByteCount)) {
+
+                pcmDataBuffer[idx] = pcmData[i];
+                idx++;
+            }
+        }
+
+        return idx;
     }
 
     private int writeMessage(short[] pcmData, short[] dataBuffer, int msgStart, int msgLength) {

@@ -105,6 +105,7 @@ public class EditorActivity extends Activity {
 
         // TODO: This is for testing purposes only
         final DanceBotMusicStream stream = new DanceBotMusicStream(mProjectManager.getDanceBotMusicFile());
+        stream.setDataSource(mProjectManager.getChoreoManager());
 
         Button streamBnt = (Button) findViewById(R.id.btn_stream);
         streamBnt.setOnClickListener(new View.OnClickListener() {
