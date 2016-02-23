@@ -13,12 +13,13 @@ import ch.ethz.asl.dancebots.danceboteditor.ui.MotorTypeSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotConfiguration;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.StreamPlayback;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
  * Created by andrin on 31.08.15.
  */
-public class ChoreographyManager {
+public class ChoreographyManager implements StreamPlayback {
 
     private static final String LOG_TAG = "CHOREOGRAPHY_MANAGER";
 
@@ -32,6 +33,11 @@ public class ChoreographyManager {
     private final ChoreographyViewManager mBeatViews;
 
     // Data source fields
+    private ArrayList<MotorBeatElement> mMotorElements;
+    private ArrayList<LedBeatElement> mLedElements;
+    private short[] mDataBuffer;
+    private short mLastSampleLevel;
+
     private int mNumSamplesReset;
     private int mNumSamplesOne;
     private int mNumSamplesZero;
@@ -207,11 +213,12 @@ public class ChoreographyManager {
         return elems;
     }
 
-    public int readDataChannel(short[] pcmDataBuffer, int shortCount) {
+    @Override
+    public void prepareStreamPlayback() {
 
         // Get beat element lists for motor and led elements
-        ArrayList<MotorBeatElement> motorElements = mMotorChoreography.getBeatElements();
-        ArrayList<LedBeatElement> ledElements = mLedChoregraphy.getBeatElements();
+        mMotorElements = mMotorChoreography.getBeatElements();
+        mLedElements = mLedChoregraphy.getBeatElements();
 
         // Get the total number of beats detected
         int numBeats = mMusicFile.getBeatCount();
@@ -235,18 +242,23 @@ public class ChoreographyManager {
         int maxNumSamplesInMsg = numBitsInMsg * mNumSamplesOne + mNumSamplesReset;
 
         // Initialize a new data buffer, which stores the current calculated message
-        short dataBuffer[] = new short[maxNumSamplesInMsg];
+        mDataBuffer = new short[maxNumSamplesInMsg];
 
         // Keep a state of the last sample written
-        short lastSampleLevel = DanceBotConfiguration.DATA_LEVEL;
+        mLastSampleLevel = DanceBotConfiguration.DATA_LEVEL;
+
+    }
+
+    @Override
+    public int readDataStream(short[] pcmDataBuffer, int shortCount) {
 
         int pcmDataShortCount = pcmDataBuffer.length;
         int startBeat = mMusicFile.getBeatFromShort(shortCount);
         int endBeat = mMusicFile.getBeatFromShort(shortCount + pcmDataShortCount);
 
         // Get the start and end sample for the current selected beat
-        long startSample = motorElements.get(startBeat).getSamplePosition();
-        long endSample = motorElements.get(endBeat + 1).getSamplePosition();
+        long startSample = mMotorElements.get(startBeat).getSamplePosition();
+        long endSample = mMotorElements.get(endBeat + 1).getSamplePosition();
 
         // Get the true number of shorts from the input
         // Only shorts within this range will be needed
@@ -264,12 +276,12 @@ public class ChoreographyManager {
         for (int i = startBeat; i < endBeat; ++i) {
 
             // Get the corresponding MotorBeatElement and LedBeatElement
-            MotorBeatElement motorElement = motorElements.get(i);
-            LedBeatElement ledElement = ledElements.get(i);
+            MotorBeatElement motorElement = mMotorElements.get(i);
+            LedBeatElement ledElement = mLedElements.get(i);
 
             // Get the start and end sample for the current selected beat
-            long startSamplePosition = motorElements.get(i).getSamplePosition();
-            long endSamplePosition = motorElements.get(i + 1).getSamplePosition();
+            long startSamplePosition = mMotorElements.get(i).getSamplePosition();
+            long endSamplePosition = mMotorElements.get(i + 1).getSamplePosition();
 
             // Compute the total number of samples to process for the current beat
             int samplesToProcess = (int) (endSamplePosition - startSamplePosition);
@@ -298,10 +310,10 @@ public class ChoreographyManager {
                     led = ledElement.getLedBytes(relativeBeat);
                 }
 
-                int numSamplesInMsg = calculateMessage(dataBuffer, vLeft, vRight, led, lastSampleLevel);
+                int numSamplesInMsg = calculateMessage(mDataBuffer, vLeft, vRight, led, mLastSampleLevel);
 
                 // Get last sample level
-                lastSampleLevel = dataBuffer[numSamplesInMsg - 1];
+                mLastSampleLevel = mDataBuffer[numSamplesInMsg - 1];
 
                 /*
                  * If the end of samples to process is not reached, the data buffer is copied to
@@ -310,7 +322,7 @@ public class ChoreographyManager {
                 if (samplePos + numSamplesInMsg < samplesToProcess) {
 
                     // Write calculated data message to pcm buffer
-                    writeMessage(pcmData, dataBuffer, samplePos, numSamplesInMsg);
+                    writeMessage(pcmData, mDataBuffer, samplePos, numSamplesInMsg);
 
                 } else {
 

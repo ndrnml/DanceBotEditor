@@ -38,8 +38,7 @@ public class DanceBotMusicStream implements Runnable {
 
     private MediaExtractor mMediaExtractor;
     private String mSourcePath;
-    boolean stop = true;
-    private Thread mThread = null;
+    boolean mStop = true;
 
     private String mime = null;
     private int sampleRate = 0, channels = 0, bitrate = 0;
@@ -66,6 +65,7 @@ public class DanceBotMusicStream implements Runnable {
 
     public void setDataSource(final ChoreographyManager dataSource) {
         mDataSource = dataSource;
+        mDataSource.prepareStreamPlayback();
         mDataSourceSet = true;
     }
 
@@ -88,11 +88,10 @@ public class DanceBotMusicStream implements Runnable {
     public void play() {
 
         if (mStreamStates.getState() == MusicStreamStates.STOPPED) {
-            stop = false;
+            mStop = false;
             // Set number of bytes written initially to zero
             mShortOffset = 0;
-            mThread = new Thread(this);
-            mThread.start();
+            new Thread(this).start();
         }
 
         if (mStreamStates.getState() == MusicStreamStates.READY_TO_PLAY) {
@@ -117,7 +116,7 @@ public class DanceBotMusicStream implements Runnable {
     }
 
     public void stop() {
-        stop = true;
+        mStop = true;
     }
 
     public void pause() {
@@ -224,7 +223,7 @@ public class DanceBotMusicStream implements Runnable {
 
         mStreamStates.setState(MusicStreamStates.PLAYING);
 
-        while (!sawOutputEOS && noOutputCounter < noOutputCounterLimit && !stop) {
+        while (!sawOutputEOS && noOutputCounter < noOutputCounterLimit && !mStop) {
 
             // Pause implementation
             waitPlay();
@@ -278,7 +277,6 @@ public class DanceBotMusicStream implements Runnable {
 
                 if (chunk.length > 0) {
 
-                    // TODO: Check channels
                     if (mDataSourceSet) {
                         int shortCount = interleaveChannels(chunk, mDataSource, mShortOffset);
                         mShortOffset += info.size / 2;
@@ -331,14 +329,14 @@ public class DanceBotMusicStream implements Runnable {
         }
 
         // clear source and the other globals
-        mSourcePath = null;
+        /*mSourcePath = null;
         duration = 0;
         mime = null;
         sampleRate = 0; channels = 0; bitrate = 0;
-        presentationTimeUs = 0; duration = 0;
+        presentationTimeUs = 0; duration = 0;*/
 
         mStreamStates.setState(MusicStreamStates.STOPPED);
-        stop = true;
+        mStop = true;
 
         /*if(noOutputCounter >= noOutputCounterLimit) {
             if (events != null) handler.post(new Runnable() { @Override public void run() { events.onError();  } });
@@ -351,7 +349,7 @@ public class DanceBotMusicStream implements Runnable {
 
         short[] tmpDataBuffer = new short[chunk.length];
 
-        int shortCount = dataSource.readDataChannel(tmpDataBuffer, shortOffset);
+        int shortCount = dataSource.readDataStream(tmpDataBuffer, shortOffset);
         // shortCount should be equal to tmpDataBuffer.length
 
         for (int i = 1; i < chunk.length; i+=2) {
