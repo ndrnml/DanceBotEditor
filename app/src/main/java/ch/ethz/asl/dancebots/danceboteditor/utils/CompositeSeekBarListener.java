@@ -15,7 +15,7 @@ public class CompositeSeekBarListener implements SeekBar.OnSeekBarChangeListener
     // A single instance of PhotoManager, used to implement the singleton pattern
     private static CompositeSeekBarListener sInstance = null;
 
-    private static List<SeekBar.OnSeekBarChangeListener> registeredListeners = new ArrayList<SeekBar.OnSeekBarChangeListener>();
+    private static List<SeekBar.OnSeekBarChangeListener> registeredListeners = new ArrayList<>();
 
     // A static block that sets class fields
     static {
@@ -23,14 +23,14 @@ public class CompositeSeekBarListener implements SeekBar.OnSeekBarChangeListener
         sInstance = new CompositeSeekBarListener();
     }
 
-    /**
-     * Constructs the work queues and thread pools used to download and decode images.
-     */
-    private CompositeSeekBarListener() {
+    private CompositeSeekBarListener() {}
 
-    }
     public static void registerListener (SeekBar.OnSeekBarChangeListener listener) {
         registeredListeners.add(listener);
+    }
+
+    public static SeekBar.OnSeekBarChangeListener getInstance() {
+        return sInstance;
     }
 
     @Override

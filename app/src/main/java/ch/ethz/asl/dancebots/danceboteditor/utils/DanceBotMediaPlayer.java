@@ -50,12 +50,12 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         btn.setOnClickListener(this);
     }
 
-    public void attachMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
+    public void setMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
 
         // Prepare seek bar for the selected song
         mSeekBar = seekBar;
         mSeekBar.setClickable(true);
-        mSeekBar.setOnSeekBarChangeListener(this);
+        //mSeekBar.setOnSeekBarChangeListener(this);
 
         // Init seek bar labels
         mSeekBarCurrentTimeView = currentTime;
@@ -196,7 +196,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-        Log.d(LOG_TAG, "seekBar: on progress changed");
+        //Log.d(LOG_TAG, "seekBar: on progress changed");
 
         // Notify automatic scroll listener when seek bar progressed
         if (DanceBotEditorManager.getInstance().getAutomaticScrollHandler() != null) {

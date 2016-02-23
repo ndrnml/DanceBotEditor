@@ -3,7 +3,6 @@ package ch.ethz.asl.dancebots.danceboteditor.activities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -14,9 +13,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
+import ch.ethz.asl.dancebots.danceboteditor.utils.CompositeSeekBarListener;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicStream;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
@@ -54,13 +53,17 @@ public class EditorActivity extends Activity {
         // Store global reference to HorizontalRecyclerViews beatViews
         mProjectManager.setBeatViews(mBeatElementViews);
 
+        SeekBar seekBar = (SeekBar) findViewById(R.id.seekbar_media_player);
+
         // Create new media player instance, be sure to pass the current activity to resolve
         // all necessary view elements
         DanceBotMediaPlayer mediaPlayer = new DanceBotMediaPlayer(this);
-        mediaPlayer.attachMediaPlayerSeekBar(
+        mediaPlayer.setMediaPlayerSeekBar(
                 (SeekBar) findViewById(R.id.seekbar_media_player),
                 (TextView) findViewById(R.id.seekbar_current_time),
                 (TextView) findViewById(R.id.seekbar_total_time));
+
+        CompositeSeekBarListener.registerListener(mediaPlayer);
 
         // Set media player
         mProjectManager.setMediaPlayer(mediaPlayer);
@@ -98,23 +101,27 @@ public class EditorActivity extends Activity {
         // TODO: AND don't call it in DanceBotEditorManager
         DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
 
-
-
-
-
-
         // TODO: This is for testing purposes only
-        final DanceBotMusicStream stream = new DanceBotMusicStream(mProjectManager.getDanceBotMusicFile());
-        stream.setDataSource(mProjectManager.getChoreoManager());
+        final DanceBotMusicStream streamPlayer = new DanceBotMusicStream(mProjectManager.getDanceBotMusicFile());
+        streamPlayer.setDataSource(mProjectManager.getChoreoManager());
+        streamPlayer.setMediaPlayerSeekBar(
+                (SeekBar) findViewById(R.id.seekbar_media_player),
+                (TextView) findViewById(R.id.seekbar_current_time),
+                (TextView) findViewById(R.id.seekbar_total_time));
+
+        CompositeSeekBarListener.registerListener(streamPlayer);
+
+        // Add CompositeSeekBarListener to the media seek bar for both media player and media stream
+        seekBar.setOnSeekBarChangeListener(CompositeSeekBarListener.getInstance());
 
         Button streamBnt = (Button) findViewById(R.id.btn_stream);
         streamBnt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (stream.isPlaying()) {
-                    stream.pause();
+                if (streamPlayer.isPlaying()) {
+                    streamPlayer.pause();
                 } else {
-                    stream.play();
+                    streamPlayer.play();
                 }
             }
         });

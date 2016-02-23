@@ -22,7 +22,7 @@ import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 /**
  * Created by andrin on 28.01.16.
  */
-public class DanceBotMusicStream implements Runnable {
+public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeListener {
 
     private String LOG_TAG = this.getClass().getSimpleName();
 
@@ -70,19 +70,19 @@ public class DanceBotMusicStream implements Runnable {
     }
 
     public void setMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
-/*
+
         // Prepare seek bar for the selected song
         mSeekBar = seekBar;
         mSeekBar.setClickable(true);
-        mSeekBar.setOnSeekBarChangeListener(this);
-        mSeekBar.setMax(mMediaPlayer.getDuration());
+        //mSeekBar.setOnSeekBarChangeListener(this);
+        mSeekBar.setMax(mMusicFile.getDurationInMilliSecs());
 
         // Init seek bar labels
         mSeekBarCurrentTimeView = currentTime;
         mSeekBarTotalTimeView = totalTime;
 
-        mSeekBarCurrentTimeView.setText(songTimeFormat(0));
-        mSeekBarTotalTimeView.setText(songTimeFormat(0));*/
+        mSeekBarCurrentTimeView.setText(Helper.songTimeFormat(0));
+        mSeekBarTotalTimeView.setText(Helper.songTimeFormat(0));
     }
 
     public void play() {
@@ -282,10 +282,6 @@ public class DanceBotMusicStream implements Runnable {
                         mShortOffset += info.size / 2;
                     }
 
-                    for (int q = 0; q < 50; ++q) {
-                        Log.d(LOG_TAG, "" + chunk[q]);
-                    }
-
                     // Write decoded PCM to the AudioTrack
                     audioTrack.write(chunk, 0, chunk.length);
 
@@ -368,5 +364,35 @@ public class DanceBotMusicStream implements Runnable {
 
     public boolean isPlaying() {
         return mStreamStates.isPlaying();
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+        if (mSeekBar != null) {
+
+            //Log.d(LOG_TAG, "seekBar: on progress changed");
+
+            // Notify automatic scroll listener when seek bar progressed
+        /*if (DanceBotEditorManager.getInstance().getAutomaticScrollHandler() != null) {
+            DanceBotEditorManager.getInstance().notifyAutomaticScrollHandler();
+        }*/
+
+            // If user interaction, set media player progress
+            if (fromUser) {
+                seekTo(progress);
+                Log.d(LOG_TAG, "fromUser: on progress changed");
+            }
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
     }
 }

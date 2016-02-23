@@ -273,9 +273,6 @@ public class ChoreographyManager implements StreamPlayback {
         long trueSampleStart = shortCount;
         long trueSampleEnd = shortCount + pcmDataShortCount;
 
-        Log.d(LOG_TAG, "sample start: " + trueSampleStart);
-        Log.d(LOG_TAG, "sample end: " + trueSampleEnd);
-
         // Compute the total number of samples to process for the current beat
         //int samples = (int) (endSample - startSample);
 

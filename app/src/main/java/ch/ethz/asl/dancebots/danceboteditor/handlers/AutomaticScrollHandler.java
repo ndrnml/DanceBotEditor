@@ -83,12 +83,12 @@ public class AutomaticScrollHandler implements Runnable {
     @Override
     public void run() {
 
-        Log.d(LOG_TAG, "run automatic scroll handler");
+        //Log.d(LOG_TAG, "run automatic scroll handler");
 
         // Check if media player is playing the song
         if (!mMediaPlayerListener.isPlaying()) {
 
-            Log.d(LOG_TAG, "song is not playing");
+            //Log.d(LOG_TAG, "song is not playing");
 
             // Check for user inactivity only when not playing a song
             if (System.currentTimeMillis() - mLastInteraction > TIME_TO_LIVE) {
@@ -130,9 +130,9 @@ public class AutomaticScrollHandler implements Runnable {
                     // Check if current sample is in range
                     if (isInRange(estimatedBeatStartSample, estimatedBeatEndSample, currentSample)) {
                         exactBeatElement = estimatedBeatElement + i;
-                        if (i == 0) {
+                        /*if (i == 0) {
                             Log.d(LOG_TAG, "i == 0");
-                        }
+                        }*/
                         break;
                     }
                 }
@@ -148,7 +148,7 @@ public class AutomaticScrollHandler implements Runnable {
                 mRecyclerViewScrollListener.setFocus(exactBeatElement);
             }
 
-            Log.d(LOG_TAG, "update scroll to element: " + exactBeatElement);
+            //Log.d(LOG_TAG, "update scroll to element: " + exactBeatElement);
         }
 
         mScrollHandler.postDelayed(this, 100);
