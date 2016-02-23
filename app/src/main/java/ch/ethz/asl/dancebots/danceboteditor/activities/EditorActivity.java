@@ -74,10 +74,10 @@ public class EditorActivity extends Activity {
                 (TextView) findViewById(R.id.seekbar_total_time));
         mediaPlayer.setPlayButton((Button) findViewById(R.id.btn_play));
         mediaPlayer.setDataSource(mMusicFile);
-        mediaPlayer.setEventListener(AutomaticScrollListener.getInstance());
+        //mediaPlayer.setEventListener(AutomaticScrollListener.getInstance());
 
         // Register media player and horizontal beat view to automatic scroll handler
-        AutomaticScrollListener.registerScrollListeners(mBeatElementViews, mediaPlayer);
+        //AutomaticScrollListener.registerScrollListeners(mBeatElementViews, mediaPlayer);
 
         // Set media player
         mProjectManager.setMediaPlayer(mediaPlayer);
@@ -90,10 +90,10 @@ public class EditorActivity extends Activity {
                 (TextView) findViewById(R.id.seekbar_current_time),
                 (TextView) findViewById(R.id.seekbar_total_time));
         streamPlayer.setPlayButton((Button) findViewById(R.id.btn_stream));
-        //streamPlayer.setEventListener(AutomaticScrollListener.getInstance());
+        streamPlayer.setEventListener(AutomaticScrollListener.getInstance());
 
         // Register stream player to automatic scroll handler
-        //AutomaticScrollListener.registerScrollListeners(mBeatElementViews, streamPlayer);
+        AutomaticScrollListener.registerScrollListeners(mBeatElementViews, streamPlayer);
 
         // Add CompositeSeekBarListener to the media seek bar for both media player and media stream
         seekBar.setOnSeekBarChangeListener(CompositeSeekBarListener.getInstance());
@@ -124,6 +124,8 @@ public class EditorActivity extends Activity {
         // TODO: make this more flexible. Maybe a scroll handler for views and one for seek bars
         // TODO: AND don't call it in DanceBotEditorManager
         //DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
+
+        Log.d(LOG_TAG, "onCreate");
 
     }
 

@@ -42,7 +42,7 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
 
     private MediaExtractor mMediaExtractor;
     private String mSourcePath;
-    boolean mStop = true;
+    private boolean mStop = true;
 
     private String mime = null;
     private int sampleRate = 0, channels = 0, bitrate = 0;
@@ -96,7 +96,7 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         mSeekBarTotalTimeView = totalTime;
 
         mSeekBarCurrentTimeView.setText(Helper.songTimeFormat(0));
-        mSeekBarTotalTimeView.setText(Helper.songTimeFormat(0));
+        mSeekBarTotalTimeView.setText(Helper.songTimeFormat(mMusicFile.getDurationInMilliSecs()));
     }
 
     /**
@@ -372,6 +372,15 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         sampleRate = 0; channels = 0; bitrate = 0;
         presentationTimeUs = 0; duration = 0;*/
 
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if (mPlayButton != null) {
+                    mPlayButton.setText(R.string.txt_stream);
+                }
+            }
+        });
+
         mStreamStates.setState(MusicStreamStates.STOPPED);
         mStop = true;
 
@@ -425,9 +434,21 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         return mStreamStates.isPlaying();
     }
 
+    public boolean isReady() {
+        return mStreamStates.isReadyToPlay();
+    }
+
     @Override
     public void setSeekBarProgress(int progress) {
+        // Update seek bar
+        if (mSeekBar != null) {
+            mSeekBar.setProgress(progress);
+        }
 
+        // Update seek bar text view current time
+        if (mSeekBarCurrentTimeView != null) {
+            mSeekBarCurrentTimeView.setText(Helper.songTimeFormat(progress));
+        }
     }
 
     @Override
@@ -441,7 +462,7 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
     @Override
     public int getCurrentPosition() {
         if (mMediaExtractor != null) {
-            return (int) mMediaExtractor.getSampleTime() * 1000;
+            return (int) mMediaExtractor.getSampleTime() / 1000;
         }
         return 0;
     }
@@ -490,14 +511,17 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         if (mPlayButton != null) {
 
             if (isPlaying()) {
+
                 pause();
+
             } else {
+
                 play();
 
                 // Set seek bar progress to current song position
                 if (mSeekBar != null) {
                     if (mMediaExtractor != null) {
-                        int currentTime = (int) mMediaExtractor.getSampleTime() * 1000;
+                        int currentTime = (int) mMediaExtractor.getSampleTime() / 1000;
                         mSeekBar.setProgress(currentTime);
                     }
                 }
@@ -514,6 +538,8 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
             } else {
                 mPlayButton.setText(R.string.txt_stream);
             }
+
+            mPlayButton.setText("HUGO");
         }
     }
 

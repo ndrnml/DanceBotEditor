@@ -31,6 +31,7 @@ public class AutomaticScrollListener implements Runnable {
         // Creates a single static instance of PhotoManager
         sInstance = new AutomaticScrollListener();
     }
+
     /**
      * AutomaticScrollListener creates a self removing scroll handler that updates the media
      * player, the seek bar state and the scroll state
