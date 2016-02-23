@@ -76,8 +76,18 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
     }
 
     public void stopListening() {
-        mHandler.removeCallbacks(this);
-        mIsRunning = false;
+
+        boolean isAnyPlaying = false;
+
+        // Check global state, whether any playback is playing
+        for (OnMediaPlayerChangeListener mediaPlayer : registeredListeners) {
+            isAnyPlaying = isAnyPlaying || mediaPlayer.isPlaying();
+        }
+
+        if (!isAnyPlaying) {
+            mHandler.removeCallbacks(this);
+            mIsRunning = false;
+        }
     }
 
     @Override
