@@ -4,20 +4,15 @@ import android.app.Activity;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.EventListener;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.listener.AutomaticScrollListener;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerListener;
-import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerScrollListener;
 
 /**
  * Created by andrin on 21.10.15.
@@ -110,7 +105,6 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
 
     @Override
     public void play() {
-
         if (mIsReady) {
             mMediaPlayer.start();
             mIsPlaying = true;

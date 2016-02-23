@@ -87,9 +87,6 @@ public class EditorActivity extends Activity {
                 (TextView) findViewById(R.id.seekbar_total_time));
         mMediaPlayer.setPlayButton((Button) findViewById(R.id.btn_play));
 
-        // Register media player and horizontal beat view to automatic scroll handler
-        //AutomaticScrollListener.registerScrollListeners(mBeatElementViews, mediaPlayer);
-
         // Set media player
         mProjectManager.setMediaPlayer(mMediaPlayer);
 
@@ -101,10 +98,6 @@ public class EditorActivity extends Activity {
                 (TextView) findViewById(R.id.seekbar_current_time),
                 (TextView) findViewById(R.id.seekbar_total_time));
         mMediaStream.setPlayButton((Button) findViewById(R.id.btn_stream));
-        //streamPlayer.setEventListener(AutomaticScrollListener.getInstance());
-
-        // Register stream player to automatic scroll handler
-        //AutomaticScrollListener.registerScrollListeners(mBeatElementViews, streamPlayer);
 
         // Update music file information
         // Update Title
@@ -129,10 +122,6 @@ public class EditorActivity extends Activity {
             selectedSongAlbumArt.setImageDrawable(Drawable.createFromPath(songAlbumArtPath));
         }*/
 
-        // TODO: make this more flexible. Maybe a scroll handler for views and one for seek bars
-        // TODO: AND don't call it in DanceBotEditorManager
-        //DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
-
         mMediaPlayerListener = new MediaPlayerListener(mBeatElementViews, mSeekBar, mMusicFile);
         mMediaPlayerListener.registerMediaPlayer(mMediaPlayer);
         mMediaPlayerListener.registerMediaPlayer(mMediaStream);
@@ -144,22 +133,6 @@ public class EditorActivity extends Activity {
 
     }
 
-    public void updateProgressBar() {
-        mHandler.postDelayed(mUpdateTask, 100);
-    }
-
-    private Runnable mUpdateTask = new Runnable() {
-        @Override
-        public void run() {
-
-            int currentDuration = mMediaStream.getCurrentPosition();
-
-            mSeekBar.setProgress(currentDuration);
-
-            mHandler.postDelayed(this, 100);
-            Log.d(LOG_TAG, "update seekbar");
-        }
-    };
 
     @Override
     protected void onStart() {

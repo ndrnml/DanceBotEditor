@@ -23,7 +23,6 @@ public class DanceBotEditorManager {
     private ChoreographyManager mChoreoManager;
     private DanceBotMediaPlayer mMediaPlayer;
     private HorizontalRecyclerViews mBeatViews;
-    //private AutomaticScrollListener mAutomaticScrollHandler;
 
     /**
      * TODO
@@ -77,15 +76,6 @@ public class DanceBotEditorManager {
         mChoreoLengthMenu = new IntegerSelectionMenu(BeatElementContents.getLengthValues());
     }
 
-    /*
-    public void initAutomaticScrollHandler() {
-        mAutomaticScrollHandler = new AutomaticScrollListener(mBeatViews, mMediaPlayer);
-    }
-
-    public void notifyAutomaticScrollHandler() {
-        mAutomaticScrollHandler.startListening();
-    }*/
-
     /**
      * Based on the detected beats, create a new choreography manager
      */
@@ -120,9 +110,6 @@ public class DanceBotEditorManager {
         if (mMediaPlayer != null) {
             mMediaPlayer.cleanUp();
         }
-
-        // TODO: Is this necessary?
-        //mAutomaticScrollHandler.cleanUp();
 
     }
 
@@ -175,10 +162,5 @@ public class DanceBotEditorManager {
     public IntegerSelectionMenu getChoreoLengthMenu() {
         return mChoreoLengthMenu;
     }
-    public DanceBotMediaPlayer getMediaPlayer() {
-        return mMediaPlayer;
-    }
-    /*public AutomaticScrollListener getAutomaticScrollHandler() {
-        return mAutomaticScrollHandler;
-    }*/
+
 }

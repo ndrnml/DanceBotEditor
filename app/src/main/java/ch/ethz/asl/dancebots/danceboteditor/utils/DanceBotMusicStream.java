@@ -9,7 +9,6 @@ import android.media.MediaFormat;
 import android.os.*;
 import android.os.Process;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -19,7 +18,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.listener.AutomaticScrollListener;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerListener;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 
