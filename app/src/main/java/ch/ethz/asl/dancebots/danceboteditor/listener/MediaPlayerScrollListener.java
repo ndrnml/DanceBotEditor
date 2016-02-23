@@ -17,6 +17,10 @@ public interface MediaPlayerScrollListener {
 
     int getSeekBarProgress();
 
+    /**
+     * Get the current playback position in milliseconds
+     * @return position in milliseconds
+     */
     int getCurrentPosition();
 
     int getTotalTime();

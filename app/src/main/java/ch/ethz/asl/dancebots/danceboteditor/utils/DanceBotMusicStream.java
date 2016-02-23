@@ -19,17 +19,18 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
+import ch.ethz.asl.dancebots.danceboteditor.listener.AutomaticScrollListener;
+import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerScrollListener;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 
 /**
  * Created by andrin on 28.01.16.
  */
-public class DanceBotMusicStream implements Runnable, View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+public class DanceBotMusicStream implements Runnable, View.OnClickListener, SeekBar.OnSeekBarChangeListener, MediaPlayerScrollListener {
 
     private String LOG_TAG = this.getClass().getSimpleName();
 
-    private AutomaticScrollHandler streamPlayerEvents = null;
+    private AutomaticScrollListener mEventListener = null;
     private Handler handler = new Handler();
 
     private final DanceBotMusicFile mMusicFile;
@@ -65,8 +66,8 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         mSourcePath = mMusicFile.getSongPath();
     }
 
-    public void setEventListener(AutomaticScrollHandler eventListener) {
-        streamPlayerEvents = eventListener;
+    public void setEventListener(AutomaticScrollListener eventListener) {
+        mEventListener = eventListener;
     }
 
     public void setDataSource(final ChoreographyManager dataSource) {
@@ -425,6 +426,37 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
     }
 
     @Override
+    public void setSeekBarProgress(int progress) {
+
+    }
+
+    @Override
+    public int getSeekBarProgress() {
+        if (mSeekBar != null) {
+            return mSeekBar.getProgress();
+        }
+        return 0;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        if (mMediaExtractor != null) {
+            return (int) mMediaExtractor.getSampleTime() * 1000;
+        }
+        return 0;
+    }
+
+    @Override
+    public int getTotalTime() {
+        return mMusicFile.getDurationInMilliSecs();
+    }
+
+    @Override
+    public int getSampleRate() {
+        return mMusicFile.getSampleRate();
+    }
+
+    @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
         if (mSeekBar != null) {
@@ -432,14 +464,14 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
             //Log.d(LOG_TAG, "seekBar: on progress changed");
 
             // Notify automatic scroll listener when seek bar progressed
-        /*if (DanceBotEditorManager.getInstance().getAutomaticScrollHandler() != null) {
-            DanceBotEditorManager.getInstance().notifyAutomaticScrollHandler();
-        }*/
+            if (mEventListener != null) {
+                mEventListener.startListening();
+            }
 
             // If user interaction, set media player progress
             if (fromUser) {
                 seekTo(progress);
-                Log.d(LOG_TAG, "fromUser: on progress changed");
+                //Log.d(LOG_TAG, "fromUser: on progress changed");
             }
         }
     }
@@ -458,10 +490,22 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         if (mPlayButton != null) {
 
             if (isPlaying()) {
-
                 pause();
             } else {
                 play();
+
+                // Set seek bar progress to current song position
+                if (mSeekBar != null) {
+                    if (mMediaExtractor != null) {
+                        int currentTime = (int) mMediaExtractor.getSampleTime() * 1000;
+                        mSeekBar.setProgress(currentTime);
+                    }
+                }
+
+                // Notify automatic scroll listener when media player progressed
+                if (mEventListener != null) {
+                    mEventListener.startListening();
+                }
             }
 
             // Update button text value

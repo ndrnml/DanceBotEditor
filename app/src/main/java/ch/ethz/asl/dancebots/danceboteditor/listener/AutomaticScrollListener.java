@@ -1,24 +1,20 @@
-package ch.ethz.asl.dancebots.danceboteditor.handlers;
+package ch.ethz.asl.dancebots.danceboteditor.listener;
 
 
 import android.os.Handler;
 import android.util.Log;
-import android.widget.SeekBar;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerScrollListener;
-import ch.ethz.asl.dancebots.danceboteditor.listener.RecyclerViewScrollListener;
-
 /**
  * Created by andrin on 22.10.15.
  */
-public class AutomaticScrollHandler implements Runnable {
+public class AutomaticScrollListener implements Runnable {
 
     private static final String LOG_TAG = "SCROLL_HANDLER";
 
-    private static AutomaticScrollHandler sInstance = null;
+    private static AutomaticScrollListener sInstance = null;
 
     private final int TIME_TO_LIVE = 10000;
     private long mLastInteraction = System.currentTimeMillis();
@@ -33,14 +29,14 @@ public class AutomaticScrollHandler implements Runnable {
     // A static block that sets class fields
     static {
         // Creates a single static instance of PhotoManager
-        sInstance = new AutomaticScrollHandler();
+        sInstance = new AutomaticScrollListener();
     }
     /**
-     * AutomaticScrollHandler creates a self removing scroll handler that updates the media
+     * AutomaticScrollListener creates a self removing scroll handler that updates the media
      * player, the seek bar state and the scroll state
      * Handler removes itself, when user is inactive
      */
-    private AutomaticScrollHandler() {}
+    private AutomaticScrollListener() {}
 
     public static void registerScrollListeners(RecyclerViewScrollListener recyclerListener, MediaPlayerScrollListener playerListener) {
         mRegisteredRecyclerViewScrollListeners.add(recyclerListener);
@@ -110,8 +106,6 @@ public class AutomaticScrollHandler implements Runnable {
         }
 
         //Log.d(LOG_TAG, "run automatic scroll handler");
-
-
     }
 
     private void updateSeekBar(MediaPlayerScrollListener mediaPlayerScrollListener) {
@@ -194,7 +188,7 @@ public class AutomaticScrollHandler implements Runnable {
         }
     }
 
-    public static AutomaticScrollHandler getInstance() {
+    public static AutomaticScrollListener getInstance() {
         return sInstance;
     }
 }

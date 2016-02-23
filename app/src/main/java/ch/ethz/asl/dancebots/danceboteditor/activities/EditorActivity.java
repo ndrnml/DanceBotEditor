@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
+import ch.ethz.asl.dancebots.danceboteditor.listener.AutomaticScrollListener;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.CompositeSeekBarListener;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
@@ -74,9 +74,10 @@ public class EditorActivity extends Activity {
                 (TextView) findViewById(R.id.seekbar_total_time));
         mediaPlayer.setPlayButton((Button) findViewById(R.id.btn_play));
         mediaPlayer.setDataSource(mMusicFile);
-        mediaPlayer.setEventListener(AutomaticScrollHandler.getInstance());
+        mediaPlayer.setEventListener(AutomaticScrollListener.getInstance());
 
-        AutomaticScrollHandler.registerScrollListeners(mBeatElementViews, mediaPlayer);
+        // Register media player and horizontal beat view to automatic scroll handler
+        AutomaticScrollListener.registerScrollListeners(mBeatElementViews, mediaPlayer);
 
         // Set media player
         mProjectManager.setMediaPlayer(mediaPlayer);
@@ -89,6 +90,10 @@ public class EditorActivity extends Activity {
                 (TextView) findViewById(R.id.seekbar_current_time),
                 (TextView) findViewById(R.id.seekbar_total_time));
         streamPlayer.setPlayButton((Button) findViewById(R.id.btn_stream));
+        //streamPlayer.setEventListener(AutomaticScrollListener.getInstance());
+
+        // Register stream player to automatic scroll handler
+        //AutomaticScrollListener.registerScrollListeners(mBeatElementViews, streamPlayer);
 
         // Add CompositeSeekBarListener to the media seek bar for both media player and media stream
         seekBar.setOnSeekBarChangeListener(CompositeSeekBarListener.getInstance());

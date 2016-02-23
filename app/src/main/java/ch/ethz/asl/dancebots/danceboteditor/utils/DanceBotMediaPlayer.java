@@ -2,7 +2,6 @@ package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import android.app.Activity;
 import android.media.AudioManager;
-import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
@@ -15,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
+import ch.ethz.asl.dancebots.danceboteditor.listener.AutomaticScrollListener;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerScrollListener;
 
 /**
@@ -23,7 +22,7 @@ import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerScrollListener;
  */
 public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener, MediaPlayerScrollListener {
 
-    private static final String LOG_TAG = "DANCE_BOT_MEDIA_PLAYER";
+    private static final String LOG_TAG = DanceBotMediaPlayer.class.getSimpleName();
 
     private final Activity mActivity;
     private TextView mSeekBarTotalTimeView;
@@ -35,7 +34,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     private int mTotalTime;
     private DanceBotMusicFile mMusicFile;
     private Button mPlayPauseButton;
-    private AutomaticScrollHandler mEventListener;
+    private AutomaticScrollListener mEventListener;
 
     public DanceBotMediaPlayer(Activity activity) {
 
@@ -47,7 +46,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         mMediaPlayer.setOnCompletionListener(this);
     }
 
-    public void setEventListener(AutomaticScrollHandler eventListener) {
+    public void setEventListener(AutomaticScrollListener eventListener) {
         mEventListener = eventListener;
     }
 
@@ -113,19 +112,6 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         return mIsPlaying;
     }
 
-    /**
-     * Get the current playback position in milliseconds
-     *
-     * @return position in milliseconds
-     */
-    @Override
-    public int getCurrentPosition() {
-        if (mMediaPlayer != null) {
-            return mMediaPlayer.getCurrentPosition();
-        }
-        return 0;
-    }
-
     @Override
     public void setSeekBarProgress(int progress) {
         // Update seek bar
@@ -143,6 +129,14 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     public int getSeekBarProgress() {
         if (mSeekBar != null) {
             return mSeekBar.getProgress();
+        }
+        return 0;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        if (mMediaPlayer != null) {
+            return mMediaPlayer.getCurrentPosition();
         }
         return 0;
     }
@@ -174,7 +168,6 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
                         mSeekBar.setProgress(currentTime);
                     }
 
-                    // TODO: More elegant solution?
                     // Notify automatic scroll listener when media player progressed
                     if (mEventListener != null) {
                         mEventListener.startListening();
@@ -208,7 +201,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         // If user interaction, set media player progress
         if (fromUser) {
             mMediaPlayer.seekTo(progress);
-            Log.d(LOG_TAG, "fromUser: on progress changed");
+            //Log.d(LOG_TAG, "fromUser: on progress changed");
         }
     }
 

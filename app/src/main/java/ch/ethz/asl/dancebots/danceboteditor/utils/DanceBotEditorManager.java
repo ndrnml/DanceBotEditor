@@ -2,7 +2,6 @@ package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import android.content.Context;
 
-import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElementContents;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.ui.FloatSelectionMenu;
@@ -24,7 +23,7 @@ public class DanceBotEditorManager {
     private ChoreographyManager mChoreoManager;
     private DanceBotMediaPlayer mMediaPlayer;
     private HorizontalRecyclerViews mBeatViews;
-    //private AutomaticScrollHandler mAutomaticScrollHandler;
+    //private AutomaticScrollListener mAutomaticScrollHandler;
 
     /**
      * TODO
@@ -80,7 +79,7 @@ public class DanceBotEditorManager {
 
     /*
     public void initAutomaticScrollHandler() {
-        mAutomaticScrollHandler = new AutomaticScrollHandler(mBeatViews, mMediaPlayer);
+        mAutomaticScrollHandler = new AutomaticScrollListener(mBeatViews, mMediaPlayer);
     }
 
     public void notifyAutomaticScrollHandler() {
@@ -179,7 +178,7 @@ public class DanceBotEditorManager {
     public DanceBotMediaPlayer getMediaPlayer() {
         return mMediaPlayer;
     }
-    /*public AutomaticScrollHandler getAutomaticScrollHandler() {
+    /*public AutomaticScrollListener getAutomaticScrollHandler() {
         return mAutomaticScrollHandler;
     }*/
 }
