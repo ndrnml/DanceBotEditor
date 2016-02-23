@@ -53,8 +53,10 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
     private Button mPlayButton;
 
     /**
-     * Constructor
-     * @param musicFile
+     * Create new DanceBotMusicStream instance. This should only happen when a valid
+     * DanceBotMusicFile is present.
+     *
+     * @param musicFile the music file which is the data source of the stream player
      */
     public DanceBotMusicStream(DanceBotMusicFile musicFile) {
 
@@ -96,6 +98,9 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         mSeekBarTotalTimeView.setText(Helper.songTimeFormat(0));
     }
 
+    /**
+     * Start stream playback.
+     */
     public void play() {
 
         if (mStreamStates.getState() == MusicStreamStates.STOPPED) {
@@ -111,10 +116,16 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         }
     }
 
+    /**
+     * Notify background Thread if player state changed.
+     */
     public synchronized void syncNotify() {
         notify();
     }
 
+    /**
+     * Synchronized wait if the player is on pause.
+     */
     public synchronized void waitPlay() {
 
         while (mStreamStates.getState() == MusicStreamStates.READY_TO_PLAY) {
@@ -126,17 +137,28 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         }
     }
 
+    /**
+     * Stop the media stream player.
+     */
     public void stop() {
         mStop = true;
     }
 
+    /**
+     * Pause the media stream player. This causes the Thread to spin in a wait loop.
+     */
     public void pause() {
         mStreamStates.setState(MusicStreamStates.READY_TO_PLAY);
     }
 
+    /**
+     * Seek to closest position
+     *
+     * @param positionInMilliSeconds position in milliseconds
+     */
     public void seekTo(long positionInMilliSeconds) {
         if (mMediaExtractor != null) {
-            Log.d(LOG_TAG, "seek to: " + positionInMilliSeconds * 1000);
+            // MediaExtractor expects microseconds
             mMediaExtractor.seekTo(positionInMilliSeconds * 1000, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
         }
     }
@@ -262,7 +284,7 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
                         presentationTimeUs = mMediaExtractor.getSampleTime();
                         //Log.d(LOG_TAG, "current sample time: " + presentationTimeUs / 1000);
 
-                        final int percent = (duration == 0) ? 0 : (int) (100 * presentationTimeUs / duration);
+                        //final int percent = (duration == 0) ? 0 : (int) (100 * presentationTimeUs / duration);
                         //if (streamPlayerEvents != null) handler.post(new Runnable() { @Override public void run() { streamPlayerEvents.onPlayUpdate(percent, presentationTimeUs / 1000, duration / 1000);  } });
                     }
 
@@ -359,15 +381,37 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         }*/
     }
 
+    /**
+     * Combine music channel with dance sequence data channel. This will delete one channel of the
+     * stereo music playback of AudioTrack. Instead the (mono) dance sequence data channel will be
+     * used.
+     *
+     * Attention: This makes the song unpleasant to listen to.
+     *
+     * @param chunk data buffer with the original stereo signal
+     * @param dataSource data buffer with the dance sequence data
+     * @param shortOffset samples streamed so far
+     * @return number of samples interleaved
+     */
     private int interleaveChannels(short[] chunk, ChoreographyManager dataSource, int shortOffset) {
 
+        // Create data buffer, which will be filled with dance sequence pcm data
         short[] tmpDataBuffer = new short[chunk.length / 2];
 
+        // Fill dance sequence pcm data into output buffer tmpDataBuffer
         int shortCount = dataSource.readDataStream(tmpDataBuffer, shortOffset);
         // shortCount should be equal to tmpDataBuffer.length
 
+        // Data buffer index
         int idx = 0;
 
+        /*
+         * Replace every second signal entry
+         * AudioTrack stereo signals are build like this:
+         * left channel: {24, 45, 9...}
+         * right channel: {58, 28, 12...}
+         * stereo channel: {24, 58, 45, 28, 9, 12...}
+         */
         for (int i = 1; i < chunk.length; i+=2) {
             chunk[i] = tmpDataBuffer[idx];
             idx++;
