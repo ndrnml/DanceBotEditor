@@ -54,13 +54,15 @@ public class ChoreographyManager implements StreamPlayback {
 
         /**
          * Sets the current led element view adapter
-         * @param ledAdapter
+         *
+         * @param ledAdapter led light recycler view adapter
          */
         void setLedElementAdapter(BeatElementAdapter ledAdapter);
 
         /**
          * Sets the current motor element view adapter
-         * @param motorAdapter
+         *
+         * @param motorAdapter motor element recycler view adapter
          */
         void setMotorElementAdapter(BeatElementAdapter motorAdapter);
     }
@@ -170,7 +172,8 @@ public class ChoreographyManager implements StreamPlayback {
 
     /**
      * Initialize led beat elements after successfully extracting all beats
-     * @param musicFile
+     *
+     * @param musicFile selected music file
      */
     public ArrayList<LedBeatElement> initLedBeatElements(DanceBotMusicFile musicFile) {
 
@@ -184,8 +187,7 @@ public class ChoreographyManager implements StreamPlayback {
                 elems.add(new LedBeatElement(mContext, i, beatBuffer[i]));
             }
         } else {
-            // TODO some error?
-            Log.v(LOG_TAG, "Error: " + beatBuffer.toString() + ", Number of beats: " + numBeats);
+            Log.d(LOG_TAG, "Error: initLedBeatElements, Number of beats: " + numBeats);
         }
 
         return elems;
@@ -193,7 +195,8 @@ public class ChoreographyManager implements StreamPlayback {
 
     /**
      * Initialize motor beat elements after successfully extracting all beats
-     * @param musicFile
+     *
+     * @param musicFile selected music file
      */
     public ArrayList<MotorBeatElement> initMotorBeatElements(DanceBotMusicFile musicFile) {
 
@@ -203,12 +206,13 @@ public class ChoreographyManager implements StreamPlayback {
         int numBeats = beatBuffer.length;
 
         if (numBeats > 0) {
+
             for (int i = 0; i < numBeats; ++i) {
                 elems.add(new MotorBeatElement(mContext, i, beatBuffer[i]));
             }
+
         } else {
-            // TODO some error?
-            Log.v(LOG_TAG, "Error: " + beatBuffer.toString() + ", Number of beats: " + numBeats);
+            Log.d(LOG_TAG, "Error: initMotorBeatElements, Number of beats: " + numBeats);
         }
 
         return elems;
@@ -246,6 +250,13 @@ public class ChoreographyManager implements StreamPlayback {
 
     }
 
+    /**
+     * TODO: Check what happens if for the current buffer window more then one beat is involved
+     *
+     * @param pcmDataBuffer output data buffer, containing dance sequence pcm encoding
+     * @param shortCount number of shorts written so far
+     * @return number of samples written to the output data buffer
+     */
     @Override
     public int readDataStream(short[] pcmDataBuffer, int shortCount) {
 
@@ -255,7 +266,7 @@ public class ChoreographyManager implements StreamPlayback {
 
         // Get the start and end sample for the current selected beat
         //long startSample = mMotorElements.get(startBeat).getSamplePosition();
-        //long endSample = mMotorElements.get(endBeat + 1).getSamplePosition();
+        //long endSample = mMotorElements.get(endBeat).getSamplePosition();
 
         // Get the true number of shorts from the input
         // Only shorts within this range will be needed
@@ -278,96 +289,83 @@ public class ChoreographyManager implements StreamPlayback {
 
         int i = startBeat;
 
-            // Get the corresponding MotorBeatElement and LedBeatElement
-            MotorBeatElement motorElement = mMotorElements.get(i);
-            LedBeatElement ledElement = mLedElements.get(i);
+        // Get the corresponding MotorBeatElement and LedBeatElement
+        MotorBeatElement motorElement = mMotorElements.get(i);
+        LedBeatElement ledElement = mLedElements.get(i);
 
-            // Get the start and end sample for the current selected beat
-            //long startSamplePosition = mMotorElements.get(i).getSamplePosition();
-            //long endSamplePosition = mMotorElements.get(i + 1).getSamplePosition();
+        // Get the start and end sample for the current selected beat
+        //long startSamplePosition = mMotorElements.get(i).getSamplePosition();
+        //long endSamplePosition = mMotorElements.get(i + 1).getSamplePosition();
 
-            // Compute the total number of samples to process for the current beat
-            int samplesToProcess = (int) (trueSampleEnd - trueSampleStart);
+        // Compute the total number of samples to process for the current beat
+        int samplesToProcess = (int) (trueSampleEnd - trueSampleStart);
 
-            // Initialize the (current) relative sample start position to zero
-            int samplePos = 0;
+        // Initialize the (current) relative sample start position to zero
+        int samplePos = 0;
 
-            // Iterate while not all samples at the current beat are processed
-            while (samplePos < samplesToProcess) {
+        // Iterate while not all samples at the current beat are processed
+        while (samplePos < samplesToProcess) {
 
-                float relativeBeat = (float) samplePos / (float) samplesToProcess;
+            float relativeBeat = (float) samplePos / (float) samplesToProcess;
 
-                // Initialize velocities and led
-                short vLeft = 0;
-                short vRight = 0;
-                byte led = 0;
+            // Initialize velocities and led
+            short vLeft = 0;
+            short vRight = 0;
+            byte led = 0;
 
-                // Check the current motor element is different from the DEFAULT state
-                if (motorElement.getMotionType() != MotorType.DEFAULT) {
-                    vLeft = (short) motorElement.getVelocityLeft(relativeBeat);
-                    vRight = (short) motorElement.getVelocityRight(relativeBeat);
-                }
+            // Check the current motor element is different from the DEFAULT state
+            if (motorElement.getMotionType() != MotorType.DEFAULT) {
+                vLeft = (short) motorElement.getVelocityLeft(relativeBeat);
+                vRight = (short) motorElement.getVelocityRight(relativeBeat);
+            }
 
-                // Check the current led element is different from the DEFAULT state
-                if (ledElement.getMotionType() != LedType.DEFAULT) {
-                    led = ledElement.getLedBytes(relativeBeat);
-                }
+            // Check the current led element is different from the DEFAULT state
+            if (ledElement.getMotionType() != LedType.DEFAULT) {
+                led = ledElement.getLedBytes(relativeBeat);
+            }
 
-                int numSamplesInMsg = calculateMessage(mDataBuffer, vLeft, vRight, led, mLastSampleLevel);
+            int numSamplesInMsg = calculateMessage(mDataBuffer, vLeft, vRight, led, mLastSampleLevel);
 
-                // Get last sample level
-                mLastSampleLevel = mDataBuffer[numSamplesInMsg - 1];
+            // Get last sample level
+            mLastSampleLevel = mDataBuffer[numSamplesInMsg - 1];
 
-                /*
-                 * If the end of samples to process is not reached, the data buffer is copied to
-                 * pcm buffer
-                 */
-                if (samplePos + numSamplesInMsg < samplesToProcess) {
+            /*
+             * If the end of samples to process is not reached, the data buffer is copied to
+             * pcm buffer
+             */
+            if (samplePos + numSamplesInMsg < samplesToProcess) {
 
-                    // Write calculated data message to pcm buffer
-                    writeMessage(pcmDataBuffer, mDataBuffer, samplePos, numSamplesInMsg);
+                // Write calculated data message to pcm buffer
+                writeMessage(pcmDataBuffer, mDataBuffer, samplePos, numSamplesInMsg);
 
-                } else {
-
-                    // If this happens, all messages have been written for the current beat
-                    break;
-                }
-
+                // Accumulate number of processed samples
                 samplePos += numSamplesInMsg;
-            }
-        //}
 
-        // Copy relevant short section to the pcmDataBuffer
-        /*int idx = 0;
-        for (int i = 0; i < pcmData.length; ++i) {
+            } else {
 
-            // If current short lies within streaming range copy it
-            if (i + startSample <= trueSampleStart && trueSampleEnd < i + startSample) {
-
-                pcmDataBuffer[idx] = pcmData[i];
-                idx++;
-            }
-
-            if (i > trueSampleEnd) {
+                // If this happens, all messages have been written for the current beat
                 break;
             }
         }
 
-        return idx;*/
-
-        /*for (int id = 0; id < pcmDataBuffer.length; ++id) {
-            Log.d(LOG_TAG, "" + pcmDataBuffer[id]);
-        }*/
-
-        return -1;
+        return samplePos;
     }
 
-    private int writeMessage(short[] pcmData, short[] dataBuffer, int msgStart, int msgLength) {
+    /**
+     * Write next data message to the output buffer
+     *
+     * @param outputBuffer output buffer that contains all messages
+     * @param dataMessage next message to write to the output buffer
+     * @param msgStart start offset of the output buffer
+     * @param msgLength length of the next message to write
+     * @return error code
+     */
+    private int writeMessage(short[] outputBuffer, short[] dataMessage, int msgStart, int msgLength) {
 
-        if (msgStart + msgLength <= pcmData.length) {
+        if (msgStart + msgLength <= outputBuffer.length) {
 
             for (int i = 0; i < msgLength; ++i) {
-                pcmData[msgStart + i] = dataBuffer[i];
+                outputBuffer[msgStart + i] = dataMessage[i];
             }
 
             return DanceBotError.NO_ERROR;
@@ -381,24 +379,25 @@ public class ChoreographyManager implements StreamPlayback {
 
     /**
      * This function calculates the needed samples for left and right velocities and for the led
-     * light. The values of the current beat element will be parsed an put into the dataBuffer.
+     * light. The values of the current beat element will be parsed an put into the chunk container.
      * After the three properties are parsed and the buffer filled it returns the number of samples
-     * written to the dataBuffer.
-     * @param dataBuffer
-     * @param vLeft
-     * @param vRight
-     * @param led
-     * @param lastBitLevel
+     * written to the data chunk.
+     *
+     * @param dataChunk message into which will be written
+     * @param vLeft velocity left of current element
+     * @param vRight velocity right of current element
+     * @param led led light indicator of current element
+     * @param lastBitLevel last DATA_LEVEL that was written to the output buffer
      * @return the written samples
      */
-    private int calculateMessage(short[] dataBuffer, short vLeft, short vRight, byte led, short lastBitLevel) {
+    private int calculateMessage(short[] dataChunk, short vLeft, short vRight, byte led, short lastBitLevel) {
 
         int offsetSamples = 0;
         byte velByte = 0;
 
         // Init all dataBuffer elements to -DATA_LEVEL
-        for (int i = 0; i < dataBuffer.length; ++i) {
-            dataBuffer[i] = -DanceBotConfiguration.DATA_LEVEL;
+        for (int i = 0; i < dataChunk.length; ++i) {
+            dataChunk[i] = -DanceBotConfiguration.DATA_LEVEL;
         }
 
         // Invert last bit
@@ -406,7 +405,7 @@ public class ChoreographyManager implements StreamPlayback {
 
         // Write reset message
         for (int i = 0; i < mNumSamplesReset; ++i) {
-            dataBuffer[i] = lastBitLevel;
+            dataChunk[i] = lastBitLevel;
         }
 
         // Bits written
@@ -438,7 +437,7 @@ public class ChoreographyManager implements StreamPlayback {
 
             // Write the number of samples required for the specific velocity encoding
             for (int j = 0; j < numSamples; ++j) {
-                dataBuffer[j + offsetSamples] = lastBitLevel;
+                dataChunk[j + offsetSamples] = lastBitLevel;
             }
 
             // Count number of samples added to the buffer
@@ -473,7 +472,7 @@ public class ChoreographyManager implements StreamPlayback {
 
             // Write the number of samples required for the specific velocity encoding
             for (int j = 0; j < numSamples; ++j) {
-                dataBuffer[j + offsetSamples] = lastBitLevel;
+                dataChunk[j + offsetSamples] = lastBitLevel;
             }
 
             // Count number of samples added to the buffer
@@ -498,7 +497,7 @@ public class ChoreographyManager implements StreamPlayback {
 
             // Write the number of samples required for the specific led encoding
             for (int j = 0; j < numSamples; ++j) {
-                dataBuffer[j + offsetSamples] = lastBitLevel;
+                dataChunk[j + offsetSamples] = lastBitLevel;
             }
 
             // Count number of samples added to the buffer
