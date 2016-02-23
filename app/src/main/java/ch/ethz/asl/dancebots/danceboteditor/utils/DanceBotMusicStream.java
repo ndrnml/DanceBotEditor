@@ -134,9 +134,10 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         mStreamStates.setState(MusicStreamStates.READY_TO_PLAY);
     }
 
-    public void seekTo(long position) {
+    public void seekTo(long positionInMilliSeconds) {
         if (mMediaExtractor != null) {
-            mMediaExtractor.seekTo(position, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+            Log.d(LOG_TAG, "seek to: " + positionInMilliSeconds * 1000);
+            mMediaExtractor.seekTo(positionInMilliSeconds * 1000, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
         }
     }
 
@@ -259,6 +260,8 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
 
                     } else {
                         presentationTimeUs = mMediaExtractor.getSampleTime();
+                        //Log.d(LOG_TAG, "current sample time: " + presentationTimeUs / 1000);
+
                         final int percent = (duration == 0) ? 0 : (int) (100 * presentationTimeUs / duration);
                         //if (streamPlayerEvents != null) handler.post(new Runnable() { @Override public void run() { streamPlayerEvents.onPlayUpdate(percent, presentationTimeUs / 1000, duration / 1000);  } });
                     }

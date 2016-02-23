@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerScrollListener;
 
 /**
@@ -34,7 +35,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     private int mTotalTime;
     private DanceBotMusicFile mMusicFile;
     private Button mPlayPauseButton;
-    private AudioTrack audioTrack;
+    private AutomaticScrollHandler mEventListener;
 
     public DanceBotMediaPlayer(Activity activity) {
 
@@ -44,6 +45,10 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         mMediaPlayer = new MediaPlayer();
         // Attach on completion listener
         mMediaPlayer.setOnCompletionListener(this);
+    }
+
+    public void setEventListener(AutomaticScrollHandler eventListener) {
+        mEventListener = eventListener;
     }
 
     public void setMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
