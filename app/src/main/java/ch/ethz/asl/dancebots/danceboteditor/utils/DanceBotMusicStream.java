@@ -467,11 +467,6 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
 
             //Log.d(LOG_TAG, "seekBar: on progress changed");
 
-            // Notify automatic scroll listener when seek bar progressed
-            /*if (mEventListener != null) {
-                mEventListener.startListening();
-            }*/
-
             // If user interaction, set media player progress
             if (fromUser) {
                 seekTo(progress);
@@ -493,39 +488,5 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
             mEventListener.stopListening();
         }
     }
-
-    /*
-    @Override
-    public void onClick(View v) {
-
-        if (mPlayButton != null) {
-
-            if (isPlaying()) {
-
-                pause();
-
-                mPlayButton.setText(R.string.txt_stream);
-
-            } else {
-
-                startPlay();
-
-                // Set seek bar progress to current song position
-                if (mSeekBar != null) {
-                    if (mMediaExtractor != null) {
-                        int currentTime = (int) mMediaExtractor.getSampleTime() / 1000;
-                        mSeekBar.setProgress(currentTime);
-                    }
-                }
-
-                // Notify automatic scroll listener when media player progressed
-                if (mEventListener != null) {
-                    mEventListener.startListening();
-                }
-
-                mPlayButton.setText(R.string.txt_pause);
-            }
-        }
-    }*/
 
 }

@@ -143,44 +143,6 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
         return 0;
     }
 
-    /*
-    @Override
-    public void onClick(View v) {
-
-        if (mPlayPauseButton != null) {
-
-            if (mIsReady) {
-                mIsPlaying = !mIsPlaying;
-                if (mIsPlaying) {
-
-                    mMediaPlayer.start();
-
-                    // Set seek bar progress to current song position
-                    int currentTime = mMediaPlayer.getCurrentPosition();
-                    if (mSeekBar != null) {
-                        mSeekBar.setProgress(currentTime);
-                    }
-
-                    // Notify automatic scroll listener when media player progressed
-                    if (mEventListener != null) {
-                        mEventListener.startListening();
-                    }
-
-                } else {
-
-                    mMediaPlayer.pause();
-                }
-
-                // Update button text value
-                if (mIsPlaying) {
-                    mPlayPauseButton.setText(R.string.txt_pause);
-                } else {
-                    mPlayPauseButton.setText(R.string.txt_play);
-                }
-            }
-        }
-    }*/
-
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 

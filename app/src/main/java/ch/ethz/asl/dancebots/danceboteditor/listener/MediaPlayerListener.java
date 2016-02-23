@@ -1,15 +1,20 @@
 package ch.ethz.asl.dancebots.danceboteditor.listener;
 
+import android.app.Activity;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
+import ch.ethz.asl.dancebots.danceboteditor.utils.Helper;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
@@ -19,6 +24,7 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
 
     private static final String LOG_TAG = MediaPlayerListener.class.getSimpleName();
 
+    private final Activity mActivity;
     private final float mTotalDurationInMilliSecs;
     private final float mSampleRate;
     private final int mNumElements;
@@ -31,6 +37,7 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
     private OnMediaPlayerChangeListener mActiveMediaPlayer;
     private int mSeekBarProgress = 0;
     private boolean mIsRunning = false;
+    private TextView mCurrentTimeView;
 
     /**
      * // TODO
@@ -49,6 +56,10 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
     }
 
     public MediaPlayerListener(HorizontalRecyclerViews recyclerView, SeekBar seekBar, DanceBotMusicFile musicFile) {
+
+        mActivity = ((Activity) DanceBotEditorManager.getInstance().getContext());
+        mCurrentTimeView = (TextView) mActivity.findViewById(R.id.seekbar_current_time);
+
         mRecyclerView = recyclerView;
         mSeekBar = seekBar;
 
@@ -101,7 +112,7 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
             int currentDuration = mActiveMediaPlayer.getCurrentPosition();
             mSeekBar.setProgress(currentDuration);
 
-            // TODO: update seek bar text views
+            mCurrentTimeView.setText(Helper.songTimeFormat(currentDuration));
         }
 
         if (seekBarChanged()) {
@@ -176,6 +187,9 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
                         mediaPlayer.pause();
                         mHandler.removeCallbacks(this);
                         mIsRunning = false;
+
+                        if (id == R.id.btn_stream) ((Button) v).setText(R.string.txt_stream);
+                        if (id == R.id.btn_play) ((Button) v).setText(R.string.txt_play);
                     }
                 }
             }
@@ -190,6 +204,8 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
                     if (!mIsRunning) {
                         mHandler.postDelayed(this, 100);
                         mIsRunning = true;
+
+                        ((Button) v).setText(R.string.txt_pause);
                     }
                 }
             }
