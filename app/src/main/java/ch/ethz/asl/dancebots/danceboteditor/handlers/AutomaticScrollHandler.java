@@ -21,7 +21,6 @@ public class AutomaticScrollHandler implements Runnable {
     private final Handler mScrollHandler;
 
     private RecyclerViewScrollListener mRecyclerViewScrollListener;
-
     private MediaPlayerScrollListener mMediaPlayerListener;
 
     private boolean mIsRunning;
@@ -56,6 +55,8 @@ public class AutomaticScrollHandler implements Runnable {
 
         // Check if handler not already running to prevent postDelayed flood
         if (!mIsRunning) {
+
+            Log.d(LOG_TAG, "start listening, add callbacks.");
 
             // Post this handler runnable for later execution
             mScrollHandler.postDelayed(this, 0);

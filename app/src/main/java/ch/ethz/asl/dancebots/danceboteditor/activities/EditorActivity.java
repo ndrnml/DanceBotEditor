@@ -53,7 +53,12 @@ public class EditorActivity extends Activity {
         // Store global reference to HorizontalRecyclerViews beatViews
         mProjectManager.setBeatViews(mBeatElementViews);
 
+        // Initialize the beat views, the beat adapters and the dance bot choreography manager
+        DanceBotEditorManager.getInstance().initChoreography();
+
+        // Get seek bar in the EditorActivity to attach both media player and stream player
         SeekBar seekBar = (SeekBar) findViewById(R.id.seekbar_media_player);
+        seekBar.setClickable(true);
 
         // Create new media player instance, be sure to pass the current activity to resolve
         // all necessary view elements
@@ -62,14 +67,25 @@ public class EditorActivity extends Activity {
                 (SeekBar) findViewById(R.id.seekbar_media_player),
                 (TextView) findViewById(R.id.seekbar_current_time),
                 (TextView) findViewById(R.id.seekbar_total_time));
-
-        CompositeSeekBarListener.registerListener(mediaPlayer);
+        mediaPlayer.setPlayButton((Button) findViewById(R.id.btn_play));
 
         // Set media player
         mProjectManager.setMediaPlayer(mediaPlayer);
 
         // Open file in media player
         mProjectManager.getMediaPlayer().openMusicFile(mProjectManager.getDanceBotMusicFile());
+
+        // Initialize media stream player
+        final DanceBotMusicStream streamPlayer = new DanceBotMusicStream(mProjectManager.getDanceBotMusicFile());
+        streamPlayer.setDataSource(mProjectManager.getChoreoManager());
+        streamPlayer.setMediaPlayerSeekBar(
+                (SeekBar) findViewById(R.id.seekbar_media_player),
+                (TextView) findViewById(R.id.seekbar_current_time),
+                (TextView) findViewById(R.id.seekbar_total_time));
+        streamPlayer.setPlayButton((Button) findViewById(R.id.btn_stream));
+
+        // Add CompositeSeekBarListener to the media seek bar for both media player and media stream
+        seekBar.setOnSeekBarChangeListener(CompositeSeekBarListener.getInstance());
 
         // Update music file information
         // Update Title
@@ -94,37 +110,10 @@ public class EditorActivity extends Activity {
             selectedSongAlbumArt.setImageDrawable(Drawable.createFromPath(songAlbumArtPath));
         }*/
 
-        // Initialize the beat views, the beat adapters and the dance bot choreography manager
-        DanceBotEditorManager.getInstance().initChoreography();
-
         // TODO: make this more flexible. Maybe a scroll handler for views and one for seek bars
         // TODO: AND don't call it in DanceBotEditorManager
         DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
 
-        // TODO: This is for testing purposes only
-        final DanceBotMusicStream streamPlayer = new DanceBotMusicStream(mProjectManager.getDanceBotMusicFile());
-        streamPlayer.setDataSource(mProjectManager.getChoreoManager());
-        streamPlayer.setMediaPlayerSeekBar(
-                (SeekBar) findViewById(R.id.seekbar_media_player),
-                (TextView) findViewById(R.id.seekbar_current_time),
-                (TextView) findViewById(R.id.seekbar_total_time));
-
-        CompositeSeekBarListener.registerListener(streamPlayer);
-
-        // Add CompositeSeekBarListener to the media seek bar for both media player and media stream
-        seekBar.setOnSeekBarChangeListener(CompositeSeekBarListener.getInstance());
-
-        Button streamBnt = (Button) findViewById(R.id.btn_stream);
-        streamBnt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (streamPlayer.isPlaying()) {
-                    streamPlayer.pause();
-                } else {
-                    streamPlayer.play();
-                }
-            }
-        });
     }
 
     @Override

@@ -42,4 +42,5 @@
     <string name="menu_velocity_left">Geschwindigkeit Links</string>
     <string name="menu_lights">Lichter</string>
     <string name="menu_lengths">Länge</string>
+    <string name="txt_stream">stream</string>
 </resources>

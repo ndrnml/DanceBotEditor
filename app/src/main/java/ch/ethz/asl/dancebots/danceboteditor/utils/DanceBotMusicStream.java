@@ -9,6 +9,8 @@ import android.media.MediaFormat;
 import android.os.*;
 import android.os.Process;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -16,13 +18,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 
 /**
  * Created by andrin on 28.01.16.
  */
-public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeListener {
+public class DanceBotMusicStream implements Runnable, View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
     private String LOG_TAG = this.getClass().getSimpleName();
 
@@ -47,6 +50,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
     private ChoreographyManager mDataSource;
     private boolean mDataSourceSet = false;
     private int mShortOffset;
+    private Button mPlayButton;
 
     /**
      * Constructor
@@ -69,12 +73,19 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
         mDataSourceSet = true;
     }
 
+    public void setPlayButton(Button playButton) {
+
+        mPlayButton = playButton;
+        mPlayButton.setOnClickListener(this);
+    }
+
     public void setMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
 
         // Prepare seek bar for the selected song
         mSeekBar = seekBar;
-        mSeekBar.setClickable(true);
-        //mSeekBar.setOnSeekBarChangeListener(this);
+        // Register stream player to seek bar
+        CompositeSeekBarListener.registerListener(this);
+
         mSeekBar.setMax(mMusicFile.getDurationInMilliSecs());
 
         // Init seek bar labels
@@ -388,11 +399,31 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-
     }
+
+    @Override
+    public void onClick(View v) {
+
+        if (mPlayButton != null) {
+
+            if (isPlaying()) {
+
+                pause();
+            } else {
+                play();
+            }
+
+            // Update button text value
+            if (isPlaying()) {
+                mPlayButton.setText(R.string.txt_pause);
+            } else {
+                mPlayButton.setText(R.string.txt_stream);
+            }
+        }
+    }
+
 }

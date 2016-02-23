@@ -44,18 +44,14 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         mMediaPlayer = new MediaPlayer();
         // Attach on completion listener
         mMediaPlayer.setOnCompletionListener(this);
-
-        // Attach on click listener to play/pause button
-        Button btn = (Button) mActivity.findViewById(R.id.btn_play);
-        btn.setOnClickListener(this);
     }
 
     public void setMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
 
         // Prepare seek bar for the selected song
         mSeekBar = seekBar;
-        mSeekBar.setClickable(true);
-        //mSeekBar.setOnSeekBarChangeListener(this);
+        // Register media player to seek bar
+        CompositeSeekBarListener.registerListener(this);
 
         // Init seek bar labels
         mSeekBarCurrentTimeView = currentTime;
@@ -63,6 +59,11 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
         mSeekBarCurrentTimeView.setText(Helper.songTimeFormat(0));
         mSeekBarTotalTimeView.setText(Helper.songTimeFormat(0));
+    }
+
+    public void setPlayButton(Button playButton) {
+        mPlayPauseButton = playButton;
+        mPlayPauseButton.setOnClickListener(this);
     }
 
     /**
@@ -158,37 +159,37 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     @Override
     public void onClick(View v) {
 
-        if (mIsReady) {
-            mIsPlaying = !mIsPlaying;
-            if (mIsPlaying) {
+        if (mPlayPauseButton != null) {
 
-                mMediaPlayer.start();
+            if (mIsReady) {
+                mIsPlaying = !mIsPlaying;
+                if (mIsPlaying) {
 
-                // Set seek bar progress to current song position
-                int currentTime = mMediaPlayer.getCurrentPosition();
-                if (mSeekBar != null) {
-                    mSeekBar.setProgress(currentTime);
+                    mMediaPlayer.start();
+
+                    // Set seek bar progress to current song position
+                    int currentTime = mMediaPlayer.getCurrentPosition();
+                    if (mSeekBar != null) {
+                        mSeekBar.setProgress(currentTime);
+                    }
+
+                    // TODO: More elegant solution?
+                    // Notify automatic scroll listener when media player progressed
+                    if (DanceBotEditorManager.getInstance().getAutomaticScrollHandler() != null) {
+                        DanceBotEditorManager.getInstance().notifyAutomaticScrollHandler();
+                    }
+
+                } else {
+
+                    mMediaPlayer.pause();
                 }
 
-                // TODO: More elegant solution?
-                // Notify automatic scroll listener when media player progressed
-                if (DanceBotEditorManager.getInstance().getAutomaticScrollHandler() != null) {
-                    DanceBotEditorManager.getInstance().notifyAutomaticScrollHandler();
+                // Update button text value
+                if (mIsPlaying) {
+                    mPlayPauseButton.setText(R.string.txt_pause);
+                } else {
+                    mPlayPauseButton.setText(R.string.txt_play);
                 }
-
-            } else {
-
-                mMediaPlayer.pause();
-            }
-
-            // Get media player play/pause button
-            mPlayPauseButton = (Button) v;
-
-            // Update button text value
-            if (mIsPlaying) {
-                mPlayPauseButton.setText(R.string.txt_pause);
-            } else {
-                mPlayPauseButton.setText(R.string.txt_play);
             }
         }
     }
