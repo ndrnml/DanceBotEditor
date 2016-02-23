@@ -282,6 +282,10 @@ public class DanceBotMusicStream implements Runnable {
                         mShortOffset += info.size / 2;
                     }
 
+                    for (int q = 0; q < 50; ++q) {
+                        Log.d(LOG_TAG, "" + chunk[q]);
+                    }
+
                     // Write decoded PCM to the AudioTrack
                     audioTrack.write(chunk, 0, chunk.length);
 
@@ -347,13 +351,16 @@ public class DanceBotMusicStream implements Runnable {
 
     private int interleaveChannels(short[] chunk, ChoreographyManager dataSource, int shortOffset) {
 
-        short[] tmpDataBuffer = new short[chunk.length];
+        short[] tmpDataBuffer = new short[chunk.length / 2];
 
         int shortCount = dataSource.readDataStream(tmpDataBuffer, shortOffset);
         // shortCount should be equal to tmpDataBuffer.length
 
+        int idx = 0;
+
         for (int i = 1; i < chunk.length; i+=2) {
-            chunk[i] = tmpDataBuffer[i];
+            chunk[i] = tmpDataBuffer[idx];
+            idx++;
         }
 
         return tmpDataBuffer.length;

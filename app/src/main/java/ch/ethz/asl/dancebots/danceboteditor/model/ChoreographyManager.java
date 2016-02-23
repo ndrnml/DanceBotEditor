@@ -262,6 +262,9 @@ public class ChoreographyManager implements StreamPlayback {
         long trueSampleStart = shortCount;
         long trueSampleEnd = shortCount + pcmDataShortCount;
 
+        Log.d(LOG_TAG, "sample start: " + trueSampleStart);
+        Log.d(LOG_TAG, "sample end: " + trueSampleEnd);
+
         // Compute the total number of samples to process for the current beat
         //int samples = (int) (endSample - startSample);
 
@@ -361,7 +364,7 @@ public class ChoreographyManager implements StreamPlayback {
 
     private int writeMessage(short[] pcmData, short[] dataBuffer, int msgStart, int msgLength) {
 
-        if (msgLength <= pcmData.length) {
+        if (msgStart + msgLength <= pcmData.length) {
 
             for (int i = 0; i < msgLength; ++i) {
                 pcmData[msgStart + i] = dataBuffer[i];
