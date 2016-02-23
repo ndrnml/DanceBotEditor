@@ -12,15 +12,17 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.EventListener;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.listener.AutomaticScrollListener;
+import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerListener;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerScrollListener;
 
 /**
  * Created by andrin on 21.10.15.
  */
-public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener, MediaPlayerScrollListener {
+public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener, MediaPlayerListener.OnMediaPlayerChangeListener {
 
     private static final String LOG_TAG = DanceBotMediaPlayer.class.getSimpleName();
 
@@ -34,9 +36,9 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     private int mTotalTime;
     private DanceBotMusicFile mMusicFile;
     private Button mPlayPauseButton;
-    private AutomaticScrollListener mEventListener;
+    private MediaPlayerListener mEventListener;
 
-    public DanceBotMediaPlayer(Activity activity) {
+    public DanceBotMediaPlayer(Activity activity, DanceBotMusicFile musicFile) {
 
         mActivity = activity;
 
@@ -44,9 +46,12 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         mMediaPlayer = new MediaPlayer();
         // Attach on completion listener
         mMediaPlayer.setOnCompletionListener(this);
+
+        // Set selected music file as data source
+        setDataSource(musicFile);
     }
 
-    public void setEventListener(AutomaticScrollListener eventListener) {
+    public void setEventListener(MediaPlayerListener eventListener) {
         mEventListener = eventListener;
     }
 
@@ -67,10 +72,9 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
     public void setPlayButton(Button playButton) {
         mPlayPauseButton = playButton;
-        mPlayPauseButton.setOnClickListener(this);
     }
 
-    public void setDataSource(DanceBotMusicFile musicFile) {
+    private void setDataSource(DanceBotMusicFile musicFile) {
 
         // Bind music file as a lot information is needed later
         mMusicFile = musicFile;
@@ -103,9 +107,23 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         }
     }
 
-    /**************************************
-     * MediaPlayerScrollListener Interface
-     **************************************/
+
+    @Override
+    public void play() {
+
+        if (mIsReady) {
+            mMediaPlayer.start();
+            mIsPlaying = true;
+        }
+    }
+
+    @Override
+    public void pause() {
+        if (mIsReady) {
+            mMediaPlayer.pause();
+            mIsPlaying = false;
+        }
+    }
 
     @Override
     public boolean isPlaying() {
@@ -113,24 +131,8 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
     }
 
     @Override
-    public void setSeekBarProgress(int progress) {
-        // Update seek bar
-        if (mSeekBar != null) {
-            mSeekBar.setProgress(progress);
-        }
-
-        // Update seek bar text view current time
-        if (mSeekBarCurrentTimeView != null) {
-            mSeekBarCurrentTimeView.setText(Helper.songTimeFormat(progress));
-        }
-    }
-
-    @Override
-    public int getSeekBarProgress() {
-        if (mSeekBar != null) {
-            return mSeekBar.getProgress();
-        }
-        return 0;
+    public Button getPlayButton() {
+        return mPlayPauseButton;
     }
 
     @Override
@@ -141,16 +143,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         return 0;
     }
 
-    @Override
-    public int getTotalTime() {
-        return mTotalTime;
-    }
-
-    @Override
-    public int getSampleRate() {
-        return mMusicFile.getSampleRate();
-    }
-
+    /*
     @Override
     public void onClick(View v) {
 
@@ -186,42 +179,52 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
                 }
             }
         }
-    }
+    }*/
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
         //Log.d(LOG_TAG, "seekBar: on progress changed");
 
-        // Notify automatic scroll listener when seek bar progressed
-        if (mEventListener != null) {
-            mEventListener.startListening();
-        }
+        if (mMediaPlayer != null) {
 
-        // If user interaction, set media player progress
-        if (fromUser) {
-            mMediaPlayer.seekTo(progress);
-            //Log.d(LOG_TAG, "fromUser: on progress changed");
+            // If user interaction, set media player progress
+            if (fromUser) {
+                mMediaPlayer.seekTo(progress);
+                //Log.d(LOG_TAG, "fromUser: on progress changed");
+            }
         }
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
+        if (mEventListener != null) {
+            mEventListener.startListening();
+        }
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
+        if (mEventListener != null) {
+            mEventListener.stopListening();
+        }
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
 
+        // Set playing flag
+        mIsPlaying = false;
+
+        // Rewind media player to the start
+        mMediaPlayer.seekTo(0);
+
         if (mPlayPauseButton != null) {
-            // Set playing flag
-            mIsPlaying = false;
             mPlayPauseButton.setText(R.string.txt_play);
-            // Rewind media player to the start
-            mMediaPlayer.seekTo(0);
+        }
+
+        if (mEventListener != null) {
+            mEventListener.stopListening();
         }
     }
 

@@ -56,7 +56,7 @@ public class AutomaticScrollListener implements Runnable {
             Log.d(LOG_TAG, "start listening, add callbacks.");
 
             // Post this handler runnable for later execution
-            mScrollHandler.postDelayed(this, 0);
+            mScrollHandler.postDelayed(this, 100);
 
             // Update last interaction time
             mLastInteraction = System.currentTimeMillis();
@@ -101,12 +101,12 @@ public class AutomaticScrollListener implements Runnable {
             }
 
             updateSeekBar(mRegisteredMediaPlayerListeners.get(i));
-            updateRecyclerView(mRegisteredMediaPlayerListeners.get(i), mRegisteredRecyclerViewScrollListeners.get(i), i);
+            //updateRecyclerView(mRegisteredMediaPlayerListeners.get(i), mRegisteredRecyclerViewScrollListeners.get(i), i);
 
             mScrollHandler.postDelayed(this, 100);
         }
 
-        //Log.d(LOG_TAG, "run automatic scroll handler");
+        Log.d(LOG_TAG, "run automatic scroll handler");
     }
 
     private void updateSeekBar(MediaPlayerScrollListener mediaPlayerScrollListener) {

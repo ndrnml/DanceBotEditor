@@ -20,17 +20,17 @@ import java.nio.ByteOrder;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.listener.AutomaticScrollListener;
-import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerScrollListener;
+import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerListener;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 
 /**
  * Created by andrin on 28.01.16.
  */
-public class DanceBotMusicStream implements Runnable, View.OnClickListener, SeekBar.OnSeekBarChangeListener, MediaPlayerScrollListener {
+public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeListener, MediaPlayerListener.OnMediaPlayerChangeListener {
 
     private String LOG_TAG = this.getClass().getSimpleName();
 
-    private AutomaticScrollListener mEventListener = null;
+    private MediaPlayerListener mEventListener = null;
     private Handler handler = new Handler();
 
     private final DanceBotMusicFile mMusicFile;
@@ -50,7 +50,7 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
 
     private ChoreographyManager mDataSource;
     private boolean mDataSourceSet = false;
-    private int mShortOffset;
+    private int mShortCount = 0;
     private Button mPlayButton;
 
     /**
@@ -66,7 +66,7 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         mSourcePath = mMusicFile.getSongPath();
     }
 
-    public void setEventListener(AutomaticScrollListener eventListener) {
+    public void setEventListener(MediaPlayerListener eventListener) {
         mEventListener = eventListener;
     }
 
@@ -77,9 +77,7 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
     }
 
     public void setPlayButton(Button playButton) {
-
         mPlayButton = playButton;
-        mPlayButton.setOnClickListener(this);
     }
 
     public void setMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
@@ -102,12 +100,10 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
     /**
      * Start stream playback.
      */
-    public void play() {
+    private void startPlay() {
 
         if (mStreamStates.getState() == MusicStreamStates.STOPPED) {
             mStop = false;
-            // Set number of bytes written initially to zero
-            mShortOffset = 0;
             new Thread(this).start();
         }
 
@@ -120,14 +116,15 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
     /**
      * Notify background Thread if player state changed.
      */
-    public synchronized void syncNotify() {
+    private synchronized void syncNotify() {
         notify();
     }
 
     /**
-     * Synchronized wait if the player is on pause.
+     * Synchronized wait if the player is on pause. Pause the media stream player.
+     * This causes the Thread to spin in a wait loop.
      */
-    public synchronized void waitPlay() {
+    private synchronized void waitPlay() {
 
         while (mStreamStates.getState() == MusicStreamStates.READY_TO_PLAY) {
             try {
@@ -141,15 +138,8 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
     /**
      * Stop the media stream player.
      */
-    public void stop() {
+    private void stop() {
         mStop = true;
-    }
-
-    /**
-     * Pause the media stream player. This causes the Thread to spin in a wait loop.
-     */
-    public void pause() {
-        mStreamStates.setState(MusicStreamStates.READY_TO_PLAY);
     }
 
     /**
@@ -157,10 +147,13 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
      *
      * @param positionInMilliSeconds position in milliseconds
      */
-    public void seekTo(long positionInMilliSeconds) {
+    private void seekTo(long positionInMilliSeconds) {
         if (mMediaExtractor != null) {
             // MediaExtractor expects microseconds
             mMediaExtractor.seekTo(positionInMilliSeconds * 1000, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+            // Set written shorts to the correct number
+            // Important we assume the sample size == Short.SIZE
+            mShortCount = (int) positionInMilliSeconds / 1000 * mMusicFile.getSampleRate(); // TODO: is this correct?
         }
     }
 
@@ -307,7 +300,7 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
                 int outputBufIndex = res;
                 ByteBuffer buf = codecOutputBuffers[outputBufIndex];
 
-
+                // Create new short buffer, info.size is the amount of data (in bytes) in the buffer
                 short[] chunk = new short[info.size / 2];
                 buf.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(chunk);
                 buf.clear();
@@ -315,8 +308,8 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
                 if (chunk.length > 0) {
 
                     if (mDataSourceSet) {
-                        int shortCount = interleaveChannels(chunk, mDataSource, mShortOffset);
-                        mShortOffset += info.size / 2;
+                        interleaveChannels(chunk, mDataSource, mShortCount);
+                        mShortCount += info.size / 2;
                     }
 
                     // Write decoded PCM to the AudioTrack
@@ -372,6 +365,24 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         sampleRate = 0; channels = 0; bitrate = 0;
         presentationTimeUs = 0; duration = 0;*/
 
+        onCompletion();
+
+        /*if(noOutputCounter >= noOutputCounterLimit) {
+            if (events != null) handler.post(new Runnable() { @Override public void run() { events.onError();  } });
+        } else {
+            if (events != null) handler.post(new Runnable() { @Override public void run() { events.onStop();  } });
+        }*/
+    }
+
+    private void onCompletion() {
+
+        mStreamStates.setState(MusicStreamStates.STOPPED);
+        mStop = true;
+
+        if (mEventListener != null) {
+            mEventListener.stopListening();
+        }
+
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -380,15 +391,6 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
                 }
             }
         });
-
-        mStreamStates.setState(MusicStreamStates.STOPPED);
-        mStop = true;
-
-        /*if(noOutputCounter >= noOutputCounterLimit) {
-            if (events != null) handler.post(new Runnable() { @Override public void run() { events.onError();  } });
-        } else {
-            if (events != null) handler.post(new Runnable() { @Override public void run() { events.onStop();  } });
-        }*/
     }
 
     /**
@@ -430,33 +432,24 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
         return tmpDataBuffer.length;
     }
 
+    @Override
+    public void play() {
+        startPlay();
+    }
+
+    @Override
+    public void pause() {
+        mStreamStates.setState(MusicStreamStates.READY_TO_PLAY);
+    }
+
+    @Override
     public boolean isPlaying() {
         return mStreamStates.isPlaying();
     }
 
-    public boolean isReady() {
-        return mStreamStates.isReadyToPlay();
-    }
-
     @Override
-    public void setSeekBarProgress(int progress) {
-        // Update seek bar
-        if (mSeekBar != null) {
-            mSeekBar.setProgress(progress);
-        }
-
-        // Update seek bar text view current time
-        if (mSeekBarCurrentTimeView != null) {
-            mSeekBarCurrentTimeView.setText(Helper.songTimeFormat(progress));
-        }
-    }
-
-    @Override
-    public int getSeekBarProgress() {
-        if (mSeekBar != null) {
-            return mSeekBar.getProgress();
-        }
-        return 0;
+    public Button getPlayButton() {
+        return mPlayButton;
     }
 
     @Override
@@ -468,16 +461,6 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
     }
 
     @Override
-    public int getTotalTime() {
-        return mMusicFile.getDurationInMilliSecs();
-    }
-
-    @Override
-    public int getSampleRate() {
-        return mMusicFile.getSampleRate();
-    }
-
-    @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
         if (mSeekBar != null) {
@@ -485,9 +468,9 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
             //Log.d(LOG_TAG, "seekBar: on progress changed");
 
             // Notify automatic scroll listener when seek bar progressed
-            if (mEventListener != null) {
+            /*if (mEventListener != null) {
                 mEventListener.startListening();
-            }
+            }*/
 
             // If user interaction, set media player progress
             if (fromUser) {
@@ -499,12 +482,19 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
+        if (mEventListener != null) {
+            mEventListener.startListening();
+        }
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
+        if (mEventListener != null) {
+            mEventListener.stopListening();
+        }
     }
 
+    /*
     @Override
     public void onClick(View v) {
 
@@ -514,9 +504,11 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
 
                 pause();
 
+                mPlayButton.setText(R.string.txt_stream);
+
             } else {
 
-                play();
+                startPlay();
 
                 // Set seek bar progress to current song position
                 if (mSeekBar != null) {
@@ -530,17 +522,10 @@ public class DanceBotMusicStream implements Runnable, View.OnClickListener, Seek
                 if (mEventListener != null) {
                     mEventListener.startListening();
                 }
-            }
 
-            // Update button text value
-            if (isPlaying()) {
                 mPlayButton.setText(R.string.txt_pause);
-            } else {
-                mPlayButton.setText(R.string.txt_stream);
             }
-
-            mPlayButton.setText("HUGO");
         }
-    }
+    }*/
 
 }

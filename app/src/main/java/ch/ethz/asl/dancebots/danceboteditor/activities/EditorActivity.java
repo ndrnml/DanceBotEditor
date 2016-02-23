@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,14 +12,15 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import ch.ethz.asl.dancebots.danceboteditor.listener.AutomaticScrollListener;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
+import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerListener;
 import ch.ethz.asl.dancebots.danceboteditor.utils.CompositeSeekBarListener;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicStream;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotSeekBar;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
@@ -36,6 +38,12 @@ public class EditorActivity extends Activity {
     private DanceBotEditorManager mProjectManager;
     private HorizontalRecyclerViews mBeatElementViews;
     private DanceBotMusicFile mMusicFile;
+    private DanceBotMediaPlayer mMediaPlayer;
+    private DanceBotMusicStream mMediaStream;
+    private SeekBar mSeekBar;
+    private MediaPlayerListener mMediaPlayerListener;
+
+    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,41 +70,41 @@ public class EditorActivity extends Activity {
         DanceBotEditorManager.getInstance().initChoreography();
 
         // Get seek bar in the EditorActivity to attach both media player and stream player
-        SeekBar seekBar = (SeekBar) findViewById(R.id.seekbar_media_player);
-        seekBar.setClickable(true);
+        DanceBotSeekBar danceBotSeekBar = new DanceBotSeekBar(); // TODO: Wrapp seekbar and text views into one class
+
+        mSeekBar = (SeekBar) findViewById(R.id.seekbar_media_player);
+        mSeekBar.setClickable(true);
+        mSeekBar.setMax(mMusicFile.getDurationInMilliSecs());
+        // Add CompositeSeekBarListener to the media seek bar for both media player and media stream
+        mSeekBar.setOnSeekBarChangeListener(CompositeSeekBarListener.getInstance());
 
         // Create new media player instance, be sure to pass the current activity to resolve
         // all necessary view elements
-        DanceBotMediaPlayer mediaPlayer = new DanceBotMediaPlayer(this);
-        mediaPlayer.setMediaPlayerSeekBar(
+        mMediaPlayer = new DanceBotMediaPlayer(this, mMusicFile);
+        mMediaPlayer.setMediaPlayerSeekBar(
                 (SeekBar) findViewById(R.id.seekbar_media_player),
                 (TextView) findViewById(R.id.seekbar_current_time),
                 (TextView) findViewById(R.id.seekbar_total_time));
-        mediaPlayer.setPlayButton((Button) findViewById(R.id.btn_play));
-        mediaPlayer.setDataSource(mMusicFile);
-        //mediaPlayer.setEventListener(AutomaticScrollListener.getInstance());
+        mMediaPlayer.setPlayButton((Button) findViewById(R.id.btn_play));
 
         // Register media player and horizontal beat view to automatic scroll handler
         //AutomaticScrollListener.registerScrollListeners(mBeatElementViews, mediaPlayer);
 
         // Set media player
-        mProjectManager.setMediaPlayer(mediaPlayer);
+        mProjectManager.setMediaPlayer(mMediaPlayer);
 
         // Initialize media stream player
-        final DanceBotMusicStream streamPlayer = new DanceBotMusicStream(mMusicFile);
-        streamPlayer.setDataSource(mProjectManager.getChoreoManager());
-        streamPlayer.setMediaPlayerSeekBar(
+        mMediaStream = new DanceBotMusicStream(mMusicFile);
+        mMediaStream.setDataSource(mProjectManager.getChoreoManager());
+        mMediaStream.setMediaPlayerSeekBar(
                 (SeekBar) findViewById(R.id.seekbar_media_player),
                 (TextView) findViewById(R.id.seekbar_current_time),
                 (TextView) findViewById(R.id.seekbar_total_time));
-        streamPlayer.setPlayButton((Button) findViewById(R.id.btn_stream));
-        streamPlayer.setEventListener(AutomaticScrollListener.getInstance());
+        mMediaStream.setPlayButton((Button) findViewById(R.id.btn_stream));
+        //streamPlayer.setEventListener(AutomaticScrollListener.getInstance());
 
         // Register stream player to automatic scroll handler
-        AutomaticScrollListener.registerScrollListeners(mBeatElementViews, streamPlayer);
-
-        // Add CompositeSeekBarListener to the media seek bar for both media player and media stream
-        seekBar.setOnSeekBarChangeListener(CompositeSeekBarListener.getInstance());
+        //AutomaticScrollListener.registerScrollListeners(mBeatElementViews, streamPlayer);
 
         // Update music file information
         // Update Title
@@ -125,9 +133,33 @@ public class EditorActivity extends Activity {
         // TODO: AND don't call it in DanceBotEditorManager
         //DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
 
+        mMediaPlayerListener = new MediaPlayerListener(mBeatElementViews, mSeekBar, mMusicFile);
+        mMediaPlayerListener.registerMediaPlayer(mMediaPlayer);
+        mMediaPlayerListener.registerMediaPlayer(mMediaStream);
+
+        mMediaPlayer.setEventListener(mMediaPlayerListener);
+        mMediaStream.setEventListener(mMediaPlayerListener);
+
         Log.d(LOG_TAG, "onCreate");
 
     }
+
+    public void updateProgressBar() {
+        mHandler.postDelayed(mUpdateTask, 100);
+    }
+
+    private Runnable mUpdateTask = new Runnable() {
+        @Override
+        public void run() {
+
+            int currentDuration = mMediaStream.getCurrentPosition();
+
+            mSeekBar.setProgress(currentDuration);
+
+            mHandler.postDelayed(this, 100);
+            Log.d(LOG_TAG, "update seekbar");
+        }
+    };
 
     @Override
     protected void onStart() {
@@ -156,8 +188,6 @@ public class EditorActivity extends Activity {
     protected void onStop() {
         super.onStop();
         // The activity is no longer visible (it is now "stopped")
-
-        // TODO: clean up project files
 
         Log.d(LOG_TAG, "onStop");
     }
