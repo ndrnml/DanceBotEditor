@@ -47,7 +47,7 @@ public class DanceBotMusicStream implements Runnable {
 
     private ChoreographyManager mDataSource;
     private boolean mDataSourceSet = false;
-    private int mByteOffset;
+    private int mShortOffset;
 
     /**
      * Constructor
@@ -90,7 +90,7 @@ public class DanceBotMusicStream implements Runnable {
         if (mStreamStates.getState() == MusicStreamStates.STOPPED) {
             stop = false;
             // Set number of bytes written initially to zero
-            mByteOffset = 0;
+            mShortOffset = 0;
             mThread = new Thread(this);
             mThread.start();
         }
@@ -271,6 +271,7 @@ public class DanceBotMusicStream implements Runnable {
                 int outputBufIndex = res;
                 ByteBuffer buf = codecOutputBuffers[outputBufIndex];
 
+
                 short[] chunk = new short[info.size / 2];
                 buf.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(chunk);
                 buf.clear();
@@ -278,10 +279,10 @@ public class DanceBotMusicStream implements Runnable {
                 if (chunk.length > 0) {
 
                     // TODO: Check channels
-                    /*if (mDataSourceSet) {
-                        chunk = interleaveChannels(chunk, mDataSource, mByteOffset);
-                        mByteOffset += info.size;
-                    }*/
+                    if (mDataSourceSet) {
+                        int shortCount = interleaveChannels(chunk, mDataSource, mShortOffset);
+                        mShortOffset += info.size / 2;
+                    }
 
                     // Write decoded PCM to the AudioTrack
                     audioTrack.write(chunk, 0, chunk.length);
@@ -346,31 +347,18 @@ public class DanceBotMusicStream implements Runnable {
         }*/
     }
 
-    private byte[] interleaveChannels(byte[] chunk, ChoreographyManager dataSource, int byteOffset) {
+    private int interleaveChannels(short[] chunk, ChoreographyManager dataSource, int shortOffset) {
 
-        byte[] tmpBuffer = new byte[2 * chunk.length];
-        short[] tmpDataBuffer = new short[(chunk.length + 1) / 2];
-        byte[] tmpDataBufferByte = new byte[chunk.length];
+        short[] tmpDataBuffer = new short[chunk.length];
 
-        dataSource.readDataChannel(tmpDataBuffer, byteOffset);
+        int shortCount = dataSource.readDataChannel(tmpDataBuffer, shortOffset);
+        // shortCount should be equal to tmpDataBuffer.length
 
-        int byteIdx = 0;
-
-        for (int shortIdx = 0; shortIdx < tmpDataBuffer.length; ++shortIdx) {
-
-            tmpDataBufferByte[byteIdx] = (byte) (tmpDataBuffer[shortIdx] & 0x00FF);
-            tmpDataBufferByte[byteIdx + 1] = (byte) ((tmpDataBuffer[shortIdx] & 0xFF00) >> 8);
-
-            byteIdx += 2;
+        for (int i = 1; i < chunk.length; i+=2) {
+            chunk[i] = tmpDataBuffer[i];
         }
 
-        for (int i = 0; i < chunk.length; ++i) {
-
-            tmpBuffer[(2 * i)] = chunk[i];
-            tmpBuffer[(2 * i) + 1] = tmpDataBufferByte[i];
-        }
-
-        return tmpBuffer;
+        return tmpDataBuffer.length;
     }
 
     public boolean isPlaying() {

@@ -97,19 +97,20 @@ public class DanceBotMusicFile {
         return mSongArtist;
     }
 
-    public int getBeatFromByte(int bytes) {
+    public int getBeatFromShort(int shortCount) {
 
-        int b = 0;
+        int s = 0;
         int i;
 
         for (i = 0; i < mNumberOfBeatsDetected; ++i) {
 
             int samplePos = mBeatBuffer[i];
 
-            // compute current byte from number of samples at beat position i
-            b += b + (samplePos * mEncoding);
+            // Compute the current short from the sample position. One sample has the size
+            // SIGNED_PCM_16_BIT, thus mEncoding / Short.SIZE is redundant.
+            s += s + (samplePos);
 
-            if (b > bytes) {
+            if (s > shortCount) {
                 break;
             }
         }
