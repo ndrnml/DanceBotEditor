@@ -71,11 +71,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         mPlayPauseButton.setOnClickListener(this);
     }
 
-    /**
-     *
-     * @param musicFile
-     */
-    public void openMusicFile(DanceBotMusicFile musicFile) {
+    public void setDataSource(DanceBotMusicFile musicFile) {
 
         // Bind music file as a lot information is needed later
         mMusicFile = musicFile;
@@ -97,7 +93,7 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         // Store other important music file properties
         mTotalTime = mMusicFile.getDurationInMilliSecs();
 
-        // Update max seekbar
+        // Update max seek bar
         if (mSeekBar != null) {
             mSeekBar.setMax(mMediaPlayer.getDuration());
         }
@@ -180,8 +176,8 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
 
                     // TODO: More elegant solution?
                     // Notify automatic scroll listener when media player progressed
-                    if (DanceBotEditorManager.getInstance().getAutomaticScrollHandler() != null) {
-                        DanceBotEditorManager.getInstance().notifyAutomaticScrollHandler();
+                    if (mEventListener != null) {
+                        mEventListener.startListening();
                     }
 
                 } else {
@@ -205,8 +201,8 @@ public class DanceBotMediaPlayer implements View.OnClickListener, MediaPlayer.On
         //Log.d(LOG_TAG, "seekBar: on progress changed");
 
         // Notify automatic scroll listener when seek bar progressed
-        if (DanceBotEditorManager.getInstance().getAutomaticScrollHandler() != null) {
-            DanceBotEditorManager.getInstance().notifyAutomaticScrollHandler();
+        if (mEventListener != null) {
+            mEventListener.startListening();
         }
 
         // If user interaction, set media player progress

@@ -7,16 +7,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import ch.ethz.asl.dancebots.danceboteditor.handlers.AutomaticScrollHandler;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.CompositeSeekBarListener;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicStream;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
@@ -34,6 +35,7 @@ public class EditorActivity extends Activity {
 
     private DanceBotEditorManager mProjectManager;
     private HorizontalRecyclerViews mBeatElementViews;
+    private DanceBotMusicFile mMusicFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,9 @@ public class EditorActivity extends Activity {
         // Store global reference to HorizontalRecyclerViews beatViews
         mProjectManager.setBeatViews(mBeatElementViews);
 
+        // Get selected music file
+        mMusicFile = mProjectManager.getDanceBotMusicFile();
+
         // Initialize the beat views, the beat adapters and the dance bot choreography manager
         DanceBotEditorManager.getInstance().initChoreography();
 
@@ -68,15 +73,16 @@ public class EditorActivity extends Activity {
                 (TextView) findViewById(R.id.seekbar_current_time),
                 (TextView) findViewById(R.id.seekbar_total_time));
         mediaPlayer.setPlayButton((Button) findViewById(R.id.btn_play));
+        mediaPlayer.setDataSource(mMusicFile);
+        mediaPlayer.setEventListener(AutomaticScrollHandler.getInstance());
+
+        AutomaticScrollHandler.registerScrollListeners(mBeatElementViews, mediaPlayer);
 
         // Set media player
         mProjectManager.setMediaPlayer(mediaPlayer);
 
-        // Open file in media player
-        mProjectManager.getMediaPlayer().openMusicFile(mProjectManager.getDanceBotMusicFile());
-
         // Initialize media stream player
-        final DanceBotMusicStream streamPlayer = new DanceBotMusicStream(mProjectManager.getDanceBotMusicFile());
+        final DanceBotMusicStream streamPlayer = new DanceBotMusicStream(mMusicFile);
         streamPlayer.setDataSource(mProjectManager.getChoreoManager());
         streamPlayer.setMediaPlayerSeekBar(
                 (SeekBar) findViewById(R.id.seekbar_media_player),
@@ -112,7 +118,7 @@ public class EditorActivity extends Activity {
 
         // TODO: make this more flexible. Maybe a scroll handler for views and one for seek bars
         // TODO: AND don't call it in DanceBotEditorManager
-        DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
+        //DanceBotEditorManager.getInstance().initAutomaticScrollHandler();
 
     }
 

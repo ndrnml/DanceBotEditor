@@ -183,6 +183,7 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         motorAdapter.notifyDataSetChanged();
     }
 
+
     /***************************************
      * RecyclerViewScrollListener Interface
      ***************************************/

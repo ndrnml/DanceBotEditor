@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class CompositeSeekBarListener implements SeekBar.OnSeekBarChangeListener {
 
-    // A single instance of PhotoManager, used to implement the singleton pattern
     private static CompositeSeekBarListener sInstance = null;
 
     private static List<SeekBar.OnSeekBarChangeListener> registeredListeners = new ArrayList<>();
@@ -25,7 +24,7 @@ public class CompositeSeekBarListener implements SeekBar.OnSeekBarChangeListener
 
     private CompositeSeekBarListener() {}
 
-    public static void registerListener (SeekBar.OnSeekBarChangeListener listener) {
+    public static void registerListener(SeekBar.OnSeekBarChangeListener listener) {
         registeredListeners.add(listener);
     }
 
