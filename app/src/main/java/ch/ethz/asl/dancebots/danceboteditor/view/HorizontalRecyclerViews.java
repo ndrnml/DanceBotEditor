@@ -73,7 +73,7 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
             @Override
             public boolean onInterceptTouchEvent(final RecyclerView rv, final MotionEvent e) {
-                Log.d(LOG_TAG, "TOP: onInterceptTouchEvent");
+                //Log.d(LOG_TAG, "TOP: onInterceptTouchEvent");
 
                 // This is necessary to prevent the recycler views being desync
                 if (mLedView.getScrollState() != RecyclerView.SCROLL_STATE_IDLE) {
@@ -81,7 +81,7 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
                 }
 
                 if (rv.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
-                    Log.v(LOG_TAG, "TOP: state idle");
+                    //Log.v(LOG_TAG, "TOP: state idle");
                     onTouchEvent(rv, e);
                 }
                 return Boolean.FALSE;
@@ -89,7 +89,7 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
             @Override
             public void onTouchEvent(final RecyclerView rv, final MotionEvent e) {
-                Log.d(LOG_TAG, "TOP: onTouchEvent");
+                //Log.d(LOG_TAG, "TOP: onTouchEvent");
 
                 final int action;
 
@@ -125,7 +125,7 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
             @Override
             public boolean onInterceptTouchEvent(final RecyclerView rv, final
             MotionEvent e) {
-                Log.d(LOG_TAG, "BOTTOM: onInterceptTouchEvent");
+                //Log.d(LOG_TAG, "BOTTOM: onInterceptTouchEvent");
 
                 // This is necessary to prevent the recycler views being desync
                 if (mMotorView.getScrollState() != RecyclerView.SCROLL_STATE_IDLE) {
@@ -140,7 +140,7 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
             @Override
             public void onTouchEvent(final RecyclerView rv, final MotionEvent e) {
-                Log.d(LOG_TAG, "BOTTOM: onTouchEvent");
+                //Log.d(LOG_TAG, "BOTTOM: onTouchEvent");
 
                 final int action;
 

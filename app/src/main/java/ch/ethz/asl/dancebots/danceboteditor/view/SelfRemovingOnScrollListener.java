@@ -22,6 +22,6 @@ public class SelfRemovingOnScrollListener extends RecyclerView.OnScrollListener 
             recyclerView.removeOnScrollListener(this);
         }
 
-        Log.v(LOG_TAG, "Scroll state: " + recyclerView.getScrollState());
+        //Log.d(LOG_TAG, "Scroll state: " + recyclerView.getScrollState());
     }
 }
