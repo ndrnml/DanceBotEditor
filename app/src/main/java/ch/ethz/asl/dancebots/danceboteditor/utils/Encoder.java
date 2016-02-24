@@ -63,7 +63,7 @@ public class Encoder {
         /**
          * Encode quality.
          */
-        private int mQuality = 7;
+        private int mQuality = 5;
 
         /**
          * ID3 Tag title.

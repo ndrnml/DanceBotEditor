@@ -1,18 +1,11 @@
 package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
-import android.media.MediaCodec;
-import android.media.MediaCodecInfo;
-import android.media.MediaCodecList;
-import android.media.MediaExtractor;
-import android.media.MediaFormat;
 import android.os.*;
 import android.os.Process;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -24,6 +17,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Encoder;
+import ch.ethz.asl.dancebots.danceboteditor.utils.Helper;
 
 /**
  * Created by andrin on 29.11.15.
@@ -32,8 +26,10 @@ public class SoundEncodeRunnable implements Runnable {
 
     private static final String LOG_TAG = SoundEncodeRunnable.class.getSimpleName();
 
+    private static final int BIT_RATE = 128;
     private static final int SAMPLE_RATE = 44100;
     private static final int CHANNEL_COUNT = 2;
+
 
     // TODO: MOVE THIS CONSTS
     private static final int SAMPLE_FREQUENCY_NOMINAL = 44100;
@@ -56,6 +52,8 @@ public class SoundEncodeRunnable implements Runnable {
     private int mNumSamplesZero;
 
     private long t1,t2;
+    private short[] mPcmData;
+    private short[] mPcmMusic;
 
     /**
      * An interface that defines methods that SoundTask implements. An instance of
@@ -123,48 +121,43 @@ public class SoundEncodeRunnable implements Runnable {
             */
             mSoundTask.handleEncodeState(ENCODE_STATE_STARTED);
 
+            // Sound file to encode and save
+            DanceBotMusicFile musicFile = mSoundTask.getMusicFile();
+
             long numSamples = mSoundTask.getNumSamples();
 
-            short[] pcmMusic = new short[(int)numSamples];
-            short[] pcmData = new short[(int)numSamples];
+            mPcmMusic = new short[(int)numSamples];
+            mPcmData = new short[(int)numSamples];
+
+            Log.d(LOG_TAG, "pcm data size: " + 2 * numSamples + " bytes");
 
             // Initialize
-            Arrays.fill(pcmData, (short) -DATA_LEVEL);
+            Arrays.fill(mPcmData, (short) -DATA_LEVEL);
 
             // Prepare data channel and music channel
-            int result = generateDataChannel(pcmData);
+            /*int result = generateDataChannel(mPcmData);
             //int result = Decoder.transfer(pcmData);
-            result = Decoder.transfer(pcmMusic);
+            result = Decoder.transfer(mPcmMusic);
 
             // Create new mp3 buffer and specify size in bytes
-            // TODO Calculate buffer size in bytes
-            int mp3bufSize = (int) numSamples / 2 + 7200;
+            // Calculate buffer size in bytes
+            */int mp3bufSize = (int) numSamples / 3;
             byte[] mp3buf = new byte[mp3bufSize];
+/*
+            mEncoder = new Encoder.Builder(SAMPLE_RATE, CHANNEL_COUNT, SAMPLE_RATE, BIT_RATE).create();
+            result = mEncoder.encode(mPcmMusic, mPcmData, (int) numSamples, mp3buf);
+            result = mEncoder.flush(mp3buf);*/
 
-            mEncoder = new Encoder.Builder(44100, 2, 44100, 128).create();
-            result = mEncoder.encode(pcmMusic, pcmData, (int) numSamples, mp3buf);
-            result = mEncoder.flush(mp3buf);
+            boolean success = Helper.saveToMusicFolder(musicFile.getSongTitle(), mp3buf);
 
-            File mp3File = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_MUSIC), "FOO.mp3");
+            if (success) {
 
-            if (!mp3File.mkdirs()) {
-                Log.e(LOG_TAG, "File not created");
-            }
+                // TODO show success toast
 
-            Log.v(LOG_TAG, "Store mp3 file: " + mp3File.getAbsolutePath());
+            } else {
 
-            if (mp3File.exists()) {
-                mp3File.delete();
-                Log.d(LOG_TAG, "Existing file deleted");
-            }
+                // TODO show fail toast
 
-            try {
-                FileOutputStream fos = new FileOutputStream(mp3File.getPath());
-                fos.write(mp3buf);
-                fos.close();
-            } catch (java.io.IOException e) {
-                Log.d(LOG_TAG, "Exception in file writing", e);
             }
 
             // Handle the state of the decoding Thread
@@ -177,7 +170,12 @@ public class SoundEncodeRunnable implements Runnable {
             // In all cases, handle the results
         } finally {
 
-            //mEncoder.close();
+            /*
+            if (mEncoder != null) {
+                mEncoder.close();
+            }
+            mPcmData = null;
+            mPcmMusic = null;*/
 
             t2 = System.currentTimeMillis();
             Log.v(LOG_TAG, "Elapsed time for encoding: " + (t2 - t1) / 1000 + "s");

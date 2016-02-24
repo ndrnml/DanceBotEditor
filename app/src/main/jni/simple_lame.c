@@ -6,7 +6,8 @@
 #include <android/log.h>
 #include "simple_lame.h"
 
-static jboolean local_log = JNI_FALSE;
+static jboolean local_log = JNI_TRUE;
+//static jboolean local_log = JNI_FALSE;
 static const char* TAG = "SimpleLameLib";
 
 lame_global_flags* simple_lame_lib_init(
@@ -93,6 +94,10 @@ jint simple_lame_lib_encode(
 
     const jsize mp3buf_size = (*env)->GetArrayLength(env, mp3buf);
     jbyte* j_mp3buf = (*env)->GetByteArrayElements(env, mp3buf, NULL);
+
+    if (local_log) {
+        __android_log_print(ANDROID_LOG_VERBOSE, TAG, "mp3buf_size: %i", mp3buf_size);
+    }
 
     int result = lame_encode_buffer(glf, j_buffer_l, j_buffer_r,
                                     samples, j_mp3buf, mp3buf_size);
