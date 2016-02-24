@@ -25,6 +25,9 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
     private static final String LOG_TAG = "RECYCLER_VIEW";
 
+    // Offset to the 'border' when scrolling to the selected element
+    private static final int SCROLL_OFFSET = 20;
+
     private LinearLayoutManager mMotorLayoutManager;
     private LinearLayoutManager mLedLayoutManager;
     private RecyclerView mMotorView;
@@ -186,10 +189,10 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
     public void scrollToPosition(int position) {
 
         // Scroll motor view
-        mMotorLayoutManager.scrollToPositionWithOffset(position, 20);
+        mMotorLayoutManager.scrollToPositionWithOffset(position, SCROLL_OFFSET);
 
         // Scroll led view
-        mLedLayoutManager.scrollToPositionWithOffset(position, 20);
+        mLedLayoutManager.scrollToPositionWithOffset(position, SCROLL_OFFSET);
 
         // Set focus on current element
         setFocus(position);

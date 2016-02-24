@@ -20,7 +20,6 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicStream;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotSeekBar;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
@@ -68,9 +67,6 @@ public class EditorActivity extends Activity {
 
         // Initialize the beat views, the beat adapters and the dance bot choreography manager
         DanceBotEditorManager.getInstance().initChoreography();
-
-        // Get seek bar in the EditorActivity to attach both media player and stream player
-        DanceBotSeekBar danceBotSeekBar = new DanceBotSeekBar(); // TODO: Wrapp seekbar and text views into one class
 
         mSeekBar = (SeekBar) findViewById(R.id.seekbar_media_player);
         mSeekBar.setClickable(true);
