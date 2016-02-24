@@ -335,6 +335,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
                     if (mDataSourceSet) {
                         interleaveChannels(chunk, mDataSource, mShortCount);
                         mShortCount += info.size / 2;
+                        Log.d(LOG_TAG, "short count: " + mShortCount);
                     }
 
                     // Write decoded PCM to the AudioTrack
@@ -454,7 +455,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
             idx++;
         }
 
-        return tmpDataBuffer.length;
+        return idx;
     }
 
     @Override

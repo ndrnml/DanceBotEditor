@@ -162,6 +162,7 @@ public class EditorActivity extends Activity {
         // The activity is going to be destroyed
 
         // Release media player resources
+        mMediaPlayer.cleanUp();
 
         // TODO: Clean up all files
         mProjectManager.cleanUp();
