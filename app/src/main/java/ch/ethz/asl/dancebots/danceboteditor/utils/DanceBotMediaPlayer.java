@@ -142,7 +142,7 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
 
         //Log.d(LOG_TAG, "seekBar: on progress changed");
 
-        if (mMediaPlayer != null) {
+        if (mMediaPlayer != null && mIsReady) {
 
             // If user interaction, set media player progress
             if (fromUser) {
