@@ -109,6 +109,8 @@ public class SoundEncodeRunnable implements Runnable {
              */
             mSoundTask.handleEncodeState(ENCODE_STATE_STARTED);
 
+            Thread.sleep(3000);
+
             /*
             long numSamples = mSoundTask.getNumSamples();
 

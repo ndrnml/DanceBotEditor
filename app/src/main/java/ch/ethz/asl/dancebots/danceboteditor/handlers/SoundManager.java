@@ -177,6 +177,11 @@ public class SoundManager {
 
                     case BEAT_EXTRACTION_COMPLETE:
 
+                        // Start new EditorActivity
+                        Context context = DanceBotEditorManager.getInstance().getContext();
+                        Intent editorIntent = new Intent(context, EditorActivity.class);
+                        context.startActivity(editorIntent);
+
                         Log.v(LOG_TAG, "handleMessage: BEAT_EXTRACTION_COMPLETE");
                         break;
 
@@ -186,11 +191,6 @@ public class SoundManager {
                         if (dialog.isShowing()) {
                             dialog.dismiss();
                         }
-
-                        // Start new EditorActivity
-                        Context context = DanceBotEditorManager.getInstance().getContext();
-                        Intent editorIntent = new Intent(context, EditorActivity.class);
-                        context.startActivity(editorIntent);
 
                         Log.v(LOG_TAG, "handleMessage: TASK_COMPLETE");
                         break;
