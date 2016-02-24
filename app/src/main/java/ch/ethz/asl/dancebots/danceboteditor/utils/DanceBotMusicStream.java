@@ -332,7 +332,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
                     if (mDataSourceSet) {
                         mSampleCountMicroSecs = mMediaExtractor.getSampleTime();
                         interleaveChannels(chunk, mDataSource, mSampleCountMicroSecs);
-                        Log.d(LOG_TAG, "microsecs count: " + mSampleCountMicroSecs);
+                        //Log.d(LOG_TAG, "microsecs count: " + mSampleCountMicroSecs);
                     }
 
                     // Write decoded PCM to the AudioTrack
