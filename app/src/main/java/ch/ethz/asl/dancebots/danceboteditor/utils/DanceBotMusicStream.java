@@ -48,19 +48,19 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
 
     private ChoreographyManager mDataSource;
     private boolean mDataSourceSet = false;
-    private int mShortCount = 0;
+    private long mSampleCountMicroSecs = 0;
     private Button mPlayButton;
 
     /**
      * Interface for any instance that
      */
-    public interface StreamPlayerEvents {
+    /*public interface StreamPlayerEvents {
 
         void onStart(String mime, int sampleRate, int channels, long durationInMs);
         void onPlay();
         void onPlayUpdate(int percentage, long currentMs, long totalMs);
         void onStop();
-    }
+    }*/
 
     /**
      * Interface that must be implemented by any instance that wants to stream media data
@@ -69,7 +69,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
 
         void prepareStreamPlayback();
 
-        int readDataStream(short[] outBuffer, int shortCount);
+        int readDataStream(short[] outBuffer, long shortCount);
     }
 
 
@@ -176,9 +176,6 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
         if (mMediaExtractor != null) {
             // MediaExtractor expects microseconds
             mMediaExtractor.seekTo(positionInMilliSeconds * 1000, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
-            // Set written shorts to the correct number
-            // Important we assume the sample size == Short.SIZE
-            mShortCount = (int) positionInMilliSeconds / 1000 * mMusicFile.getSampleRate(); // TODO: is this correct?
         }
     }
 
@@ -333,9 +330,9 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
                 if (chunk.length > 0) {
 
                     if (mDataSourceSet) {
-                        interleaveChannels(chunk, mDataSource, mShortCount);
-                        mShortCount += info.size / 2;
-                        Log.d(LOG_TAG, "short count: " + mShortCount);
+                        mSampleCountMicroSecs = mMediaExtractor.getSampleTime();
+                        interleaveChannels(chunk, mDataSource, mSampleCountMicroSecs);
+                        Log.d(LOG_TAG, "microsecs count: " + mSampleCountMicroSecs);
                     }
 
                     // Write decoded PCM to the AudioTrack
@@ -428,16 +425,16 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
      *
      * @param chunk data buffer with the original stereo signal
      * @param dataSource data buffer with the dance sequence data
-     * @param shortOffset samples streamed so far
+     * @param sampleCountMicroSecs samples streamed so far
      * @return number of samples interleaved
      */
-    private int interleaveChannels(short[] chunk, ChoreographyManager dataSource, int shortOffset) {
+    private int interleaveChannels(short[] chunk, ChoreographyManager dataSource, long sampleCountMicroSecs) {
 
         // Create data buffer, which will be filled with dance sequence pcm data
         short[] tmpDataBuffer = new short[chunk.length / 2];
 
         // Fill dance sequence pcm data into output buffer tmpDataBuffer
-        int shortCount = dataSource.readDataStream(tmpDataBuffer, shortOffset);
+        int shortCount = dataSource.readDataStream(tmpDataBuffer, sampleCountMicroSecs);
         // shortCount should be equal to tmpDataBuffer.length
 
         // Data buffer index

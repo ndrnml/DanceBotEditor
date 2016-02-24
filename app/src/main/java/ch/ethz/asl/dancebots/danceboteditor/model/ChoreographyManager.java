@@ -254,15 +254,16 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
      * TODO: Check what happens if for the current buffer window more then one beat is involved
      *
      * @param pcmDataBuffer output data buffer, containing dance sequence pcm encoding
-     * @param shortCount number of shorts written so far
+     * @param sampleCountMicroSecs number of shorts written so far
      * @return number of samples written to the output data buffer
      */
     @Override
-    public int readDataStream(short[] pcmDataBuffer, int shortCount) {
+    public int readDataStream(short[] pcmDataBuffer, long sampleCountMicroSecs) {
 
         int pcmDataShortCount = pcmDataBuffer.length;
-        int startBeat = mMusicFile.getBeatFromShort(shortCount);
+        int startBeat = mMusicFile.getBeatFromMicroSecs(sampleCountMicroSecs);
         //int endBeat = mMusicFile.getBeatFromShort(shortCount + pcmDataShortCount);
+        Log.d(LOG_TAG, "beat: " + startBeat);
 
         // Get the start and end sample for the current selected beat
         //long startSample = mMotorElements.get(startBeat).getSamplePosition();
@@ -270,8 +271,8 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
 
         // Get the true number of shorts from the input
         // Only shorts within this range will be needed
-        long trueSampleStart = shortCount;
-        long trueSampleEnd = shortCount + pcmDataShortCount;
+        long trueSampleStart = sampleCountMicroSecs;
+        long trueSampleEnd = sampleCountMicroSecs + pcmDataShortCount;
 
         // Compute the total number of samples to process for the current beat
         //int samples = (int) (endSample - startSample);

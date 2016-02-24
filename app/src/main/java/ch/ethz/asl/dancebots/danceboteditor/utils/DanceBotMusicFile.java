@@ -97,28 +97,28 @@ public class DanceBotMusicFile {
         return mSongArtist;
     }
 
-    public int getBeatFromShort(int shortCount) {
+    public int getBeatFromMicroSecs(long microSecs) {
 
-        int s = 0;
+        // Time in seconds
+        double secs = microSecs * 0.001 * 0.001;
+
+        // The n-th sample
+        int sample = (int) (secs * getSampleRate());
+
         int i;
 
-        for (i = 0; i < mNumberOfBeatsDetected; ++i) {
+        for (i = 1; i < mNumberOfBeatsDetected; ++i) {
 
             int samplePos = mBeatBuffer[i];
 
-            // Compute the current short from the sample position. One sample has the size
-            // SIGNED_PCM_16_BIT, thus mEncoding / Short.SIZE is redundant.
-            s += s + (samplePos);
-
-            if (s > shortCount) {
+            if (sample < samplePos) {
                 break;
             }
         }
 
-        return i;
+        // If time window too large, beat is ahead
+        // Correct with -1
+        return i - 1;
     }
 
-    public int getEncodingSize() {
-        return mEncoding;
-    }
 }
