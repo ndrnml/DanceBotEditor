@@ -1,10 +1,18 @@
 package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
-import android.os.Environment;
+import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
+import android.media.MediaCodecList;
+import android.media.MediaExtractor;
+import android.media.MediaFormat;
+import android.os.*;
+import android.os.Process;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -13,6 +21,7 @@ import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Encoder;
 
@@ -22,6 +31,9 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.Encoder;
 public class SoundEncodeRunnable implements Runnable {
 
     private static final String LOG_TAG = SoundEncodeRunnable.class.getSimpleName();
+
+    private static final int SAMPLE_RATE = 44100;
+    private static final int CHANNEL_COUNT = 2;
 
     // TODO: MOVE THIS CONSTS
     private static final int SAMPLE_FREQUENCY_NOMINAL = 44100;
@@ -74,6 +86,8 @@ public class SoundEncodeRunnable implements Runnable {
         int getNumBeats();
 
         long getNumSamples();
+
+        DanceBotMusicFile getMusicFile();
     }
 
     public SoundEncodeRunnable(SoundTask soundTask) {
@@ -93,7 +107,7 @@ public class SoundEncodeRunnable implements Runnable {
         mSoundTask.setEncodeThread(Thread.currentThread());
 
         // Moves the current Thread into the background
-        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
         try {
             // Before continuing, checks to see that the Thread hasn't been
@@ -104,14 +118,11 @@ public class SoundEncodeRunnable implements Runnable {
             }
 
             /*
-             * Calls the SoundTask implementation of {@link #handleEncodeState} to
-             * set the state of the download
-             */
+            * Calls the SoundTask implementation of {@link #handleEncodeState} to
+            * set the state of the download
+            */
             mSoundTask.handleEncodeState(ENCODE_STATE_STARTED);
 
-            Thread.sleep(3000);
-
-            /*
             long numSamples = mSoundTask.getNumSamples();
 
             short[] pcmMusic = new short[(int)numSamples];
@@ -155,7 +166,7 @@ public class SoundEncodeRunnable implements Runnable {
             } catch (java.io.IOException e) {
                 Log.d(LOG_TAG, "Exception in file writing", e);
             }
-*/
+
             // Handle the state of the decoding Thread
             mSoundTask.handleEncodeState(ENCODE_STATE_COMPLETED);
 
@@ -175,6 +186,8 @@ public class SoundEncodeRunnable implements Runnable {
         }
 
     }
+
+
 
     /**
      *

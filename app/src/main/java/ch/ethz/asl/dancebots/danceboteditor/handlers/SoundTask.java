@@ -398,6 +398,11 @@ public class SoundTask implements
     }
 
     @Override
+    public DanceBotMusicFile getMusicFile() {
+        return mMusicFile;
+    }
+
+    @Override
     public int getSampleRate() {
         return mMusicFile.getSampleRate();
     }

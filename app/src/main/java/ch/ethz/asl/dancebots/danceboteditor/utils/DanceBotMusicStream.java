@@ -203,7 +203,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
         // Read track header
         MediaFormat format = null;
 
-        mMediaExtractor.getTrackFormat(0);
+        mMediaExtractor.getTrackFormat(0); // TODO: is this necessary? Redundant
 
         // Read media codec information
         try {
@@ -381,20 +381,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
             audioTrack = null;
         }
 
-        // clear source and the other globals
-        /*mSourcePath = null;
-        duration = 0;
-        mime = null;
-        sampleRate = 0; channels = 0; bitrate = 0;
-        presentationTimeUs = 0; duration = 0;*/
-
         onCompletion();
-
-        /*if(noOutputCounter >= noOutputCounterLimit) {
-            if (events != null) handler.post(new Runnable() { @Override public void run() { events.onError();  } });
-        } else {
-            if (events != null) handler.post(new Runnable() { @Override public void run() { events.onStop();  } });
-        }*/
     }
 
     private void onCompletion() {
