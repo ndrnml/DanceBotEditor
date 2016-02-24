@@ -257,7 +257,7 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
      * @param outputBuffer output buffer that stores the PCM encoded dance sequence data
      * @return return number of samples written
      */
-    private int readDataAll(short[] outputBuffer) {
+    public int readDataAll(short[] outputBuffer) {
 
         // Get beat element lists for motor and led elements
         ArrayList<MotorBeatElement> motorElements = getMotorBeatElements();

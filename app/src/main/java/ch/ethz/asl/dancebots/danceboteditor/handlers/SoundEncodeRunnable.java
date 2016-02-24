@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
@@ -85,6 +86,8 @@ public class SoundEncodeRunnable implements Runnable {
 
         long getNumSamples();
 
+        ChoreographyManager getChoreographyManager();
+
         DanceBotMusicFile getMusicFile();
     }
 
@@ -136,7 +139,7 @@ public class SoundEncodeRunnable implements Runnable {
             Arrays.fill(mPcmData, (short) -DATA_LEVEL);
 
             // Prepare data channel and music channel
-            int result = generateDataChannel(mPcmData);
+            int result = mSoundTask.getChoreographyManager().readDataAll(mPcmData);
             //int result = Decoder.transfer(pcmData);
             result = Decoder.transfer(mPcmMusic);
 
@@ -182,269 +185,7 @@ public class SoundEncodeRunnable implements Runnable {
 
             Log.v(LOG_TAG, "EncodeThread finished.");
         }
-
     }
 
 
-
-    /**
-     *
-     * @param pcmData
-     * @return
-     */
-    private int generateDataChannel(short[] pcmData) {
-
-        // Get beat element lists for motor and led elements
-        ArrayList<MotorBeatElement> motorElements = mSoundTask.getMotorElements();
-        ArrayList<LedBeatElement> ledElements = mSoundTask.getLedElements();
-
-        // Get the total number of beats detected
-        int numBeats = mSoundTask.getNumBeats();
-        // Get the total number of samples decoded
-        long numSamples = mSoundTask.getNumSamples();
-        // Get the detected sample rate of decoding
-        int samplingRate = mSoundTask.getSamplingRate();
-
-        // Compute the nominal sampling scale
-        float sampleScale = samplingRate / SAMPLE_FREQUENCY_NOMINAL;
-
-        // Round to the closest Integer
-        mNumSamplesZero = Math.round(sampleScale * BIT_LENGTH_ZERO_NOMINAL);
-        mNumSamplesOne = Math.round(sampleScale * BIT_LENGTH_ONE_NOMINAL);
-        mNumSamplesReset = Math.round(sampleScale * BIT_LENGTH_RESET_NOMINAL);
-
-        // Define the maximum number of bits in a robot message
-        int numBitsInMsg = 2 * (NUM_BIT_MOTOR + 1) + 8;
-
-        // Define the maximum number of samples in a robot message
-        int maxNumSamplesInMsg = numBitsInMsg * mNumSamplesOne + mNumSamplesReset;
-
-        // Initialize a new data buffer, which stores the current calculated message
-        short dataBuffer[] = new short[maxNumSamplesInMsg];
-
-        // Keep a state of the last sample written
-        short lastSampleLevel = DATA_LEVEL;
-
-        // Iterate over all detected beats in the song
-        for (int i = 0; i < numBeats - 1; ++i) {
-
-            // Get the corresponding MotorBeatElement and LedBeatElement
-            MotorBeatElement motorElement = motorElements.get(i);
-            LedBeatElement ledElement = ledElements.get(i);
-
-            // Get the start and end sample for the current selected beat
-            long startSamplePosition = motorElements.get(i).getSamplePosition();
-            long endSamplePosition = motorElements.get(i + 1).getSamplePosition();
-
-            // Compute the total number of samples to process for the current beat
-            int samplesToProcess = (int) (endSamplePosition - startSamplePosition);
-
-            // Initialize the (current) relative sample start position to zero
-            int samplePos = 0;
-
-            // Iterate while not all samples at the current beat are processed
-            while (samplePos < samplesToProcess) {
-
-                float relativeBeat = (float) samplePos / (float) samplesToProcess;
-
-                // Initialize velocities and led
-                short vLeft = 0;
-                short vRight = 0;
-                byte led = 0;
-
-                // Check the current motor element is different from the DEFAULT state
-                if (motorElement.getMotionType() != MotorType.DEFAULT) {
-                    vLeft = (short) motorElement.getVelocityLeft(relativeBeat);
-                    vRight = (short) motorElement.getVelocityRight(relativeBeat);
-                }
-
-                // Check the current led element is different from the DEFAULT state
-                if (ledElement.getMotionType() != LedType.DEFAULT) {
-                    led = ledElement.getLedBytes(relativeBeat);
-                }
-
-                int numSamplesInMsg = calculateMessage(dataBuffer, vLeft, vRight, led, lastSampleLevel);
-
-                // Get last sample level
-                lastSampleLevel = dataBuffer[numSamplesInMsg - 1];
-
-                /*
-                 * If the end of samples to process is not reached, the data buffer is copied to
-                 * pcm buffer
-                 */
-                if (samplePos + numSamplesInMsg < samplesToProcess) {
-
-                    // Compute the current absolute sample position and write data to the pcm buffer
-                    int currentSamplePosition = (int) startSamplePosition + samplePos;
-                    // Write calculated data message to pcm buffer
-                    writeMessage(pcmData, dataBuffer, currentSamplePosition, numSamplesInMsg);
-
-                } else {
-
-                    // If this happens, all messages have been written for the current beat
-                    break;
-                }
-
-                samplePos += numSamplesInMsg;
-            }
-        }
-
-        return -1;
-    }
-
-    /**
-     * TODO
-     * @param pcmData
-     * @param dataBuffer
-     * @param msgStart
-     * @param msgLength
-     * @return
-     */
-    private int writeMessage(short[] pcmData, short[] dataBuffer, int msgStart, int msgLength) {
-
-        if (msgStart > 0 && (msgStart + msgLength < mSoundTask.getNumSamples())) {
-
-            for (int i = 0; i < msgLength; ++i) {
-                pcmData[msgStart + i] = dataBuffer[i];
-            }
-
-            return DanceBotError.NO_ERROR;
-
-        } else {
-
-            Log.d(LOG_TAG, "ERROR: writeMessage out of bounds");
-            return DanceBotError.WRITE_ERROR;
-        }
-    }
-
-    /**
-     * This function calculates the needed samples for left and right velocities and for the led
-     * light. The values of the current beat element will be parsed an put into the dataBuffer.
-     * After the three properties are parsed and the buffer filled it returns the number of samples
-     * written to the dataBuffer.
-     * @param dataBuffer
-     * @param vLeft
-     * @param vRight
-     * @param led
-     * @param lastBitLevel
-     * @return the written samples
-     */
-    private int calculateMessage(short[] dataBuffer, short vLeft, short vRight, byte led, short lastBitLevel) {
-
-        // TODO: WHERE IS CHECKED THAT dataBuffer IS NOT OUT OF BOUND?
-
-        int offsetSamples = 0;
-        byte velByte = 0;
-
-        // Init all dataBuffer elements to -DATA_LEVEL
-        for (int i = 0; i < dataBuffer.length; ++i) {
-            dataBuffer[i] = -DATA_LEVEL;
-        }
-
-        // Invert last bit
-        lastBitLevel *= -1;
-
-        // Write reset message
-        for (int i = 0; i < mNumSamplesReset; ++i) {
-            dataBuffer[i] = lastBitLevel;
-        }
-
-        // Bits written
-        offsetSamples += mNumSamplesReset;
-
-        // Parse left velocity
-        if (vLeft < 0) {
-            vLeft *= -1;
-        } else {
-            // Set sign bit in velByte
-            velByte = (byte) 0x80;
-        }
-
-        // Get bits for left velocity
-        velByte |= 0x7F & vLeft;
-
-        // Write left velocity message
-        for (int i = 0; i < 8; ++i) {
-
-            int numSamples = mNumSamplesZero;
-
-            // Check if the i-th bit in velByte is set to 1
-            if ((velByte & (0x01 << i)) != 0) {
-                numSamples = mNumSamplesOne;
-            }
-
-            // Invert last bit level
-            lastBitLevel *= -1;
-
-            // Write the number of samples required for the specific velocity encoding
-            for (int j = 0; j < numSamples; ++j) {
-                dataBuffer[j + offsetSamples] = lastBitLevel;
-            }
-
-            // Count number of samples added to the buffer
-            offsetSamples += numSamples;
-        }
-
-        // Init right velocity
-        velByte = 0;
-
-        // Parse right velocity
-        if (vRight < 0) {
-            vRight *= -1;
-        } else {
-            velByte = (byte) 0x80;
-        }
-
-        // Get bits for right velocity
-        velByte |=  0x7F & vRight;
-
-        // Write right velocity message
-        for (int i = 0; i < 8; ++i) {
-
-            int numSamples = mNumSamplesZero;
-
-            // Check if the i-th bit in velByte is set to 1
-            if ((velByte & (0x01 << i)) != 0) {
-                numSamples = mNumSamplesOne;
-            }
-
-            // Invert last bit level
-            lastBitLevel *= -1;
-
-            // Write the number of samples required for the specific velocity encoding
-            for (int j = 0; j < numSamples; ++j) {
-                dataBuffer[j + offsetSamples] = lastBitLevel;
-            }
-
-            // Count number of samples added to the buffer
-            offsetSamples += numSamples;
-        }
-
-        // Parse led byte
-        byte ledByte = led;
-
-        // Write led message
-        for (int i = 0; i < 8; ++i) {
-
-            int numSamples = mNumSamplesZero;
-
-            // Check if the i-th bit in ledByte is set to 1
-            if ((ledByte & (0x01 << i)) != 0) {
-                numSamples = mNumSamplesOne;
-            }
-
-            // Invert last bit level
-            lastBitLevel *= -1;
-
-            // Write the number of samples required for the specific led encoding
-            for (int j = 0; j < numSamples; ++j) {
-                dataBuffer[j + offsetSamples] = lastBitLevel;
-            }
-
-            // Count number of samples added to the buffer
-            offsetSamples += numSamples;
-        }
-
-        return offsetSamples;
-    }
 }
