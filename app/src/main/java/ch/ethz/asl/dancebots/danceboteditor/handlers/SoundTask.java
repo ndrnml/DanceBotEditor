@@ -399,16 +399,6 @@ public class SoundTask implements
     }
 
     @Override
-    public ChoreographyManager getChoreographyManager() {
-        return DanceBotEditorManager.getInstance().getChoreoManager();
-    }
-
-    @Override
-    public DanceBotMusicFile getMusicFile() {
-        return mMusicFile;
-    }
-
-    @Override
     public int getSampleRate() {
         return mMusicFile.getSampleRate();
     }
@@ -455,23 +445,13 @@ public class SoundTask implements
     }
 
     @Override
-    public ArrayList<MotorBeatElement> getMotorElements() {
-        return mChoreoManager.getMotorBeatElements();
+    public ChoreographyManager getChoreographyManager() {
+        return DanceBotEditorManager.getInstance().getChoreoManager();
     }
 
     @Override
-    public ArrayList<LedBeatElement> getLedElements() {
-        return mChoreoManager.getLedBeatElements();
-    }
-
-    @Override
-    public int getSamplingRate() {
-        return mMusicFile.getSampleRate();
-    }
-
-    @Override
-    public int getNumBeats() {
-        return mMusicFile.getBeatCount();
+    public DanceBotMusicFile getMusicFile() {
+        return mMusicFile;
     }
 
     public Toast getInfoToast() {

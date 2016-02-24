@@ -76,19 +76,9 @@ public class SoundEncodeRunnable implements Runnable {
          */
         void handleEncodeState(int state);
 
-        ArrayList<MotorBeatElement> getMotorElements();
-
-        ArrayList<LedBeatElement> getLedElements();
-
-        int getSamplingRate();
-
-        int getNumBeats();
-
-        long getNumSamples();
+        DanceBotMusicFile getMusicFile();
 
         ChoreographyManager getChoreographyManager();
-
-        DanceBotMusicFile getMusicFile();
     }
 
     public SoundEncodeRunnable(SoundTask soundTask) {
@@ -127,7 +117,7 @@ public class SoundEncodeRunnable implements Runnable {
             // Sound file to encode and save
             DanceBotMusicFile musicFile = mSoundTask.getMusicFile();
 
-            long numSamples = mSoundTask.getNumSamples();
+            long numSamples = mSoundTask.getMusicFile().getSampleCount();
 
             // Initialize music and data buffers
             mPcmMusic = new short[(int)numSamples];
