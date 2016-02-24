@@ -40,7 +40,8 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
     private TextView mCurrentTimeView;
 
     /**
-     * // TODO
+     * Any media playing instance that wants its changes being observed by the MediaPlayerListener
+     * must implement this interface.
      */
     public interface OnMediaPlayerChangeListener {
 
@@ -55,6 +56,14 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
         int getCurrentPosition();
     }
 
+    /**
+     * MediaPlayerListener changes the HorizontalRecyclerViews and the SeekBar progress, based
+     * on media player playback changes, or any SeekBar changes
+     *
+     * @param recyclerView HorizontalRecyclerViews that will be updated on changes
+     * @param seekBar SeekBar that will be updated on changes
+     * @param musicFile corresponding music file, that passes information about the song
+     */
     public MediaPlayerListener(HorizontalRecyclerViews recyclerView, SeekBar seekBar, DanceBotMusicFile musicFile) {
 
         mActivity = ((Activity) DanceBotEditorManager.getInstance().getContext());
@@ -70,6 +79,11 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
         mNumElements = recyclerView.getNumElements();
     }
 
+    /**
+     * Register media playing instance to this change listener
+     *
+     * @param mediaPlayer media player instance, that wants its changes to be notified
+     */
     public void registerMediaPlayer(OnMediaPlayerChangeListener mediaPlayer) {
 
         // Register media player
@@ -79,6 +93,9 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
         mediaPlayer.getPlayButton().setOnClickListener(this);
     }
 
+    /**
+     * Start background listening to any media player playback changes or seek bar changes
+     */
     public void startListening() {
         if (!mIsRunning) {
             mHandler.postDelayed(this, 100);
@@ -86,6 +103,9 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
         }
     }
 
+    /**
+     * Stop listening, if no media player is currently playing
+     */
     public void stopListening() {
 
         boolean isAnyPlaying = false;
@@ -115,9 +135,10 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
             mCurrentTimeView.setText(Helper.songTimeFormat(currentDuration));
         }
 
+        // Check if seek bar progress changed
         if (seekBarChanged()) {
 
-            Log.d(LOG_TAG, "seek bar changed");
+            //Log.d(LOG_TAG, "seek bar changed");
 
             int currentTimeInMilliSecs = mSeekBar.getProgress();
 
@@ -166,6 +187,11 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
         mHandler.postDelayed(this, 100);
     }
 
+    /**
+     * On top of HorizontalRecyclerViews and SeekBar progress changes, the MediaPlayerListener
+     * also registers and handles clicks on media player instances, such that only one media player
+     * can start playback at the time
+     */
     @Override
     public void onClick(View v) {
 
@@ -188,14 +214,20 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
                         mHandler.removeCallbacks(this);
                         mIsRunning = false;
 
+                        // TODO: make more dynamic -> implement methods in media player
                         if (id == R.id.btn_stream) ((Button) v).setText(R.string.txt_stream);
                         if (id == R.id.btn_play) ((Button) v).setText(R.string.txt_play);
                     }
                 }
+                /*
+                 * else, ignore any clicks on the buttons that do not correspond to the
+                 * media player that is playing
+                 */
             }
 
         } else {
 
+            // If no media player is playing, then start the one which was clicked
             for (OnMediaPlayerChangeListener mediaPlayer : registeredListeners) {
 
                 if (mediaPlayer.getPlayButton().getId() == id) {

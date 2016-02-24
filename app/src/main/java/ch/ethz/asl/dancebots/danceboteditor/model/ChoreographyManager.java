@@ -14,13 +14,13 @@ import ch.ethz.asl.dancebots.danceboteditor.ui.MotorTypeSelectionMenu;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotConfiguration;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
-import ch.ethz.asl.dancebots.danceboteditor.utils.StreamPlayback;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicStream;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
  * Created by andrin on 31.08.15.
  */
-public class ChoreographyManager implements StreamPlayback {
+public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
 
     private static final String LOG_TAG = "CHOREOGRAPHY_MANAGER";
 

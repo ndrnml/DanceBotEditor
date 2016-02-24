@@ -183,12 +183,6 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         motorAdapter.notifyDataSetChanged();
     }
 
-
-    /***************************************
-     * RecyclerViewScrollListener Interface
-     ***************************************/
-
-    @Override
     public void scrollToPosition(int position) {
 
         // Scroll motor view
@@ -201,27 +195,22 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         setFocus(position);
     }
 
-    @Override
     public int getNumElements() {
         return mMotorView.getAdapter().getItemCount();
     }
 
-    @Override
     public long getSampleAt(int position) {
         return ((BeatElementAdapter) mMotorView.getAdapter()).getItem(position).getSamplePosition();
     }
 
-    @Override
     public int getFirstVisibleItem() {
         return mMotorLayoutManager.findFirstVisibleItemPosition();
     }
 
-    @Override
     public int getLastVisibleItem() {
         return mMotorLayoutManager.findLastVisibleItemPosition();
     }
 
-    @Override
     public void setFocus(int position) {
 
         // Set focus of current beat element in motor view

@@ -52,6 +52,28 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
     private Button mPlayButton;
 
     /**
+     * Interface for any instance that
+     */
+    public interface StreamPlayerEvents {
+
+        void onStart(String mime, int sampleRate, int channels, long durationInMs);
+        void onPlay();
+        void onPlayUpdate(int percentage, long currentMs, long totalMs);
+        void onStop();
+    }
+
+    /**
+     * Interface that must be implemented by any instance that wants to stream media data
+     */
+    public interface StreamPlayback {
+
+        void prepareStreamPlayback();
+
+        int readDataStream(short[] outBuffer, int shortCount);
+    }
+
+
+    /**
      * Create new DanceBotMusicStream instance. This should only happen when a valid
      * DanceBotMusicFile is present.
      *

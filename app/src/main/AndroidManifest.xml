@@ -32,6 +32,7 @@
             android:name=".activities.EditorActivity"
             android:label="@string/title_activity_editor"
             android:screenOrientation="landscape">
+            // android:configChanges="keyboardHidden|orientation|screenSize"
         </activity>
     </application>
 

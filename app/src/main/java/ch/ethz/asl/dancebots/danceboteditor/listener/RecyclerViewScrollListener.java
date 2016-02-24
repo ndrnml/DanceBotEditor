@@ -13,6 +13,8 @@ public interface RecyclerViewScrollListener {
 
     void scrollToPosition(int position);
 
+    void setFocus(int position);
+
     int getNumElements();
 
     long getSampleAt(int position);
@@ -20,6 +22,4 @@ public interface RecyclerViewScrollListener {
     int getFirstVisibleItem();
 
     int getLastVisibleItem();
-
-    void setFocus(int position);
 }
