@@ -76,10 +76,6 @@ public class SoundEncodeRunnable implements Runnable {
         long getNumSamples();
     }
 
-    /**
-     *
-     * @param soundTask
-     */
     public SoundEncodeRunnable(SoundTask soundTask) {
 
         mSoundTask = soundTask;
@@ -113,6 +109,7 @@ public class SoundEncodeRunnable implements Runnable {
              */
             mSoundTask.handleEncodeState(ENCODE_STATE_STARTED);
 
+            /*
             long numSamples = mSoundTask.getNumSamples();
 
             short[] pcmMusic = new short[(int)numSamples];
@@ -156,7 +153,7 @@ public class SoundEncodeRunnable implements Runnable {
             } catch (java.io.IOException e) {
                 Log.d(LOG_TAG, "Exception in file writing", e);
             }
-
+*/
             // Handle the state of the decoding Thread
             mSoundTask.handleEncodeState(ENCODE_STATE_COMPLETED);
 
@@ -167,7 +164,7 @@ public class SoundEncodeRunnable implements Runnable {
             // In all cases, handle the results
         } finally {
 
-            mEncoder.close();
+            //mEncoder.close();
 
             t2 = System.currentTimeMillis();
             Log.v(LOG_TAG, "Elapsed time for encoding: " + (t2 - t1) / 1000 + "s");
