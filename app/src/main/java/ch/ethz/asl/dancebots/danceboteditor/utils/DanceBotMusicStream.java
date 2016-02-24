@@ -19,7 +19,6 @@ import java.nio.ByteOrder;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerListener;
-import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 
 /**
  * Created by andrin on 28.01.16.
@@ -46,7 +45,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
     private int sampleRate = 0, channels = 0, bitrate = 0;
     private long presentationTimeUs = 0, duration = 0;
 
-    private ChoreographyManager mDataSource;
+    private StreamPlayback mDataSource;
     private boolean mDataSourceSet = false;
     private long mSampleCountMicroSecs = 0;
     private Button mPlayButton;
@@ -90,7 +89,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
         mEventListener = eventListener;
     }
 
-    public void setDataSource(final ChoreographyManager dataSource) {
+    public void setDataSource(StreamPlayback dataSource) {
         mDataSource = dataSource;
         mDataSource.prepareStreamPlayback();
         mDataSourceSet = true;
@@ -415,7 +414,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
      * @param sampleCountMicroSecs samples streamed so far
      * @return number of samples interleaved
      */
-    private int interleaveChannels(short[] chunk, ChoreographyManager dataSource, long sampleCountMicroSecs) {
+    private int interleaveChannels(short[] chunk, StreamPlayback dataSource, long sampleCountMicroSecs) {
 
         // Create data buffer, which will be filled with dance sequence pcm data
         short[] tmpDataBuffer = new short[chunk.length / 2];

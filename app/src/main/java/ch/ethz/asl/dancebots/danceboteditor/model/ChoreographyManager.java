@@ -251,7 +251,115 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
     }
 
     /**
-     * Read dance seqeunce data stream into outputDataBuffer
+     * Iterate over all whole music file (all beats) and gather dance sequence data. Transform it
+     * to PCM and write it into the output buffer.
+     *
+     * @param outputBuffer output buffer that stores the PCM encoded dance sequence data
+     * @return return number of samples written
+     */
+    private int readDataAll(short[] outputBuffer) {
+
+        // Get beat element lists for motor and led elements
+        ArrayList<MotorBeatElement> motorElements = getMotorBeatElements();
+        ArrayList<LedBeatElement> ledElements = getLedBeatElements();
+
+        // Get the total number of beats detected
+        int numBeats = mMusicFile.getBeatCount();
+        // Get the detected sample rate of decoding
+        int samplingRate = mMusicFile.getSampleRate();
+
+        // Compute the nominal sampling scale
+        float sampleScale = samplingRate / DanceBotConfiguration.SAMPLE_FREQUENCY_NOMINAL;
+
+        // Round to the closest Integer
+        mNumSamplesZero = Math.round(sampleScale * DanceBotConfiguration.BIT_LENGTH_ZERO_NOMINAL);
+        mNumSamplesOne = Math.round(sampleScale * DanceBotConfiguration.BIT_LENGTH_ONE_NOMINAL);
+        mNumSamplesReset = Math.round(sampleScale * DanceBotConfiguration.BIT_LENGTH_RESET_NOMINAL);
+
+        // Define the maximum number of bits in a robot message
+        int numBitsInMsg = 2 * (DanceBotConfiguration.NUM_BIT_MOTOR + 1) + 8;
+
+        // Define the maximum number of samples in a robot message
+        int maxNumSamplesInMsg = numBitsInMsg * mNumSamplesOne + mNumSamplesReset;
+
+        // Initialize a new data buffer, which stores the current calculated message
+        short dataBuffer[] = new short[maxNumSamplesInMsg];
+
+        // Keep a state of the last sample written
+        short lastSampleLevel = DanceBotConfiguration.DATA_LEVEL;
+
+        int samplePos = 0;
+
+        // Iterate over all detected beats in the song
+        for (int i = 0; i < numBeats - 1; ++i) {
+
+            // Get the corresponding MotorBeatElement and LedBeatElement
+            MotorBeatElement motorElement = motorElements.get(i);
+            LedBeatElement ledElement = ledElements.get(i);
+
+            // Get the start and end sample for the current selected beat
+            long startSamplePosition = motorElements.get(i).getSamplePosition();
+            long endSamplePosition = motorElements.get(i + 1).getSamplePosition();
+
+            // Compute the total number of samples to process for the current beat
+            int samplesToProcess = (int) (endSamplePosition - startSamplePosition);
+
+            // Initialize the (current) relative sample start position to zero
+            samplePos = 0;
+
+            // Iterate while not all samples at the current beat are processed
+            while (samplePos < samplesToProcess) {
+
+                float relativeBeat = (float) samplePos / (float) samplesToProcess;
+
+                // Initialize velocities and led
+                short vLeft = 0;
+                short vRight = 0;
+                byte led = 0;
+
+                // Check the current motor element is different from the DEFAULT state
+                if (motorElement.getMotionType() != MotorType.DEFAULT) {
+                    vLeft = (short) motorElement.getVelocityLeft(relativeBeat);
+                    vRight = (short) motorElement.getVelocityRight(relativeBeat);
+                }
+
+                // Check the current led element is different from the DEFAULT state
+                if (ledElement.getMotionType() != LedType.DEFAULT) {
+                    led = ledElement.getLedBytes(relativeBeat);
+                }
+
+                int numSamplesInMsg = calculateMessage(dataBuffer, vLeft, vRight, led, lastSampleLevel);
+
+                // Get last sample level
+                lastSampleLevel = dataBuffer[numSamplesInMsg - 1];
+
+                /*
+                 * If the end of samples to process is not reached, the data buffer is copied to
+                 * pcm buffer
+                 */
+                if (samplePos + numSamplesInMsg < samplesToProcess) {
+
+                    // Compute the current absolute sample position and write data to the pcm buffer
+                    int currentSamplePosition = (int) startSamplePosition + samplePos;
+                    // Write calculated data message to pcm buffer
+                    writeMessage(outputBuffer, dataBuffer, currentSamplePosition, numSamplesInMsg);
+
+                } else {
+
+                    // If this happens, all messages have been written for the current beat
+                    break;
+                }
+
+                samplePos += numSamplesInMsg;
+            }
+        }
+
+        return samplePos;
+    }
+
+
+    /**
+     * Read dance sequence data stream into outputDataBuffer
      *
      * @param outputDataBuffer output data buffer, containing dance sequence pcm encoding
      * @param sampleCountMicroSecs number of shorts written so far

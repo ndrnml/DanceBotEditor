@@ -126,6 +126,7 @@ public class SoundEncodeRunnable implements Runnable {
 
             long numSamples = mSoundTask.getNumSamples();
 
+            // Initialize music and data buffers
             mPcmMusic = new short[(int)numSamples];
             mPcmData = new short[(int)numSamples];
 
@@ -135,18 +136,18 @@ public class SoundEncodeRunnable implements Runnable {
             Arrays.fill(mPcmData, (short) -DATA_LEVEL);
 
             // Prepare data channel and music channel
-            /*int result = generateDataChannel(mPcmData);
+            int result = generateDataChannel(mPcmData);
             //int result = Decoder.transfer(pcmData);
             result = Decoder.transfer(mPcmMusic);
 
             // Create new mp3 buffer and specify size in bytes
             // Calculate buffer size in bytes
-            */int mp3bufSize = (int) numSamples / 3;
+            int mp3bufSize = (int) numSamples / 3;
             byte[] mp3buf = new byte[mp3bufSize];
-/*
+
             mEncoder = new Encoder.Builder(SAMPLE_RATE, CHANNEL_COUNT, SAMPLE_RATE, BIT_RATE).create();
             result = mEncoder.encode(mPcmMusic, mPcmData, (int) numSamples, mp3buf);
-            result = mEncoder.flush(mp3buf);*/
+            result = mEncoder.flush(mp3buf);
 
             boolean success = Helper.saveToMusicFolder(musicFile.getSongTitle(), mp3buf);
 
@@ -170,12 +171,11 @@ public class SoundEncodeRunnable implements Runnable {
             // In all cases, handle the results
         } finally {
 
-            /*
             if (mEncoder != null) {
                 mEncoder.close();
             }
             mPcmData = null;
-            mPcmMusic = null;*/
+            mPcmMusic = null;
 
             t2 = System.currentTimeMillis();
             Log.v(LOG_TAG, "Elapsed time for encoding: " + (t2 - t1) / 1000 + "s");
