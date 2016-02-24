@@ -21,12 +21,10 @@ public class DanceBotEditorManager {
     private Context mContext;
     private DanceBotMusicFile mDanceBotMusicFile;
     private ChoreographyManager mChoreoManager;
-    private DanceBotMediaPlayer mMediaPlayer;
     private HorizontalRecyclerViews mBeatViews;
 
     /**
-     * TODO
-     * New Menu implementation
+     * Static Menu implementations
      */
     private LedTypeSelectionMenu mLedTypeMenu;
     private MotorTypeSelectionMenu mMotorTypeMenu;
@@ -44,7 +42,7 @@ public class DanceBotEditorManager {
 
     /**
      * getInstance() of the Singleton
-     * @return
+     * @return the DanceBotEditorManager instance
      */
     public static DanceBotEditorManager getInstance() {
         if(instance == null) {
@@ -85,14 +83,10 @@ public class DanceBotEditorManager {
 
     /**
      * Attach the selected music file
-     * @param dbMusicFile
+     * @param dbMusicFile selected music file
      */
     public void attachMusicFile(DanceBotMusicFile dbMusicFile) {
         mDanceBotMusicFile = dbMusicFile;
-    }
-
-    public void setMediaPlayer(DanceBotMediaPlayer mediaPlayer) {
-        mMediaPlayer = mediaPlayer;
     }
 
     /**
@@ -107,18 +101,11 @@ public class DanceBotEditorManager {
             mDanceBotMusicFile = null;
         }
 
-        if (mMediaPlayer != null) {
-            mMediaPlayer.cleanUp();
-        }
-
     }
 
-    ///////////
-    // SETTERS
-    ///////////
-    // TODO
-    // TODO: make beatgrid, choreography setters
-    // TODO
+    /**********
+     * SETTERS
+     **********/
     public void setBeatViews(HorizontalRecyclerViews beatViews) {
         mBeatViews = beatViews;
     }
@@ -132,9 +119,10 @@ public class DanceBotEditorManager {
     public void setContext(Context c) {
         mContext = c;
     }
-    ///////////
-    // GETTERS
-    ///////////
+
+    /**********
+     * GETTERS
+     **********/
     public Context getContext() {
         return mContext;
     }

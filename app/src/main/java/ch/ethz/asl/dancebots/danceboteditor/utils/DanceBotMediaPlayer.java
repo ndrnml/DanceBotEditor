@@ -196,4 +196,10 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
             mMediaPlayer = null;
         }
     }
+
+    public void onStop() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+        }
+    }
 }

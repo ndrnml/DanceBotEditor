@@ -117,6 +117,11 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
         mSeekBarTotalTimeView.setText(Helper.songTimeFormat(mMusicFile.getDurationInMilliSecs()));
     }
 
+    // Stop streaming playback
+    public void onStop() {
+        stop();
+    }
+
     /**
      * Start stream playback.
      */

@@ -31,9 +31,6 @@ public class EditorActivity extends Activity {
 
     private static final String LOG_TAG = "EDITOR_ACTIVITY";
 
-    // On activity result identifier
-    private static final int PICK_SONG_REQUEST = 1;
-
     private DanceBotEditorManager mProjectManager;
     private HorizontalRecyclerViews mBeatElementViews;
     private DanceBotMusicFile mMusicFile;
@@ -41,8 +38,6 @@ public class EditorActivity extends Activity {
     private DanceBotMusicStream mMediaStream;
     private SeekBar mSeekBar;
     private MediaPlayerListener mMediaPlayerListener;
-
-    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,9 +77,6 @@ public class EditorActivity extends Activity {
                 (TextView) findViewById(R.id.seekbar_current_time),
                 (TextView) findViewById(R.id.seekbar_total_time));
         mMediaPlayer.setPlayButton((Button) findViewById(R.id.btn_play));
-
-        // Set media player
-        mProjectManager.setMediaPlayer(mMediaPlayer);
 
         // Initialize media stream player
         mMediaStream = new DanceBotMusicStream(mMusicFile);
@@ -158,6 +150,10 @@ public class EditorActivity extends Activity {
         super.onStop();
         // The activity is no longer visible (it is now "stopped")
 
+        // Stop if any media player playback
+        mMediaPlayer.onStop();
+        mMediaStream.onStop();
+
         Log.d(LOG_TAG, "onStop");
     }
 
@@ -165,6 +161,8 @@ public class EditorActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         // The activity is going to be destroyed
+
+        // Release media player resources
 
         // TODO: Clean up all files
         mProjectManager.cleanUp();
@@ -175,11 +173,6 @@ public class EditorActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed(); // This has to be removed, REALLY?
-
-        // TODO: ask user to cancel the current project
-        Log.v(LOG_TAG, "Back button is pressed.");
-
         // Popup alert dialog to confirm users decision
         askExit();
     }
@@ -226,8 +219,7 @@ public class EditorActivity extends Activity {
 
             /*case R.id.editor_action_open:
 
-                // TODO: move this to the ask open dialog
-                // TODO: This should only be possible if the user want's it -> State == NEW
+                // TODO: move this to the ask open dialog, This should only be possible if the user want's it -> State == NEW
                 Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
                 startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
 
