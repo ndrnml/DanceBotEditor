@@ -8,8 +8,6 @@ import android.widget.Toast;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
-import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.utils.BeatExtractor;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;

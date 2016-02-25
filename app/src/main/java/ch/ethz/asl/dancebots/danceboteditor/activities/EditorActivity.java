@@ -113,10 +113,12 @@ public class EditorActivity extends Activity {
             selectedSongAlbumArt.setImageDrawable(Drawable.createFromPath(songAlbumArtPath));
         }*/
 
+        // Register all media players to media player change listener
         mMediaPlayerListener = new MediaPlayerListener(mBeatElementViews, mSeekBar, mMusicFile);
         mMediaPlayerListener.registerMediaPlayer(mMediaPlayer);
         mMediaPlayerListener.registerMediaPlayer(mMediaStream);
 
+        // Set the corresponding event listener to the media player
         mMediaPlayer.setEventListener(mMediaPlayerListener);
         mMediaStream.setEventListener(mMediaPlayerListener);
 
