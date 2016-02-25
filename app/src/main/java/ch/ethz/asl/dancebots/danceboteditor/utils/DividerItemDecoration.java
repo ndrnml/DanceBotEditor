@@ -70,7 +70,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         /**
          * Returns true if divider should be hidden.
          *
-         * @param position Divider position (or group index for GridLayoutManager)
+         * @param position Divider position
          * @param parent   RecyclerView
          * @return True if the divider at position should be hidden
          */

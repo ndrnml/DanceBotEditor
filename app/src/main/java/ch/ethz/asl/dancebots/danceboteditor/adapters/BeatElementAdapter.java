@@ -171,6 +171,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         DanceSequence<T> danceSequence = mChoregoraphy.getDanceSequence(selBeatElem.getDanceSequenceId());
         boolean isMiddleElement = false;
 
+        // Check if element at position, belongs to a middle part of a dance sequence
         if (danceSequence != null) {
             isMiddleElement = danceSequence.isMiddleElement(position);
         }

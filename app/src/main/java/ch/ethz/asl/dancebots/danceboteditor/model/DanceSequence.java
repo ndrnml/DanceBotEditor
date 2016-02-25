@@ -47,6 +47,10 @@ public class DanceSequence<T extends BeatElement> {
         return mLength;
     }
 
+    /**
+     * Return all element indices belonging to this dance sequence
+     * @return return indices list
+     */
     public List<Integer> getElementIndices() {
         int startIndex = mStartElement.getBeatPosition();
         List<Integer> elemIndices = new ArrayList<>();
@@ -56,6 +60,11 @@ public class DanceSequence<T extends BeatElement> {
         return elemIndices;
     }
 
+    /**
+     * Check if element at position is the middle of a dance sequence
+     * @param position position of element which will be checked
+     * @return whether the checked element is in the middle of a dance sequence
+     */
     public boolean isMiddleElement(int position) {
 
         int startIdx = mStartElement.getBeatPosition();
