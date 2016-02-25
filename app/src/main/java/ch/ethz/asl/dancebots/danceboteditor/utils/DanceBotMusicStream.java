@@ -30,11 +30,9 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
     private MediaPlayerListener mEventListener = null;
     private Handler handler = new Handler();
 
-    private final DanceBotMusicFile mMusicFile;
+    private DanceBotMusicFile mMusicFile;
     private MusicStreamStates mStreamStates;
 
-    private TextView mSeekBarTotalTimeView;
-    private TextView mSeekBarCurrentTimeView;
     private SeekBar mSeekBar;
 
     private MediaExtractor mMediaExtractor;
@@ -54,7 +52,6 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
      * Interface for any instance that
      */
     /*public interface StreamPlayerEvents {
-
         void onStart(String mime, int sampleRate, int channels, long durationInMs);
         void onPlay();
         void onPlayUpdate(int percentage, long currentMs, long totalMs);
@@ -81,15 +78,20 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
     public DanceBotMusicStream(DanceBotMusicFile musicFile) {
 
         mStreamStates = new MusicStreamStates();
-        mMusicFile = musicFile;
-        mSourcePath = mMusicFile.getSongPath();
+
+        setDataSource(musicFile);
     }
 
     public void setEventListener(MediaPlayerListener eventListener) {
         mEventListener = eventListener;
     }
 
-    public void setDataSource(StreamPlayback dataSource) {
+    public void setDataSource(DanceBotMusicFile musicFile) {
+        mMusicFile = musicFile;
+        mSourcePath = mMusicFile.getSongPath();
+    }
+
+    public void setStreamSource(StreamPlayback dataSource) {
         mDataSource = dataSource;
         mDataSource.prepareStreamPlayback();
         mDataSourceSet = true;
@@ -99,83 +101,22 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
         mPlayButton = playButton;
     }
 
-    public void setMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
+    public void setMediaPlayerSeekBar(SeekBar seekBar) {
 
         // Prepare seek bar for the selected song
         mSeekBar = seekBar;
         // Register stream player to seek bar
         CompositeSeekBarListener.registerListener(this);
-
-        mSeekBar.setMax(mMusicFile.getDurationInMilliSecs());
-
-        // Init seek bar labels
-        mSeekBarCurrentTimeView = currentTime;
-        mSeekBarTotalTimeView = totalTime;
-
-        mSeekBarCurrentTimeView.setText(Helper.songTimeFormat(0));
-        mSeekBarTotalTimeView.setText(Helper.songTimeFormat(mMusicFile.getDurationInMilliSecs()));
     }
 
     // Stop streaming playback
     public void onStop() {
+
+        if (isPlaying() && mEventListener != null) {
+            mEventListener.stopListening(MediaPlayerListener.STOP_PLAYING_FLAG);
+        }
+
         stop();
-    }
-
-    /**
-     * Start stream playback.
-     */
-    private void startPlay() {
-
-        if (mStreamStates.getState() == MusicStreamStates.STOPPED) {
-            mStop = false;
-            new Thread(this).start();
-        }
-
-        if (mStreamStates.getState() == MusicStreamStates.READY_TO_PLAY) {
-            mStreamStates.setState(MusicStreamStates.PLAYING);
-            syncNotify();
-        }
-    }
-
-    /**
-     * Notify background Thread if player state changed.
-     */
-    private synchronized void syncNotify() {
-        notify();
-    }
-
-    /**
-     * Synchronized wait if the player is on pause. Pause the media stream player.
-     * This causes the Thread to spin in a wait loop.
-     */
-    private synchronized void waitPlay() {
-
-        while (mStreamStates.getState() == MusicStreamStates.READY_TO_PLAY) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Stop the media stream player.
-     */
-    private void stop() {
-        mStop = true;
-    }
-
-    /**
-     * Seek to closest position
-     *
-     * @param positionInMilliSeconds position in milliseconds
-     */
-    private void seekTo(long positionInMilliSeconds) {
-        if (mMediaExtractor != null) {
-            // MediaExtractor expects microseconds
-            mMediaExtractor.seekTo(positionInMilliSeconds * 1000, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
-        }
     }
 
     @Override
@@ -383,13 +324,70 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
         onCompletion();
     }
 
+    /**
+     * Start stream playback.
+     */
+    private void startPlay() {
+
+        if (mStreamStates.getState() == MusicStreamStates.STOPPED) {
+            mStop = false;
+            new Thread(this).start();
+        }
+
+        if (mStreamStates.getState() == MusicStreamStates.READY_TO_PLAY) {
+            mStreamStates.setState(MusicStreamStates.PLAYING);
+            syncNotify();
+        }
+    }
+
+    /**
+     * Notify background Thread if player state changed.
+     */
+    private synchronized void syncNotify() {
+        notify();
+    }
+
+    /**
+     * Synchronized wait if the player is on pause. Pause the media stream player.
+     * This causes the Thread to spin in a wait loop.
+     */
+    private synchronized void waitPlay() {
+
+        while (mStreamStates.getState() == MusicStreamStates.READY_TO_PLAY) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Stop the media stream player.
+     */
+    private void stop() {
+        mStop = true;
+    }
+
+    /**
+     * Seek to closest position
+     *
+     * @param positionInMilliSeconds position in milliseconds
+     */
+    private void seekTo(long positionInMilliSeconds) {
+        if (mMediaExtractor != null) {
+            // MediaExtractor expects microseconds
+            mMediaExtractor.seekTo(positionInMilliSeconds * 1000, MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+        }
+    }
+
     private void onCompletion() {
 
         mStreamStates.setState(MusicStreamStates.STOPPED);
         mStop = true;
 
         if (mEventListener != null) {
-            mEventListener.stopListening();
+            mEventListener.stopListening(MediaPlayerListener.DEFAULT_FLAG);
         }
 
         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -457,6 +455,16 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
     }
 
     @Override
+    public void setPlayButtonPlay() {
+        mPlayButton.setText(R.string.txt_stream);
+    }
+
+    @Override
+    public void setPlayButtonPause() {
+        mPlayButton.setText(R.string.txt_pause);
+    }
+
+    @Override
     public Button getPlayButton() {
         return mPlayButton;
     }
@@ -494,7 +502,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         if (mEventListener != null) {
-            mEventListener.stopListening();
+            mEventListener.stopListening(MediaPlayerListener.DEFAULT_FLAG);
         }
     }
 

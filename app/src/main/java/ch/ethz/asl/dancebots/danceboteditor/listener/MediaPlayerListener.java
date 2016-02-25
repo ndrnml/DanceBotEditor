@@ -2,6 +2,7 @@ package ch.ethz.asl.dancebots.danceboteditor.listener;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +24,9 @@ import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 public class MediaPlayerListener implements Runnable, View.OnClickListener {
 
     private static final String LOG_TAG = MediaPlayerListener.class.getSimpleName();
+
+    public static final int DEFAULT_FLAG = 0;
+    public static final int STOP_PLAYING_FLAG = 1;
 
     private final Activity mActivity;
     private final float mTotalDurationInMilliSecs;
@@ -50,6 +54,10 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
         void pause();
 
         boolean isPlaying();
+
+        void setPlayButtonPlay();
+
+        void setPlayButtonPause();
 
         Button getPlayButton();
 
@@ -106,7 +114,7 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
     /**
      * Stop listening, if no media player is currently playing
      */
-    public void stopListening() {
+    public void stopListening(int flag) {
 
         boolean isAnyPlaying = false;
 
@@ -115,7 +123,30 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
             isAnyPlaying = isAnyPlaying || mediaPlayer.isPlaying();
         }
 
+        // Only stop listening, when no media player is playing
         if (!isAnyPlaying) {
+            mHandler.removeCallbacks(this);
+            mIsRunning = false;
+        }
+
+        // This is an absolute stopping flag, it stops listening even when media player are playing
+        if (flag == STOP_PLAYING_FLAG) {
+
+            // Setting back the button text can either be implemented here or directly in the media
+            // player where the stop request comes from
+
+            // Set all buttons to pause
+            for (OnMediaPlayerChangeListener mediaPlayer : registeredListeners) {
+                final OnMediaPlayerChangeListener mp = mediaPlayer;
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mp.setPlayButtonPlay();
+                    }
+                });
+            }
+
+            // Remove all callbacks and stop listening
             mHandler.removeCallbacks(this);
             mIsRunning = false;
         }
@@ -214,9 +245,7 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
                         mHandler.removeCallbacks(this);
                         mIsRunning = false;
 
-                        // TODO: make more dynamic -> implement methods in media player
-                        if (id == R.id.btn_stream) ((Button) v).setText(R.string.txt_stream);
-                        if (id == R.id.btn_play) ((Button) v).setText(R.string.txt_play);
+                        mediaPlayer.setPlayButtonPlay();
                     }
                 }
                 /*
@@ -234,10 +263,10 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
                     mActiveMediaPlayer = mediaPlayer;
                     mediaPlayer.play();
                     if (!mIsRunning) {
-                        mHandler.postDelayed(this, 100);
                         mIsRunning = true;
+                        mediaPlayer.setPlayButtonPause();
 
-                        ((Button) v).setText(R.string.txt_pause);
+                        mHandler.postDelayed(this, 100);
                     }
                 }
             }

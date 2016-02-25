@@ -19,6 +19,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicStream;
+import ch.ethz.asl.dancebots.danceboteditor.utils.Helper;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
@@ -68,22 +69,25 @@ public class EditorActivity extends Activity {
         // Add CompositeSeekBarListener to the media seek bar for both media player and media stream
         mSeekBar.setOnSeekBarChangeListener(CompositeSeekBarListener.getInstance());
 
+        // Set start time of seek bar text view
+        TextView seekBarStartTime = (TextView) findViewById(R.id.seekbar_current_time);
+        seekBarStartTime.setText(Helper.songTimeFormat(0));
+
+        // Set total duration of seek bar text view
+        TextView seekBarTotalTime = (TextView) findViewById(R.id.seekbar_total_time);
+        seekBarTotalTime.setText(Helper.songTimeFormat(mMusicFile.getDurationInMilliSecs()));
+
         // Create new media player instance, be sure to pass the current activity to resolve
         // all necessary view elements
-        mMediaPlayer = new DanceBotMediaPlayer(this, mMusicFile);
-        mMediaPlayer.setMediaPlayerSeekBar(
-                (SeekBar) findViewById(R.id.seekbar_media_player),
-                (TextView) findViewById(R.id.seekbar_current_time),
-                (TextView) findViewById(R.id.seekbar_total_time));
+        mMediaPlayer = new DanceBotMediaPlayer(this);
+        mMediaPlayer.setDataSource(mMusicFile);
+        mMediaPlayer.setMediaPlayerSeekBar((SeekBar) findViewById(R.id.seekbar_media_player));
         mMediaPlayer.setPlayButton((Button) findViewById(R.id.btn_play));
 
         // Initialize media stream player
         mMediaStream = new DanceBotMusicStream(mMusicFile);
-        mMediaStream.setDataSource(mProjectManager.getChoreoManager());
-        mMediaStream.setMediaPlayerSeekBar(
-                (SeekBar) findViewById(R.id.seekbar_media_player),
-                (TextView) findViewById(R.id.seekbar_current_time),
-                (TextView) findViewById(R.id.seekbar_total_time));
+        mMediaStream.setStreamSource(mProjectManager.getChoreoManager());
+        mMediaStream.setMediaPlayerSeekBar((SeekBar) findViewById(R.id.seekbar_media_player));
         mMediaStream.setPlayButton((Button) findViewById(R.id.btn_stream));
 
         // Update music file information
@@ -125,6 +129,11 @@ public class EditorActivity extends Activity {
     protected void onStart() {
         super.onStart();
         // The activity is about to become visible.
+
+        // Restart/Prepare the media player
+        mMediaPlayer.onStart();
+
+        Log.d(LOG_TAG, "onStart");
     }
 
     @Override
@@ -141,6 +150,10 @@ public class EditorActivity extends Activity {
         super.onPause();
         // Another activity is taking focus (this activity is about to be "paused").
 
+        // Stop if any media player playback
+        mMediaPlayer.onStop();
+        mMediaStream.onStop();
+
         Log.d(LOG_TAG, "onPause");
     }
 
@@ -148,10 +161,6 @@ public class EditorActivity extends Activity {
     protected void onStop() {
         super.onStop();
         // The activity is no longer visible (it is now "stopped")
-
-        // Stop if any media player playback
-        mMediaPlayer.onStop();
-        mMediaStream.onStop();
 
         Log.d(LOG_TAG, "onStop");
     }

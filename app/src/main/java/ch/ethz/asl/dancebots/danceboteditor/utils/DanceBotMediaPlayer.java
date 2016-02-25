@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -28,12 +29,11 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
     private MediaPlayer mMediaPlayer;
     private boolean mIsReady = false;
     private boolean mIsPlaying = false;
-    private int mTotalTime;
     private DanceBotMusicFile mMusicFile;
     private Button mPlayPauseButton;
     private MediaPlayerListener mEventListener;
 
-    public DanceBotMediaPlayer(Activity activity, DanceBotMusicFile musicFile) {
+    public DanceBotMediaPlayer(Activity activity) {
 
         mActivity = activity;
 
@@ -41,35 +41,25 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
         mMediaPlayer = new MediaPlayer();
         // Attach on completion listener
         mMediaPlayer.setOnCompletionListener(this);
-
-        // Set selected music file as data source
-        setDataSource(musicFile);
     }
 
     public void setEventListener(MediaPlayerListener eventListener) {
         mEventListener = eventListener;
     }
 
-    public void setMediaPlayerSeekBar(SeekBar seekBar, TextView currentTime, TextView totalTime) {
+    public void setMediaPlayerSeekBar(SeekBar seekBar) {
 
         // Prepare seek bar for the selected song
         mSeekBar = seekBar;
         // Register media player to seek bar
         CompositeSeekBarListener.registerListener(this);
-
-        // Init seek bar labels
-        mSeekBarCurrentTimeView = currentTime;
-        mSeekBarTotalTimeView = totalTime;
-
-        mSeekBarCurrentTimeView.setText(Helper.songTimeFormat(0));
-        mSeekBarTotalTimeView.setText(Helper.songTimeFormat(0));
     }
 
     public void setPlayButton(Button playButton) {
         mPlayPauseButton = playButton;
     }
 
-    private void setDataSource(DanceBotMusicFile musicFile) {
+    public void setDataSource(DanceBotMusicFile musicFile) {
 
         // Bind music file as a lot information is needed later
         mMusicFile = musicFile;
@@ -83,22 +73,8 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
             mMediaPlayer.setDataSource(mActivity, songUri);
             mMediaPlayer.prepare();
             mIsReady = true;
-
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        // Store other important music file properties
-        mTotalTime = mMusicFile.getDurationInMilliSecs();
-
-        // Update max seek bar
-        if (mSeekBar != null) {
-            mSeekBar.setMax(mMediaPlayer.getDuration());
-        }
-
-        // Update total time view
-        if (mSeekBarTotalTimeView != null) {
-            mSeekBarTotalTimeView.setText(Helper.songTimeFormat(mTotalTime));
         }
     }
 
@@ -122,6 +98,16 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
     @Override
     public boolean isPlaying() {
         return mIsPlaying;
+    }
+
+    @Override
+    public void setPlayButtonPlay() {
+        mPlayPauseButton.setText(R.string.txt_play);
+    }
+
+    @Override
+    public void setPlayButtonPause() {
+        mPlayPauseButton.setText(R.string.txt_pause);
     }
 
     @Override
@@ -162,7 +148,7 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         if (mEventListener != null) {
-            mEventListener.stopListening();
+            mEventListener.stopListening(MediaPlayerListener.DEFAULT_FLAG);
         }
     }
 
@@ -180,7 +166,7 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
         }
 
         if (mEventListener != null) {
-            mEventListener.stopListening();
+            mEventListener.stopListening(MediaPlayerListener.DEFAULT_FLAG);
         }
     }
 
@@ -191,15 +177,39 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
         if (mMediaPlayer != null) {
             if (mMediaPlayer.isPlaying()) {
                 mMediaPlayer.stop();
+                mIsReady = false;
+                mIsPlaying = false;
             }
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
     }
 
-    public void onStop() {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
+    public void onStart() {
+        try {
+            if (!mIsReady) {
+                mMediaPlayer.prepare();
+                mIsReady = true;
+                Log.d(LOG_TAG, "onStart: media player prepared");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
+    public void onStop() {
+
+        if (mIsPlaying && mEventListener != null) {
+            mEventListener.stopListening(MediaPlayerListener.STOP_PLAYING_FLAG);
+            Log.d(LOG_TAG, "onStop: media player running, but stopping now");
+        }
+
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mIsReady = false;
+            mIsPlaying = false;
+            Log.d(LOG_TAG, "onStop: media player stopped");
+        }
+    }
+
 }
