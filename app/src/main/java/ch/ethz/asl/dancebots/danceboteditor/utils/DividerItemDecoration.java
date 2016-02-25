@@ -12,10 +12,12 @@ import android.view.View;
  */
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
+    protected VisibilityProvider mVisibilityProvider;
     private Drawable mDivider;
 
-    public DividerItemDecoration(Drawable divider) {
+    public DividerItemDecoration(Drawable divider, VisibilityProvider visibilityProvider) {
         mDivider = divider;
+        mVisibilityProvider = visibilityProvider;
     }
 
     @Override
@@ -28,6 +30,13 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
+            int childPosition = parent.getChildAdapterPosition(child);
+
+            // Hide divider if specified
+            if (mVisibilityProvider.shouldHideDivider(childPosition, parent)) {
+                continue;
+            }
+
             final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child
                     .getLayoutParams();
             final int left = child.getRight() + params.rightMargin +
@@ -42,10 +51,29 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
 
+        /**
+         * I think this is not needed
+         */
+        /*
         if (mDivider == null) {
             return;
         }
-
         outRect.set(0, 0, mDivider.getIntrinsicWidth(), 0);
+        */
+    }
+
+    /**
+     * Interface for controlling divider visibility
+     */
+    public interface VisibilityProvider {
+
+        /**
+         * Returns true if divider should be hidden.
+         *
+         * @param position Divider position (or group index for GridLayoutManager)
+         * @param parent   RecyclerView
+         * @return True if the divider at position should be hidden
+         */
+        boolean shouldHideDivider(int position, RecyclerView parent);
     }
 }

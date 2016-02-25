@@ -56,4 +56,15 @@ public class DanceSequence<T extends BeatElement> {
         return elemIndices;
     }
 
+    public boolean isMiddleElement(int position) {
+
+        int startIdx = mStartElement.getBeatPosition();
+        boolean isMiddle = false;
+
+        if (position >= startIdx && position < startIdx + mLength - 1) {
+            isMiddle = true;
+        }
+
+        return isMiddle;
+    }
 }

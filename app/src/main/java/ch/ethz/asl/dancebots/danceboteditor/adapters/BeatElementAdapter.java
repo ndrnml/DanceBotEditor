@@ -19,11 +19,12 @@ import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.model.Choreography;
 import ch.ethz.asl.dancebots.danceboteditor.model.DanceSequence;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
 
 /**
  * Created by andrin on 28.08.15.
  */
-public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adapter<BeatElementAdapter.ListItemViewHolder> {
+public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adapter<BeatElementAdapter.ListItemViewHolder> implements DividerItemDecoration.VisibilityProvider {
 
     private final Context mContext;
     private ArrayList<T> mBeatElements;
@@ -36,8 +37,9 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public static class ListItemViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
+        // Each data item is just a string in this case
         public TextView mTextView;
+        public int hugo = 39;
 
         public ListItemViewHolder(View textView) {
             super(textView);
@@ -160,5 +162,19 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
 
     public BeatElement getItem(int position) {
         return mBeatElements.get(position);
+    }
+
+    @Override
+    public boolean shouldHideDivider(int position, RecyclerView parent) {
+
+        BeatElement selBeatElem = mBeatElements.get(position);
+        DanceSequence<T> danceSequence = mChoregoraphy.getDanceSequence(selBeatElem.getDanceSequenceId());
+        boolean isMiddleElement = false;
+
+        if (danceSequence != null) {
+            isMiddleElement = danceSequence.isMiddleElement(position);
+        }
+
+        return isMiddleElement;
     }
 }

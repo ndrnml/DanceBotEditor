@@ -28,6 +28,8 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
     // Offset to the 'border' when scrolling to the selected element
     private static final int SCROLL_OFFSET = 20;
 
+    private final Drawable mDivider;
+
     private LinearLayoutManager mMotorLayoutManager;
     private LinearLayoutManager mLedLayoutManager;
     private RecyclerView mMotorView;
@@ -63,13 +65,12 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         mLedLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
         // Get divider drawable
-        Drawable divider = activity.getResources().getDrawable(R.drawable.divider);
+        mDivider = activity.getResources().getDrawable(R.drawable.divider);
 
         // Attach motor adapter and linear layout manager to the horizontal recycler view
         mMotorView = (RecyclerView) activity.findViewById(R.id.motor_element_list);
         mMotorView.setHasFixedSize(true);
         mMotorView.setLayoutManager(mMotorLayoutManager);
-        mMotorView.addItemDecoration(new DividerItemDecoration(divider));
         mMotorView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
 
             private int mLastX;
@@ -120,7 +121,6 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         mLedView = (RecyclerView) activity.findViewById(R.id.led_element_list);
         mLedView.setHasFixedSize(true);
         mLedView.setLayoutManager(mLedLayoutManager);
-        mLedView.addItemDecoration(new DividerItemDecoration(divider));
         mLedView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
 
             private int mLastX;
@@ -173,6 +173,8 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
         // Attach led element adapter
         mLedView.setAdapter(ledAdapter);
+        mLedView.addItemDecoration(new DividerItemDecoration(mDivider, ledAdapter));
+
         // Notify adapter that list content changed
         ledAdapter.notifyDataSetChanged();
     }
@@ -182,6 +184,8 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
         // Attach motor element adapter
         mMotorView.setAdapter(motorAdapter);
+        mMotorView.addItemDecoration(new DividerItemDecoration(mDivider, motorAdapter));
+
         // Notify adapter that list content changed
         motorAdapter.notifyDataSetChanged();
     }
