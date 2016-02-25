@@ -78,12 +78,12 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
         ArrayList<LedBeatElement> ledElements = initLedBeatElements(musicFile);
         mLedChoregraphy = new Choreography<>(ledElements);
 
-        mBeatViews.setLedElementAdapter(new BeatElementAdapter<>(mContext, ledElements));
+        mBeatViews.setLedElementAdapter(new BeatElementAdapter<>(mContext, ledElements, mLedChoregraphy));
 
         ArrayList<MotorBeatElement> motorElements = initMotorBeatElements(musicFile);
         mMotorChoreography = new Choreography<>(motorElements);
 
-        mBeatViews.setMotorElementAdapter(new BeatElementAdapter<>(mContext, motorElements));
+        mBeatViews.setMotorElementAdapter(new BeatElementAdapter<>(mContext, motorElements, mMotorChoreography));
 
         mMusicFile = musicFile;
     }
@@ -119,7 +119,7 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
                     ledFrequencyVal.getValAt(selectedFrequencyIdx),
                     ledLightSwitches);
 
-            if (selectedBeatElem.getChoreographyID() == null) {
+            if (selectedBeatElem.getDanceSequenceId() == null) {
 
                 mLedChoregraphy.addNewDanceSequence((LedBeatElement) selectedBeatElem, selectedChoreoLength.getValAt(selectedChoreoLengthIdx));
 
@@ -140,7 +140,7 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
                     leftVelocityVal.getValAt(selectedVelocityLeftIdx),
                     rightVelocityVal.getValAt(selectedVelocityRightIdx));
 
-            if (selectedBeatElem.getChoreographyID() == null) {
+            if (selectedBeatElem.getDanceSequenceId() == null) {
 
                 mMotorChoreography.addNewDanceSequence((MotorBeatElement) selectedBeatElem, selectedChoreoLength.getValAt(selectedChoreoLengthIdx));
 
@@ -156,7 +156,7 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
     public void processNegativeClick(BeatElement selectedBeatElem) {
 
         // Check if dance sequence exists
-        if (selectedBeatElem.getChoreographyID() != null) {
+        if (selectedBeatElem.getDanceSequenceId() != null) {
 
             if (selectedBeatElem.getClass() == LedBeatElement.class) { // LED_TYPE
 

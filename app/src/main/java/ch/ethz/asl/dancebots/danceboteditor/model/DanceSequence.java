@@ -1,5 +1,7 @@
 package ch.ethz.asl.dancebots.danceboteditor.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -43,6 +45,15 @@ public class DanceSequence<T extends BeatElement> {
 
     public int getLength() {
         return mLength;
+    }
+
+    public List<Integer> getElementIndices() {
+        int startIndex = mStartElement.getBeatPosition();
+        List<Integer> elemIndices = new ArrayList<>();
+        for (int i = 0; i < mLength; ++i) {
+            elemIndices.add(startIndex + i);
+        }
+        return elemIndices;
     }
 
 }

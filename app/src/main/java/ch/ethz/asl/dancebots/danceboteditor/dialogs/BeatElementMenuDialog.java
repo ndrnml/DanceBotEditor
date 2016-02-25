@@ -3,7 +3,6 @@ package ch.ethz.asl.dancebots.danceboteditor.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -363,7 +362,7 @@ public class BeatElementMenuDialog extends DialogFragment {
         });
 
         // Only show discard button if selected beat element already belongs to a dance sequence
-        if (mBeatElement.getChoreographyID() == null) {
+        if (mBeatElement.getDanceSequenceId() == null) {
             mBeatElementMenuView.findViewById(R.id.beatmenu_btn_discard).setVisibility(View.GONE);
         }
 

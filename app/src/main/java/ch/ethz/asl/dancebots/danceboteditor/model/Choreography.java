@@ -104,7 +104,7 @@ public class Choreography<T extends BeatElement> {
     public void updateDanceSequence(T elem, int newDanceSequenceLength) {
 
         // Get unique identifier of existing dance sequence
-        UUID danceSequenceID = elem.getChoreographyID();
+        UUID danceSequenceID = elem.getDanceSequenceId();
 
         // Get old dance sequence
         DanceSequence<T> oldDanceSequence = mDanceSequences.get(danceSequenceID);
@@ -153,7 +153,7 @@ public class Choreography<T extends BeatElement> {
     public void removeDanceSequence(T selectedBeatElem) {
 
         // Get unique identifier of existing dance sequence
-        UUID danceSequenceID = selectedBeatElem.getChoreographyID();
+        UUID danceSequenceID = selectedBeatElem.getDanceSequenceId();
 
         DanceSequence<T> selectedDanceSequence = mDanceSequences.get(danceSequenceID);
 
@@ -250,7 +250,7 @@ public class Choreography<T extends BeatElement> {
      * @return true if element is not yet assigned
      */
     private boolean isNotAssignedToOther(UUID choreoID, T elem) {
-        return ((elem.getChoreographyID() == null) || (elem.getChoreographyID() == choreoID));
+        return ((elem.getDanceSequenceId() == null) || (elem.getDanceSequenceId() == choreoID));
     }
 
     /**
@@ -260,4 +260,7 @@ public class Choreography<T extends BeatElement> {
         return mBeatElements;
     }
 
+    public DanceSequence<T> getDanceSequence(UUID choreographyID) {
+        return mDanceSequences.get(choreographyID);
+    }
 }

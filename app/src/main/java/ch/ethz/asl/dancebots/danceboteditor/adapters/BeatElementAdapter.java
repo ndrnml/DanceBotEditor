@@ -11,10 +11,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import ch.ethz.asl.dancebots.danceboteditor.dialogs.BeatElementMenuDialog;
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.model.Choreography;
+import ch.ethz.asl.dancebots.danceboteditor.model.DanceSequence;
 
 /**
  * Created by andrin on 28.08.15.
@@ -24,6 +28,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
     private final Context mContext;
     private ArrayList<T> mBeatElements;
     private int mPlayingItem;
+    private Choreography<T> mChoregoraphy;
 
     private SparseBooleanArray selectedItems = new SparseBooleanArray();
 
@@ -40,10 +45,12 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         }
     }
 
-    public BeatElementAdapter(Context context, ArrayList<T> elems) {
+    public BeatElementAdapter(Context context, ArrayList<T> elems, Choreography<T> choreography) {
 
         mContext = context;
         mBeatElements = elems;
+        mChoregoraphy = choreography;
+
         mPlayingItem = 0;
     }
 
@@ -51,7 +58,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         mPlayingItem = position;
     }
 
-    private void selectDanceSequence(ArrayList<Integer> selectedElems) {
+    private void selectDanceSequence(List<Integer> selectedElems) {
 
         for (int elem : selectedElems) {
             if (selectedItems.get(elem, false)) {
@@ -95,8 +102,15 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
             public boolean onLongClick(View v) {
 
                 Toast mToast = Toast.makeText(mContext, "", Toast.LENGTH_LONG);
-                mToast.setText("Item long clicked: " + listItemViewHolder.getPosition());
+                mToast.setText("Item long clicked: " + listItemViewHolder.getAdapterPosition());
                 mToast.show();
+
+                BeatElement selBeatElem = mBeatElements.get(listItemViewHolder.getAdapterPosition());
+                DanceSequence<T> danceSequence = mChoregoraphy.getDanceSequence(selBeatElem.getDanceSequenceId());
+
+                if (danceSequence != null) {
+                    selectDanceSequence(danceSequence.getElementIndices());
+                }
 
                 return true;
             }

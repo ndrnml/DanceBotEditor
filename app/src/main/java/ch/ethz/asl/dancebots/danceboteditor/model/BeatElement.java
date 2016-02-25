@@ -18,6 +18,7 @@ public abstract class BeatElement {
 
     // Choreography properties of a beat element
     protected UUID mChoreographyID;
+    protected DanceSequence mDanceSequence;
 
     // Menu property index of a beat element
     //protected MotionType mMotionType;
@@ -116,7 +117,7 @@ public abstract class BeatElement {
      * @return
      */
     public boolean isSameDanceSequence(BeatElement elem) {
-        return (mChoreographyID == elem.getChoreographyID());
+        return (mChoreographyID == elem.getDanceSequenceId());
     }
 
     //TODO
@@ -161,7 +162,8 @@ public abstract class BeatElement {
     public float getFrequencyVal() {
         return mFrequencyVal;
     }
-    public UUID getChoreographyID() {
+    public UUID getDanceSequenceId() {
         return mChoreographyID;
     }
+
 }
