@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import ch.ethz.asl.dancebots.danceboteditor.dialogs.BeatElementMenuDialog;
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
@@ -39,7 +38,6 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
     public static class ListItemViewHolder extends RecyclerView.ViewHolder {
         // Each data item is just a string in this case
         public TextView mTextView;
-        public int hugo = 39;
 
         public ListItemViewHolder(View textView) {
             super(textView);

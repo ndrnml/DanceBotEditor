@@ -1,6 +1,7 @@
 package ch.ethz.asl.dancebots.danceboteditor.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -55,20 +56,20 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         }
     };
 
-    public HorizontalRecyclerViews(Activity activity) {
+    public HorizontalRecyclerViews(Context context) {
 
         // Initialize and setup linear layout manager
-        mMotorLayoutManager = new LinearLayoutManager(activity.getApplicationContext());
-        mLedLayoutManager = new LinearLayoutManager(activity.getApplicationContext());
+        mMotorLayoutManager = new LinearLayoutManager(context.getApplicationContext());
+        mLedLayoutManager = new LinearLayoutManager(context.getApplicationContext());
 
         mMotorLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mLedLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
         // Get divider drawable
-        mDivider = activity.getResources().getDrawable(R.drawable.divider);
+        mDivider = context.getDrawable(R.drawable.divider);
 
         // Attach motor adapter and linear layout manager to the horizontal recycler view
-        mMotorView = (RecyclerView) activity.findViewById(R.id.motor_element_list);
+        mMotorView = (RecyclerView) ((Activity) context).findViewById(R.id.motor_element_list);
         mMotorView.setHasFixedSize(true);
         mMotorView.setLayoutManager(mMotorLayoutManager);
         mMotorView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
@@ -118,7 +119,7 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         });
 
         // Attach led adapter and linear layout manager
-        mLedView = (RecyclerView) activity.findViewById(R.id.led_element_list);
+        mLedView = (RecyclerView) ((Activity) context).findViewById(R.id.led_element_list);
         mLedView.setHasFixedSize(true);
         mLedView.setLayoutManager(mLedLayoutManager);
         mLedView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
@@ -224,7 +225,6 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         BeatElementAdapter motorAdapter = (BeatElementAdapter) mMotorView.getAdapter();
         motorAdapter.setPlayingItem(position);
         motorAdapter.notifyDataSetChanged();
-        //motorAdapter.notifyItemChanged(position); TODO Maybe more efficient
 
         // Set focus of current beat element in led view
         BeatElementAdapter ledAdapter = (BeatElementAdapter) mLedView.getAdapter();
