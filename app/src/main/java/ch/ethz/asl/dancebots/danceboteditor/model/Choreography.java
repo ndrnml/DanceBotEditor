@@ -226,7 +226,10 @@ public class Choreography<T extends BeatElement> {
         // Get unique identifier of existing dance sequence
         UUID danceSequenceID = selectedBeatElem.getDanceSequenceId();
 
-        removeDanceSequence(danceSequenceID, selectedBeatElem.getBeatPosition(), selectedBeatElem.getBeatPosition() + mDanceSequences.get(danceSequenceID).getLength());
+        // Get starting element
+        T startElement = mDanceSequences.get(danceSequenceID).getStartElement();
+
+        removeDanceSequence(danceSequenceID, startElement.getBeatPosition(), startElement.getBeatPosition() + mDanceSequences.get(danceSequenceID).getLength());
     }
 
     /**
