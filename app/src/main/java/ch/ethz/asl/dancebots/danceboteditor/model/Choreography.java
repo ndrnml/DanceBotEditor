@@ -107,10 +107,12 @@ public class Choreography<T extends BeatElement> {
     }
 
     /**
+     * Compute the maximum length, that a dance sequence can possibly have, starting at start index
+     * without interfering with other dance sequences
      *
-     * @param startIdx
-     * @param danceSequenceLength
-     * @return
+     * @param startIdx start sequence of the selected dance sequence
+     * @param danceSequenceLength expected dance sequence length
+     * @return the maximum calculated length possible, starting from start index
      */
     private int getMaxLength(int startIdx, int danceSequenceLength) {
         // First element already belongs to the sequence
@@ -153,55 +155,10 @@ public class Choreography<T extends BeatElement> {
     }
 
 
-    /*
-    public void updateDanceSequence(T elem, int newDanceSequenceLength) {
-
-        // Get unique identifier of existing dance sequence
-        UUID danceSequenceID = elem.getDanceSequenceId();
-
-        // Get old dance sequence
-        DanceSequence<T> oldDanceSequence = mDanceSequences.get(danceSequenceID);
-
-        // Get old start element of existing dance sequence
-        T oldStartElement = oldDanceSequence.getStartElement();
-
-        // Get old dance sequence length
-        int oldSequenceLength = oldDanceSequence.getLength();
-
-        // Copy updated dance sequence properties to old start element
-        oldStartElement.setProperties(elem);
-
-        // If old dance sequence was longer, free the remaining elements
-        if (newDanceSequenceLength < oldSequenceLength) {
-
-            int removeFrom = oldStartElement.getBeatPosition() + newDanceSequenceLength;
-            int removeTo = oldStartElement.getBeatPosition() + oldSequenceLength - 1;
-
-            // Remove elements (including the first and the last one)
-            for (int i = removeFrom; i <= removeTo; ++i) {
-
-                // Get next element to remove
-                T nextElem = mBeatElements.get(i);
-
-                // Set default properties
-                nextElem.setDefaultProperties();
-
-                if (i + 1 >= mNumBeats) {
-                    break;
-                }
-            }
-        }
-
-        // Overwrite existing elements
-        overwriteElements(oldDanceSequence.getChoreographyID(), oldStartElement, newDanceSequenceLength);
-
-        // Update dance sequence
-        oldDanceSequence.updateProperties(danceSequenceID, oldStartElement, newDanceSequenceLength);
-    }*/
-
     /**
      * Remove dance sequence from hash map and reset beat elements from start to end index to default
-     * @param uuid
+     *
+     * @param uuid the uuid of the dance sequence, which should be removed
      * @param startIdx start index belonging to the dance sequence
      * @param endIdx end index does not belong to dance sequence anymore
      */
@@ -218,8 +175,9 @@ public class Choreography<T extends BeatElement> {
 
 
     /**
+     * Remove dance sequence from hash map and reset beat elements from start to end index to default
      *
-     * @param selectedBeatElem
+     * @param selectedBeatElem beat element for which the dance sequence should be completely removed
      */
     public void removeDanceSequence(T selectedBeatElem) {
 
