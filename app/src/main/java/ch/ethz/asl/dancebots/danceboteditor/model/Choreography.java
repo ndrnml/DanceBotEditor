@@ -61,6 +61,17 @@ public class Choreography<T extends BeatElement> {
 
         T nextElem;
 
+        // Before we start adding new dance sequence elements check max length
+        int maxLength = getMaxLength(startIdx, danceSequenceLength);
+
+        // If max length is shorter than the chosen dance sequence length, we have to overwrite
+        // the length values in the dance sequence and the current selected length value
+        // TODO: The menu index values are not yet adjusted
+        if (maxLength < danceSequenceLength) {
+            danceSequenceLength = maxLength;
+            danceSeq.setLength(maxLength);
+        }
+
         /*
          * Update element if it does not belong to any choreography and if the current length is
          * less than the total choreography length, and current position is less than total beats
@@ -81,10 +92,10 @@ public class Choreography<T extends BeatElement> {
                 nextElem.setProperties(startElem);
 
                 // Increment the current length
-                length += 1;
+                length++;
 
                 // Increment element
-                nextElemIdx += 1;
+                nextElemIdx++;
 
             } else {
 
@@ -96,11 +107,51 @@ public class Choreography<T extends BeatElement> {
     }
 
     /**
+     *
+     * @param startIdx
+     * @param danceSequenceLength
+     * @return
+     */
+    private int getMaxLength(int startIdx, int danceSequenceLength) {
+        // First element already belongs to the sequence
+        int length = 1;
+
+        // Start from second element and check whether it is already assigned
+        for (int i = startIdx + 1; i < startIdx + danceSequenceLength; ++i) {
+            if (mBeatElements.get(i).getDanceSequenceId() != null) {
+                break;
+            }
+            length++;
+        }
+        return length;
+    }
+
+    /**
      * Update existing BeatElements and handle (if there exist) remaining BeatElements
      *
      * @param elem dance sequence identifier for which elements should be updated
-     * @param newDanceSequenceLength starting element
+     * @param danceSequenceLength starting element
      */
+    public void updateDanceSequence(T elem, int danceSequenceLength) {
+
+        // Get dance sequence
+        UUID danceSequenceID = elem.getDanceSequenceId();
+
+        // Get starting element
+        T startElement = mDanceSequences.get(danceSequenceID).getStartElement();
+
+        // Copy selected properties
+        startElement.setProperties(elem);
+
+        // Remove old dance sequence
+        removeDanceSequence(danceSequenceID, startElement.getBeatPosition() + 1, startElement.getBeatPosition() + mDanceSequences.get(danceSequenceID).getLength());
+
+        // Add a new dance sequence
+        addNewDanceSequence(startElement, danceSequenceLength);
+    }
+
+
+    /*
     public void updateDanceSequence(T elem, int newDanceSequenceLength) {
 
         // Get unique identifier of existing dance sequence
@@ -144,7 +195,25 @@ public class Choreography<T extends BeatElement> {
 
         // Update dance sequence
         oldDanceSequence.updateProperties(danceSequenceID, oldStartElement, newDanceSequenceLength);
+    }*/
+
+    /**
+     * Remove dance sequence from hash map and reset beat elements from start to end index to default
+     * @param uuid
+     * @param startIdx start index belonging to the dance sequence
+     * @param endIdx end index does not belong to dance sequence anymore
+     */
+    public void removeDanceSequence(UUID uuid, int startIdx, int endIdx) {
+
+        // Delete dance sequence from hash map
+        mDanceSequences.remove(uuid);
+
+        // Iterate over all elements and set to default
+        for (int i = startIdx; i < endIdx; ++i) {
+            mBeatElements.get(i).setDefaultProperties();
+        }
     }
+
 
     /**
      *

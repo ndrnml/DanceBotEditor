@@ -76,4 +76,8 @@ public class DanceSequence<T extends BeatElement> {
 
         return isMiddle;
     }
+
+    public void setLength(int length) {
+        mLength = length;
+    }
 }
