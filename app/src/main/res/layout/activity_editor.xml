@@ -62,19 +62,17 @@
             android:splitMotionEvents="false"
             android:theme="@style/HorizontalListView">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/motor_element_list"
-                android:layout_width="wrap_content"
-                android:layout_height="120dp"
-                android:background="@color/motor_list_default_color"
-                tools:context=".EditorActivity" />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/motor_element_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="120dp"
+                    tools:context=".EditorActivity" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/led_element_list"
-                android:layout_width="wrap_content"
-                android:layout_height="120dp"
-                android:background="@color/led_list_default_color"
-                tools:context=".EditorActivity" />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/led_element_list"
+                    android:layout_width="wrap_content"
+                    android:layout_height="120dp"
+                    tools:context=".EditorActivity" />
 
         </LinearLayout>
 

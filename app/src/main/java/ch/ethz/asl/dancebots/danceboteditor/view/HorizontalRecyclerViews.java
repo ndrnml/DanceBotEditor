@@ -218,12 +218,13 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
         // Set focus of current beat element in motor view
         BeatElementAdapter motorAdapter = (BeatElementAdapter) mMotorView.getAdapter();
-        motorAdapter.setSelected(position);
+        motorAdapter.setPlayingItem(position);
         motorAdapter.notifyDataSetChanged();
+        //motorAdapter.notifyItemChanged(position); TODO Maybe more efficient
 
         // Set focus of current beat element in led view
         BeatElementAdapter ledAdapter = (BeatElementAdapter) mLedView.getAdapter();
-        ledAdapter.setSelected(position);
+        ledAdapter.setPlayingItem(position);
         ledAdapter.notifyDataSetChanged();
     }
 }

@@ -3,10 +3,12 @@ package ch.ethz.asl.dancebots.danceboteditor.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -17,22 +19,24 @@ import ch.ethz.asl.dancebots.danceboteditor.R;
 /**
  * Created by andrin on 28.08.15.
  */
-public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adapter<BeatElementAdapter.SimpleViewHolder> {
+public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adapter<BeatElementAdapter.ListItemViewHolder> {
 
     private final Context mContext;
     private ArrayList<T> mBeatElements;
-    private int mSelectedItem;
+    private int mPlayingItem;
+
+    private SparseBooleanArray selectedItems = new SparseBooleanArray();
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class SimpleViewHolder extends RecyclerView.ViewHolder {
+    public static class ListItemViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public TextView mTextView;
 
-        public SimpleViewHolder(TextView v) {
-            super(v);
-            mTextView = v;
+        public ListItemViewHolder(View textView) {
+            super(textView);
+            mTextView = (TextView) textView.findViewById(R.id.tv_list_item);
         }
     }
 
@@ -40,69 +44,98 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
 
         mContext = context;
         mBeatElements = elems;
-        mSelectedItem = 0;
+        mPlayingItem = 0;
     }
 
-    public void setSelected(int position) {
-        mSelectedItem = position;
+    public void setPlayingItem(int position) {
+        mPlayingItem = position;
+    }
+
+    private void selectDanceSequence(ArrayList<Integer> selectedElems) {
+
+        for (int elem : selectedElems) {
+            if (selectedItems.get(elem, false)) {
+                selectedItems.delete(elem);
+            } else {
+                selectedItems.put(elem, true);
+            }
+
+            notifyItemChanged(elem);
+        }
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public BeatElementAdapter.SimpleViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
+    public ListItemViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
 
         // Create a new view
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.beat_element, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.beat_element, parent, false);
 
         // Set the view's size, margins, paddings and layout parameters
-        final SimpleViewHolder vh = new SimpleViewHolder((TextView) v);
+        final ListItemViewHolder listItemViewHolder = new ListItemViewHolder(itemView);
 
-        // TODO Ensure long clicks are also registered
-        vh.mTextView.setLongClickable(true);
+        // Ensure long clicks are enabled
+        listItemViewHolder.mTextView.setLongClickable(true);
 
         // Create and attach on click listener
-        vh.mTextView.setOnClickListener(new View.OnClickListener() {
+        listItemViewHolder.mTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 BeatElementMenuDialog dialog = new BeatElementMenuDialog();
 
-                dialog.initializeMenuFromElement(BeatElementAdapter.this, mBeatElements.get(vh.getAdapterPosition()));
+                dialog.initializeMenuFromElement(BeatElementAdapter.this, mBeatElements.get(listItemViewHolder.getAdapterPosition()));
                 dialog.show(((Activity) mContext).getFragmentManager(), "element_menu");
             }
         });
 
         // Create and attach on long click listener
-        /*vh.mTextView.setOnLongClickListener(new View.OnLongClickListener() {
+        listItemViewHolder.mTextView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
 
-                mToast.setText(": Item long clicked: " + vh.getPosition());
+                Toast mToast = Toast.makeText(mContext, "", Toast.LENGTH_LONG);
+                mToast.setText("Item long clicked: " + listItemViewHolder.getPosition());
                 mToast.show();
 
                 return true;
             }
-        });*/
+        });
 
-        return vh;
+        return listItemViewHolder;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(SimpleViewHolder holder, int position) {
+    public void onBindViewHolder(ListItemViewHolder viewHolder, int position) {
+
         /*
          * Get element from dataset at this position
          * Replace the contents of the view with that element
          * Populate the data into the template view using the data object
          */
-        holder.mTextView.setText(mBeatElements.get(position).getMotionType().getTag());
+        viewHolder.mTextView.setText(mBeatElements.get(position).getMotionType().getTag());
 
+        /**
+         * It would be nice to perform all selected and active elements with 'selector' in a xml file.
+         *
+         * Each motion has its own background color which is set here. This background color
+         * overwrites all active or selected states set by the view holder.
+         *
+         * viewHolder.itemView.setSelected(true);
+         * viewHolder.itemView.setActivated(selectedItems.get(position, false));
+         */
         // Stylize list item according to type
-        holder.mTextView.setBackgroundColor(mBeatElements.get(position).getMotionType().getColor());
+        viewHolder.itemView.setBackgroundColor(mBeatElements.get(position).getMotionType().getColor());
 
-        // Set selected item
-        if (mSelectedItem == position) {
-            holder.mTextView.setBackground(mContext.getDrawable(R.drawable.selected_item));
+        // Set background color of current playing/(selected) item
+        if (mPlayingItem == position) {
+            viewHolder.itemView.setBackground(mContext.getDrawable(R.drawable.playing_item));
+        }
+
+        // Set background color of activate items, belonging to this dance sequence
+        if (selectedItems.get(position, false)) {
+            viewHolder.itemView.setBackground(mContext.getDrawable(R.drawable.activated_item));
         }
     }
 

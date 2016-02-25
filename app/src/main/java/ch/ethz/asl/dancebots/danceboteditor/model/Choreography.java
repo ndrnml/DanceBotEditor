@@ -28,8 +28,8 @@ public class Choreography<T extends BeatElement> {
     /**
      * Add a new dance sequence to the choreography
      *
-     * @param beatElem
-     * @param danceSequenceLength
+     * @param beatElem selected beat element
+     * @param danceSequenceLength selected dance sequence length
      */
     public void addNewDanceSequence(T beatElem, int danceSequenceLength) {
 
@@ -216,8 +216,8 @@ public class Choreography<T extends BeatElement> {
                 // If the next element already was assigned, stop here.
                 break;
             }
-
         }
+
     }
 
     /**
