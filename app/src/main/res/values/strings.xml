@@ -43,4 +43,5 @@
     <string name="menu_lights">Lichter</string>
     <string name="menu_lengths">Länge</string>
     <string name="txt_stream">stream</string>
+    <string name="string_dance_sequence_menu_title">"Tanz Menü ab Element: "</string>
 </resources>

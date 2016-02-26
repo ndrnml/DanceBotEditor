@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 
@@ -26,14 +27,18 @@ public class SubMenuDialog extends DialogFragment {
     private BeatElementMenuDialog.MENU_TYPE mMenuType;
     private String[] mMenuList;
     private int mMenuListIdx;
+    private int mMenuTitleResource;
 
     public void initializeSubMenu(BeatElementMenuDialog dialog,
                                   BeatElementMenuDialog.MENU_TYPE menuType,
-                                  String[] menuList, int menuListIdx) {
+                                  String[] menuList,
+                                  int menuListIdx,
+                                  int menuTitleResource) {
         mCallerDialog = dialog;
         mMenuType = menuType;
         mMenuList = menuList;
         mMenuListIdx = menuListIdx;
+        mMenuTitleResource = menuTitleResource;
     }
 
     @Override
@@ -48,7 +53,8 @@ public class SubMenuDialog extends DialogFragment {
         mSubmenuView = inflater.inflate(R.layout.menu_sub_element, null);
 
         // TODO Get title view
-        //final TextView subMenuTitleView = (TextView) mSubmenuView.findViewById(R.id.id_submenu_title);
+        final TextView subMenuTitleView = (TextView) mSubmenuView.findViewById(R.id.id_submenu_title);
+        subMenuTitleView.setText(mMenuTitleResource);
 
         // Get number picker view
         final NumberPicker numberPicker = (NumberPicker) mSubmenuView.findViewById(R.id.submenu_element_picker);
@@ -68,9 +74,6 @@ public class SubMenuDialog extends DialogFragment {
                 int i = 1;
             }
         });
-
-        // Compose submenu dialog with custom elements
-        //builder.setTitle("MenuName: "); TODO. Either setTitle or customize TextView
 
         // Setup dialog view and buttons
         builder.setView(mSubmenuView)

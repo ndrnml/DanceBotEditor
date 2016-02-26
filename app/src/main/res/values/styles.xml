@@ -10,7 +10,7 @@
     </style>
 
     <style name="DialogMenuView">
-        <item name="android:padding">32dp</item>
+        <item name="android:padding">28dp</item>
     </style>
 
     <style name="DialogMenuElement" parent="@android:style/TextAppearance.Medium">
