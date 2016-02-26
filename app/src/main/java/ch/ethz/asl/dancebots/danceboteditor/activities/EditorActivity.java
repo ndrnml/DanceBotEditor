@@ -240,8 +240,22 @@ public class EditorActivity extends Activity {
 
             case R.id.editor_action_save:
 
-                // Start saving the project mp3
-                SoundManager.startEncoding(EditorActivity.this, mProjectManager.getDanceBotMusicFile(), mProjectManager.getChoreoManager());
+                // Ask if user really wants to save file
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(EditorActivity.this);
+
+                alertDialog.setPositiveButton(R.string.txt_yes, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Start saving the project mp3
+                        SoundManager.startEncoding(EditorActivity.this, mProjectManager.getDanceBotMusicFile(), mProjectManager.getChoreoManager());
+                    }
+                });
+
+                alertDialog.setNegativeButton(R.string.txt_no, null);
+                alertDialog.setMessage(R.string.string_alert_save_file_message);
+                alertDialog.setTitle(R.string.string_alert_save_file_title);
+                alertDialog.show();
 
                 return true;
 

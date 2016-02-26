@@ -1,8 +1,5 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
 /**
  * The DanceBotMusicFile class stores all relevant data about the selected song.
  * Meta data, details and extracted beats are stored in this object.
@@ -19,8 +16,6 @@ public class DanceBotMusicFile {
     private long mNumberOfSamples;
     private int mSampleRate;
     private int mChannels;
-    private final int mEncoding = Short.SIZE; // This is set in Mp3Decoder.cpp to MPG123_ENC_SIGNED_16 (short)
-
 
     // Decoding and Beat Extraction
     private int mNumberOfBeatsDetected;
@@ -70,9 +65,6 @@ public class DanceBotMusicFile {
     }
     public int getDurationInMilliSecs() {
         return mDurationInMiliSeconds;
-    }
-    public int getDurationInSecs() {
-        return (mDurationInMiliSeconds / 1000);
     }
     public int getBeatCount() {
         return mNumberOfBeatsDetected;

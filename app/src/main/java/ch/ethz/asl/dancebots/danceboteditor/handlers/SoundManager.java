@@ -307,6 +307,14 @@ public class SoundManager {
         return decodeTask;
     }
 
+    /**
+     * Start the encoding and saving process of a music file in combination with dance sequence data
+     *
+     * @param context Context for all the dialogs
+     * @param musicFile music file which will be encoded in one channel
+     * @param choreoManager choreography manager provides the dance sequence data for the other channel
+     * @return worker Thread task
+     */
     static public SoundTask startEncoding(Context context, DanceBotMusicFile musicFile, ChoreographyManager choreoManager) {
 
         // Ensure that at least one Thread is invoked

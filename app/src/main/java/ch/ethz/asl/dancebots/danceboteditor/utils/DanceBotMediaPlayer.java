@@ -126,15 +126,13 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-        if (mMediaPlayer != null && mIsReady) {
+        if (mMediaPlayer != null) {
 
             // If user interaction, set media player progress
             if (fromUser) {
                 mMediaPlayer.seekTo(progress);
                 //Log.d(LOG_TAG, "fromUser: on progress changed");
             }
-        } else {
-            Log.d(LOG_TAG, "Error onProgressChanged, media player == null, or not ready!");
         }
     }
 
