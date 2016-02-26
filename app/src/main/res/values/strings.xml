@@ -4,7 +4,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="btn_txt_open_media_library">Mediathek öffnen</string>
-    <string name="activity_label_media_library">medialibraryactivity</string>
+    <string name="activity_label_media_library">Mediathek Übersicht</string>
     <string name="title_activity_editor">EditorActivity</string>
     <string name="txt_title_song_infos">Song Infos</string>
     <string name="txt_song_title">Titel:</string>

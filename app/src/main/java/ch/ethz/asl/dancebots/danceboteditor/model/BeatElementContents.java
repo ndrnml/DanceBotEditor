@@ -4,7 +4,6 @@ import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 /**
  * Created by andrin on 03.12.15.
@@ -17,6 +16,9 @@ public class BeatElementContents {
     private final int CHOREO_LENGTH_MIN = 1;
     private final int CHOREO_LENGTH_MAX = 50;
     private final int CHOREO_LENGTH_STEP = 1;
+
+    private static int DEFAULT_LENGTH_INDEX = 0;
+    private static int DEFAULT_VELOCITY_INDEX = 0;
 
     private static BeatElementContents sInstance = null;
 
@@ -43,6 +45,9 @@ public class BeatElementContents {
 
         generateIntegersInRange(mVelocityValues, VELOCITY_MIN, VELOCITY_MAX, VELOCITY_STEP);
         generateIntegersInRange(mLengthValues, CHOREO_LENGTH_MIN, CHOREO_LENGTH_MAX, CHOREO_LENGTH_STEP);
+
+        DEFAULT_VELOCITY_INDEX = Math.round(mVelocityValues.size() / 2); // This should be 50
+        DEFAULT_LENGTH_INDEX = 7; // This is set to 8 (if common time beat)
 
         generateMotorTypes();
         generateLedTypes();
@@ -102,7 +107,6 @@ public class BeatElementContents {
         frequencyList.add(new Pair<>(1, 3));
         frequencyList.add(new Pair<>(2, 3));
         frequencyList.add(new Pair<>(1, 1));
-
     }
 
     /**
@@ -150,4 +154,13 @@ public class BeatElementContents {
     public static ArrayList<Integer> getLengthValues() {
         return mLengthValues;
     }
+
+    public static int getDefaultVelocityIdx() {
+        return DEFAULT_VELOCITY_INDEX;
+    }
+
+    public static int getDefaultLengthIdx() {
+        return DEFAULT_LENGTH_INDEX;
+    }
+
 }

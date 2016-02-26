@@ -55,7 +55,7 @@ public abstract class BeatElement {
         // Default menu indices
         mMotionTypeIdx = 0;
         mFrequencyIdx = 0;
-        mChoreoLengthIdx = 0;
+        mChoreoLengthIdx = BeatElementContents.getDefaultLengthIdx();
 
         // Call the more specific sub type setDefaultSubProperties() of sub class
         setDefaultSubProperties();
@@ -118,17 +118,6 @@ public abstract class BeatElement {
      */
     public boolean isSameDanceSequence(BeatElement elem) {
         return (mChoreographyID == elem.getDanceSequenceId());
-    }
-
-    //TODO
-    public boolean hasSameProperties(BeatElement elem) {
-        /*
-        return !(mChoreoStartElem != elem.getChoreoStartIdx() ||
-                mChoreoLength != elem.getChoreoLength() ||
-                mMotionTypeIdx != elem.getMotionTypeIdx() ||
-                mFrequencyIdx != elem.getFrequencyIdx() ||
-                mChoreoLengthIdx != elem.getChoreoLengthIdx());*/
-        return false;
     }
 
     /**

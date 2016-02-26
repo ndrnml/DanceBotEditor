@@ -2,6 +2,8 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
 
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotConfiguration;
+
 /**
  * Created by andrin on 04.09.15.
  */
@@ -179,8 +181,8 @@ public class MotorBeatElement extends BeatElement {
         mFrequencyVal = 0;
 
         // Initialize specific motor element default properties
-        mVelocityLeftIdx = 0;
-        mVelocityRightIdx = 0;
+        mVelocityLeftIdx = BeatElementContents.getDefaultVelocityIdx();
+        mVelocityRightIdx = BeatElementContents.getDefaultVelocityIdx();
 
         // Initialize motor element specific default absolute values
         mLeftVelocityValue = 0;
