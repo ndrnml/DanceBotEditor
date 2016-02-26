@@ -41,9 +41,6 @@ public class SoundEncodeRunnable implements Runnable {
     // Defines a field that contains the calling object of type SoundTask.
     private final TaskRunnableEncodeMethods mSoundTask;
     private Encoder mEncoder;
-    private int mNumSamplesReset;
-    private int mNumSamplesOne;
-    private int mNumSamplesZero;
 
     private long t1,t2;
     private short[] mPcmData;
@@ -59,13 +56,13 @@ public class SoundEncodeRunnable implements Runnable {
 
         /**
          * Sets the current encoding Thread
-         * @param currentThread
+         * @param currentThread this worker Thread
          */
         void setEncodeThread(Thread currentThread);
 
         /**
          * Handle the state of the encoding process
-         * @param state
+         * @param state progress state
          */
         void handleEncodeState(int state);
 
