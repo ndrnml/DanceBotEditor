@@ -12,9 +12,4 @@ public class DanceBotConfiguration {
     public static final int BIT_LENGTH_RESET_NOMINAL = 40;
     public static final int NUM_BIT_MOTOR = 7;
     public static final short DATA_LEVEL = 26214;
-
-    // Constants for indicating the state of the encoding
-    public static final int ENCODE_STATE_FAILED = -1;
-    public static final int ENCODE_STATE_STARTED = 0;
-    public static final int ENCODE_STATE_COMPLETED = 1;
 }

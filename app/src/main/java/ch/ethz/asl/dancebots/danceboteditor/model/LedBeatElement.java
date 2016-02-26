@@ -43,13 +43,15 @@ public class LedBeatElement extends BeatElement {
 
             case KNIGHT_RIDER:
 
-                byte pos = (byte) (3.5 + 3.49 * Math.sin(relativeBeat * mFrequencyVal * 2 * Math.PI));
-                ledByte = (byte) (0x0003 << pos);
+                byte pos = (byte) (3.5 + 3.49 * Math.sin(relativeBeat * mFrequencyVal * 2.0 * Math.PI));
+                ledByte |= (byte) (0x0003 << pos);
                 break;
 
             case RANDOM:
 
-                int numRands = (int) (relativeBeat * mFrequencyVal);
+                // TODO: what is this magic number 2 * beatDuration * Frequency + 1?
+                int NUM = 100;
+                int numRands = (int) (NUM);
                 byte[] bs = new byte[numRands];
                 new Random().nextBytes(bs);
                 ledByte = bs[new Random().nextInt(numRands)];
@@ -60,7 +62,7 @@ public class LedBeatElement extends BeatElement {
 
                 byte b = computeByteFromSwitches();
 
-                if (Math.round(relativeBeat * 100 * mFrequencyVal) % 2 == 0) {
+                if (Math.round(relativeBeat * mFrequencyVal) % 2 == 0) {
                     ledByte = b;
                 } else {
                     ledByte = (byte) ~b;
@@ -70,7 +72,7 @@ public class LedBeatElement extends BeatElement {
 
             case SAME_BLINK:
 
-                if (Math.round(relativeBeat * 100 * mFrequencyVal) % 2 == 0) {
+                if (Math.round(relativeBeat * mFrequencyVal) % 2 == 0) {
                     ledByte = 0;
                 } else {
                     ledByte = computeByteFromSwitches();

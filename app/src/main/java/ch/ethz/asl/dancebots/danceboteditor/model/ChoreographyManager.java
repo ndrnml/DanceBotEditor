@@ -310,7 +310,8 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
             // Iterate while not all samples at the current beat are processed
             while (samplePos < samplesToProcess) {
 
-                float relativeBeat = (float) samplePos / (float) samplesToProcess;
+                // Get relative beat in percent
+                float relativeBeat = ((float) samplePos / (float) samplesToProcess) * 100;
 
                 // Initialize velocities and led
                 short vLeft = 0;
@@ -396,7 +397,7 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
         // Iterate while not all samples at the current beat are processed
         while (samplePos < samplesToProcess) {
 
-            float relativeBeat = (float) samplePos / (float) samplesToProcess;
+            float relativeBeat = ((float) samplePos / (float) samplesToProcess) * 100;
 
             // Initialize velocities and led
             short vLeft = 0;
@@ -506,14 +507,14 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
             vLeft *= -1;
         } else {
             // Set sign bit in velByte
-            velByte = (byte) 0x80;
+            velByte |= 0x80;
         }
 
         // Get bits for left velocity
         velByte |= 0x7F & vLeft;
 
         // Write left velocity message
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < Byte.SIZE; ++i) {
 
             int numSamples = mNumSamplesZero;
 
@@ -541,14 +542,14 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
         if (vRight < 0) {
             vRight *= -1;
         } else {
-            velByte = (byte) 0x80;
+            velByte |= 0x80;
         }
 
         // Get bits for right velocity
         velByte |=  0x7F & vRight;
 
         // Write right velocity message
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < Byte.SIZE; ++i) {
 
             int numSamples = mNumSamplesZero;
 
@@ -570,10 +571,10 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
         }
 
         // Parse led byte
-        byte ledByte = led;
+        byte ledByte = (byte) (0xFF & led);
 
         // Write led message
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < Byte.SIZE; ++i) {
 
             int numSamples = mNumSamplesZero;
 

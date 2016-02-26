@@ -76,6 +76,7 @@ public class Choreography<T extends BeatElement> {
          * Update element if it does not belong to any choreography and if the current length is
          * less than the total choreography length, and current position is less than total beats
          */
+        // TODO: Beautify
         while ((length < danceSequenceLength) && ((startIdx + length) < mNumBeats)) {
 
             // If nextElemIdx and length in valid range, fetch next element

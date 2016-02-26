@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Created by andrin on 03.12.15.
@@ -11,7 +12,7 @@ import java.util.EnumSet;
 public class BeatElementContents {
 
     private final int VELOCITY_MIN = 0;
-    private final int VELOCITY_MAX = 100;
+    private final int VELOCITY_MAX = 110;
     private final int VELOCITY_STEP = 10;
     private final int CHOREO_LENGTH_MIN = 1;
     private final int CHOREO_LENGTH_MAX = 50;
@@ -37,8 +38,8 @@ public class BeatElementContents {
      */
     private BeatElementContents() {
 
-        generateMotorFrequencies();
-        generateLedFrequencies();
+        generateMotorFrequencies(mMotorFrequencies);
+        generateLedFrequencies(mLedFrequencies);
 
         generateIntegersInRange(mVelocityValues, VELOCITY_MIN, VELOCITY_MAX, VELOCITY_STEP);
         generateIntegersInRange(mLengthValues, CHOREO_LENGTH_MIN, CHOREO_LENGTH_MAX, CHOREO_LENGTH_STEP);
@@ -79,30 +80,29 @@ public class BeatElementContents {
     /**
      * Generate led frequencies
      */
-    private void generateLedFrequencies() {
-
-        // "1/4", "1/3", "1/2", "2/3", "1"
-        mLedFrequencies.add(new Pair<>(1, 4));
-        mLedFrequencies.add(new Pair<>(1, 3));
-        mLedFrequencies.add(new Pair<>(2, 3));
-        mLedFrequencies.add(new Pair<>(1, 1));
+    private void generateLedFrequencies(ArrayList<Pair<Integer, Integer>> frequencyList) {
+        // "1/4", "1/3", "1/2", "2/3", "3/2", "2", "3", "4"
+        frequencyList.add(new Pair<>(1, 4));
+        frequencyList.add(new Pair<>(1, 3));
+        frequencyList.add(new Pair<>(1, 2));
+        frequencyList.add(new Pair<>(2, 3));
+        frequencyList.add(new Pair<>(3, 2));
+        frequencyList.add(new Pair<>(2, 1));
+        frequencyList.add(new Pair<>(3, 1));
+        frequencyList.add(new Pair<>(4, 1));
     }
 
     /**
      *
      * Generate motor frequencies
      */
-    private void generateMotorFrequencies() {
+    private void generateMotorFrequencies(ArrayList<Pair<Integer, Integer>> frequencyList) {
+        // "1/4", "1/3", "1/2", "2/3", "1"
+        frequencyList.add(new Pair<>(1, 4));
+        frequencyList.add(new Pair<>(1, 3));
+        frequencyList.add(new Pair<>(2, 3));
+        frequencyList.add(new Pair<>(1, 1));
 
-        // "1/4", "1/3", "1/2", "2/3", "3/2", "2", "3", "4"
-        mMotorFrequencies.add(new Pair<>(1, 4));
-        mMotorFrequencies.add(new Pair<>(1, 3));
-        mMotorFrequencies.add(new Pair<>(1, 2));
-        mMotorFrequencies.add(new Pair<>(2, 3));
-        mMotorFrequencies.add(new Pair<>(3, 2));
-        mMotorFrequencies.add(new Pair<>(2, 1));
-        mMotorFrequencies.add(new Pair<>(3, 1));
-        mMotorFrequencies.add(new Pair<>(4, 1));
     }
 
     /**
