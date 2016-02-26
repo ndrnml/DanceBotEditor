@@ -64,6 +64,7 @@ public class SoundTask implements
     // An object that contains the ThreadPool singleton.
     private final SoundManager sSoundManager;
 
+    // Time measurement intrinsics, this can be removed eventually
     private long t1,t2;
 
     /**
@@ -108,9 +109,8 @@ public class SoundTask implements
      *
      * @param context pass the caller context
      * @param musicFile the music file which will be decoded
-     * @param beatView the beat view which will be updated
      */
-    public void initializeDecoderTask(Context context, DanceBotMusicFile musicFile, HorizontalRecyclerViews beatView) {
+    public void initializeDecoderTask(Context context, DanceBotMusicFile musicFile) {
 
         // Sets the selected dance bot editor music file
         mMusicFile = musicFile;
@@ -125,9 +125,10 @@ public class SoundTask implements
     /**
      * Initialize the encoder task
      *
-     * @param context
-     * @param musicFile
-     * @param choreoManager
+     * @param context context which the Encoder task belongs to
+     * @param musicFile the music file whose audio will be encoded
+     * @param choreoManager the choreography manager which is responsible for handling the dance
+     *                      sequence transformation
      */
     public void initializeEncoderTask(Context context, DanceBotMusicFile musicFile, ChoreographyManager choreoManager) {
 
@@ -173,11 +174,9 @@ public class SoundTask implements
      */
     private void postProcessExtractedBeats() {
 
-        // TODO: What happens if one worker Thread gets terminated?
         // Main decoder Thread actively waits for worker (BeatExtraction) Threads to finish
         while (!allBeatExtractionRunnablesDone()) {
 
-            // TODO: interrupt thread?
             if (Thread.interrupted()) {
                 try {
                     throw new InterruptedException();
