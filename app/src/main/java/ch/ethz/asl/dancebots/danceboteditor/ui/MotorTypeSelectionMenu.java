@@ -47,7 +47,10 @@ public class MotorTypeSelectionMenu {
 
         MotorType type = mSelection.get(val);
 
-        // Make all menu elements visible
+        // Make all non-motor elements invisible
+        menuView.findViewById(R.id.menu_item_lights).setVisibility(View.GONE);
+
+        // Make all motor menu elements visible
         menuView.findViewById(R.id.menu_item_frequency).setVisibility(View.VISIBLE);
         menuView.findViewById(R.id.menu_item_velocity_left).setVisibility(View.VISIBLE);
         menuView.findViewById(R.id.menu_item_velocity_right).setVisibility(View.VISIBLE);

@@ -47,6 +47,10 @@ public class LedTypeSelectionMenu {
 
         LedType type = mSelection.get(val);
 
+        // Make all non-led elements invisible
+        menuView.findViewById(R.id.menu_item_velocity_left).setVisibility(View.GONE);
+        menuView.findViewById(R.id.menu_item_velocity_right).setVisibility(View.GONE);
+
         // Make all menu elements visible
         menuView.findViewById(R.id.menu_item_frequency).setVisibility(View.VISIBLE);
         menuView.findViewById(R.id.menu_item_lights).setVisibility(View.VISIBLE);

@@ -260,9 +260,8 @@ public class BeatElementMenuDialog extends DialogFragment {
         // Add a check box menu
         buildCheckBoxMenu(elem.getLedLightSwitches());
 
-        // Hide not relevant menu items
-        mBeatElementMenuView.findViewById(R.id.menu_item_velocity_left).setVisibility(View.GONE);
-        mBeatElementMenuView.findViewById(R.id.menu_item_velocity_right).setVisibility(View.GONE);
+        // Set appropriate visibility of menu elements
+        mLedTypeMenu.setVisibility(mBeatElementMenuView, elem.getMotionTypeIdx());
     }
 
     private void createMotorElementMenu(MotorBeatElement elem) {
@@ -282,8 +281,8 @@ public class BeatElementMenuDialog extends DialogFragment {
         // Add choreography length submenu
         buildSubMenu(R.id.txt_length_default, elem.getChoreoLengthIdx(), mMenuChoreoLengths, MENU_TYPE.CHOREO_LENGTH, "choreo_length_menu", R.string.menu_lengths);
 
-        // Hide irrelevant menu items
-        mBeatElementMenuView.findViewById(R.id.menu_item_lights).setVisibility(View.GONE);
+        // Set appropriate visibility of menu elements
+        mMotorTypeMenu.setVisibility(mBeatElementMenuView, elem.getMotionTypeIdx());
     }
 
     @Override
