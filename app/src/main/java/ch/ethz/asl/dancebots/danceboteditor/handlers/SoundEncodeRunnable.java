@@ -9,11 +9,13 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import ch.ethz.asl.dancebots.danceboteditor.dialogs.StickyOkDialog;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotConfiguration;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
@@ -30,15 +32,6 @@ public class SoundEncodeRunnable implements Runnable {
     private static final int BIT_RATE = 128;
     private static final int SAMPLE_RATE = 44100;
     private static final int CHANNEL_COUNT = 2;
-
-
-    // TODO: MOVE THIS CONSTS
-    private static final int SAMPLE_FREQUENCY_NOMINAL = 44100;
-    private static final int BIT_LENGTH_ONE_NOMINAL = 24;
-    private static final int BIT_LENGTH_ZERO_NOMINAL = 8;
-    private static final int BIT_LENGTH_RESET_NOMINAL = 40;
-    private static final int NUM_BIT_MOTOR = 7;
-    private static final short DATA_LEVEL = 26214;
 
     // Constants for indicating the state of the encoding
     public static final int ENCODE_STATE_FAILED = -1;
@@ -126,7 +119,7 @@ public class SoundEncodeRunnable implements Runnable {
             Log.d(LOG_TAG, "pcm data size: " + 2 * numSamples + " bytes");
 
             // Initialize
-            Arrays.fill(mPcmData, (short) -DATA_LEVEL);
+            Arrays.fill(mPcmData, (short) -DanceBotConfiguration.DATA_LEVEL);
 
             // Prepare data channel and music channel
             int result = mSoundTask.getChoreographyManager().readDataAll(mPcmData);
@@ -146,7 +139,7 @@ public class SoundEncodeRunnable implements Runnable {
 
             if (success) {
 
-                // TODO show success toast
+                //new StickyOkDialog().setMessage("path").setTitle("title").show(((getFragmentManager(), "ok_dialog");
 
             } else {
 

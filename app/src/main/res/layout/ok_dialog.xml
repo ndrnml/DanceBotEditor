@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="@style/DialogMenuView">
+
+    <TextView
+        android:id="@+id/tv_ok_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:text="@string/string_ok_dialog_title"
+        android:layout_gravity="center_horizontal"
+        android:padding="32dp" />
+
+    <TextView
+        android:id="@+id/tv_ok_dialog_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/string_ok_dialog_message"
+        android:layout_gravity="center_horizontal"
+        android:padding="32dp" />
+
+    <Button
+        style="@style/MenuButtonPositive"
+        android:id="@+id/btn_ok_dialog"
+        android:text="@string/string_btn_ok"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>

@@ -183,7 +183,7 @@
         <Button
             style="@style/MenuButtonPositive"
             android:id="@+id/beatmenu_btn_ok"
-            android:text="@string/btn_beatmenu_txt_ok"
+            android:text="@string/string_btn_ok"
             android:layout_alignParentRight="true" />
     </RelativeLayout>
 
