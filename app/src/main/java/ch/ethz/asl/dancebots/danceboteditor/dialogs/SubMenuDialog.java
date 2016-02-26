@@ -40,6 +40,25 @@ public class SubMenuDialog extends DialogFragment {
         mMenuList = menuList;
         mMenuListIdx = menuListIdx;
         mMenuTitleResource = menuTitleResource;
+
+        // Make sub menu context aware (not a pretty solution)
+        switch (menuType) {
+            case MOTION:
+                mMenuListIdx = mCallerDialog.getTmpMotionIdx();
+                break;
+            case FREQUENCY:
+                mMenuListIdx = mCallerDialog.getTmpFrequencyIdx();
+                break;
+            case VELOCITY_LEFT:
+                mMenuListIdx = mCallerDialog.getTmpVelLeftIdx();
+                break;
+            case VELOCITY_RIGHT:
+                mMenuListIdx = mCallerDialog.getTmpVelRightIdx();
+                break;
+            case CHOREO_LENGTH:
+                mMenuListIdx = mCallerDialog.getTmpLengthIdx();
+                break;
+        }
     }
 
     @Override
@@ -76,7 +95,6 @@ public class SubMenuDialog extends DialogFragment {
                     mMotionTypeChanged = true;
                     //Log.d(LOG_TAG, "motion type: onValueChange");
                 }
-
             }
         });
 
@@ -90,10 +108,9 @@ public class SubMenuDialog extends DialogFragment {
                         // Callback of parent menu
                         mCallerDialog.doPositiveClick(mMenuType, numberPicker.getValue());
 
+                        // Check if motion type changed, and adapt menu element visibility
                         if (mMotionTypeChanged) {
-
                             mCallerDialog.changeVisibility(numberPicker.getValue());
-
                             Log.d(LOG_TAG, "motion type changed");
                         }
 
