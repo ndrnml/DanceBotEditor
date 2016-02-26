@@ -1,5 +1,7 @@
 package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.*;
 import android.os.Process;
 import android.util.Log;
@@ -16,6 +18,7 @@ import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotConfiguration;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
@@ -119,9 +122,9 @@ public class SoundEncodeRunnable implements Runnable {
             Arrays.fill(mPcmData, (short) -DanceBotConfiguration.DATA_LEVEL);
 
             // Prepare data channel and music channel
-            int result = mSoundTask.getChoreographyManager().readDataAll(mPcmData);
+            mSoundTask.getChoreographyManager().readDataAll(mPcmData);
             //int result = Decoder.transfer(pcmData);
-            result = Decoder.transfer(mPcmMusic);
+            Decoder.transfer(mPcmMusic);
 
             // Create new mp3 buffer and specify size in bytes
             // Calculate buffer size in bytes
@@ -129,19 +132,19 @@ public class SoundEncodeRunnable implements Runnable {
             byte[] mp3buf = new byte[mp3bufSize];
 
             mEncoder = new Encoder.Builder(SAMPLE_RATE, CHANNEL_COUNT, SAMPLE_RATE, BIT_RATE).create();
-            result = mEncoder.encode(mPcmMusic, mPcmData, (int) numSamples, mp3buf);
-            result = mEncoder.flush(mp3buf);
+            mEncoder.encode(mPcmMusic, mPcmData, (int) numSamples, mp3buf);
+            mEncoder.flush(mp3buf);
 
-            boolean success = Helper.saveToMusicFolder(musicFile.getSongTitle(), mp3buf);
+            File file = Helper.saveToMusicFolder(musicFile.getSongTitle(), mp3buf);
 
-            if (success) {
-
-                //new StickyOkDialog().setMessage("path").setTitle("title").show(((getFragmentManager(), "ok_dialog");
-
+            if (file != null) {
+                Context context = DanceBotEditorManager.getInstance().getContext();
+                new StickyOkDialog()
+                        .setTitle("File successfully written")
+                        .setMessage("Path: " + file.getAbsolutePath())
+                        .show(((Activity) context).getFragmentManager(), "ok_dialog");
             } else {
-
-                // TODO show fail toast
-
+                Log.d(LOG_TAG, "Error writing file.");
             }
 
             // Handle the state of the decoding Thread

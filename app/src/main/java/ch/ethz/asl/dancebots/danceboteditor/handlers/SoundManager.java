@@ -17,6 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.activities.EditorActivity;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
@@ -197,7 +198,11 @@ public class SoundManager {
 
                     case ENCODING_STARTED:
 
-                        dialog.setMessage("Saving your song. This might take ages... ;)");
+                        // Not so nice way of removing disturbing percentage numbers
+                        dialog.setProgressNumberFormat(null);
+                        dialog.setProgressPercentFormat(null);
+
+                        dialog.setMessage(DanceBotEditorManager.getInstance().getContext().getString(R.string.string_encoding_started_message));
                         dialog.show();
 
                         Log.v(LOG_TAG, "handleMessage: ENCODING_STARTED");

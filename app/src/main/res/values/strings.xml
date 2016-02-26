@@ -47,4 +47,5 @@
     <string name="string_ok_dialog_message">ok_dialog_message</string>
     <string name="string_ok_dialog_title">ok_dialog_title</string>
     <string name="string_btn_load_project">Load Project</string>
+    <string name="string_encoding_started_message">Saving your song. This might take ages ;)</string>
 </resources>

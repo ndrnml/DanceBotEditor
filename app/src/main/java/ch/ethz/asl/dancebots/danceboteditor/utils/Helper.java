@@ -74,9 +74,9 @@ public class Helper {
      *
      * @param fileName file name without any extensions
      * @param mp3Buffer byte buffer which will be stored as mp3
-     * @return success or failure
+     * @return created file or null
      */
-    public static boolean saveToMusicFolder(String fileName, byte[] mp3Buffer) {
+    public static File saveToMusicFolder(String fileName, byte[] mp3Buffer) {
 
         if (isExternalStorageWritable()) {
 
@@ -86,7 +86,15 @@ public class Helper {
             // Save file within this directory
             File file = new File(musicDir, fileName + FILE_SUFFIX + ".mp3");
 
-            if (file.exists()) {
+            // Prepare extension number if file already exists
+            int numExtension = 1;
+
+            // Create new file name and try again
+            while (file.exists()) {
+
+                file = new File(musicDir, fileName + FILE_SUFFIX + numExtension + ".mp3");
+                numExtension++;
+
                 Log.d(LOG_TAG, "file already existed");
             }
 
@@ -98,14 +106,15 @@ public class Helper {
 
             } catch (java.io.IOException e) {
                 Log.d(LOG_TAG, "Exception in file writing", e);
-                return false;
+                return null;
             }
 
-            return true;
+            return file;
 
         } else {
 
-            return false;
+            Log.d(LOG_TAG, "Error: external storage is not writable");
+            return null;
         }
     }
 
