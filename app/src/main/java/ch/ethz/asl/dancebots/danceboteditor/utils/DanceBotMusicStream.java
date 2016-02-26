@@ -147,8 +147,6 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
         // Read track header
         MediaFormat format = null;
 
-        mMediaExtractor.getTrackFormat(0); // TODO: is this necessary? Redundant
-
         // Read media codec information
         try {
 
@@ -156,7 +154,6 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
             mime = format.getString(MediaFormat.KEY_MIME);
             sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
             channels = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
-            // if duration is 0, we are probably playing a live stream
             duration = format.getLong(MediaFormat.KEY_DURATION);
             bitrate = format.getInteger(MediaFormat.KEY_BIT_RATE);
 

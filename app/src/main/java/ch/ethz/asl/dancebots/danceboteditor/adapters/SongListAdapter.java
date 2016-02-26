@@ -55,9 +55,9 @@ public class SongListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        //map to song layout
+        // Create new view from layout
         LinearLayout songLayout = (LinearLayout) mSongElementInflater.inflate
-                (R.layout.song_list_details, null); // TODO use recycled view
+                (R.layout.song_list_details, null);
 
         //get title and artist views
         TextView songView = (TextView)songLayout.findViewById(R.id.song_title);
@@ -68,7 +68,7 @@ public class SongListAdapter extends BaseAdapter {
         Song s = mSongList.get(position);
         String currTitle = s.mTitle;
         String currArtist = s.mArtist;
-        String currPah = s.mPath; // TODO change dir to path
+        String currPah = s.mPath;
 
         // Display all relevant properties of this song
         songView.setText(currTitle);

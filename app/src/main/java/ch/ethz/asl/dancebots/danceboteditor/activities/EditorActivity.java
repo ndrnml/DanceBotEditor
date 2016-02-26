@@ -185,7 +185,7 @@ public class EditorActivity extends Activity {
         // Release media player resources
         mMediaPlayer.cleanUp();
 
-        // TODO: Clean up all files
+        // Cleanup project manager, when activity will be shutdown
         mProjectManager.cleanUp();
 
         Log.d(LOG_TAG, "onDestroy");
@@ -237,15 +237,6 @@ public class EditorActivity extends Activity {
 
         // Handle all menu options here
         switch (id) {
-
-            /*case R.id.editor_action_open:
-
-                // TODO: move this to the ask open dialog, This should only be possible if the user want's it -> State == NEW
-                Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
-                startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
-
-                return true;
-            */
 
             case R.id.editor_action_save:
 

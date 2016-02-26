@@ -66,7 +66,6 @@ public class Choreography<T extends BeatElement> {
 
         // If max length is shorter than the chosen dance sequence length, we have to overwrite
         // the length values in the dance sequence and the current selected length value
-        // TODO: The menu index values are not yet adjusted
         if (maxLength < danceSequenceLength) {
             danceSequenceLength = maxLength;
             danceSeq.setLength(maxLength);

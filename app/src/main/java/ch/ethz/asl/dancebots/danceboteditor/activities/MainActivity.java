@@ -130,7 +130,7 @@ public class MainActivity extends Activity {
                 mProjectManager.attachMusicFile(dbMusicFile);
 
                 // Perform beat extraction in async task
-                SoundManager.startDecoding(MainActivity.this, mProjectManager.getDanceBotMusicFile(), null, 1);
+                SoundManager.startDecoding(MainActivity.this, mProjectManager.getDanceBotMusicFile(), 1);
 
             } else {
 

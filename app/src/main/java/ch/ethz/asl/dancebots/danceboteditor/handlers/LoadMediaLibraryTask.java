@@ -26,15 +26,12 @@ public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integ
 
     @Override
     protected void onPreExecute() {
-        // TODO Add spinning wheel
+        // If device is slow, add spinning wheel here
     }
-
 
     @Override
     protected void onPostExecute(Integer integer) {
-        // TODO remove spinning wheel
     }
-
 
     /**
      * Update progress performed by background thread
@@ -52,7 +49,6 @@ public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integ
         // After all data is changed notify the adapter
         mSongListAdapter.notifyDataSetChanged();
     }
-
 
     @Override
     protected Integer doInBackground(SongListAdapter... adapters) {
@@ -134,8 +130,9 @@ public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integ
     }
 
     /**
-     * @param url
-     * @return
+     * Get the mime type of a file
+     * @param url pass the absolute path as String
+     * @return the mime type found at the url location
      */
     public static String getMimeType(String url) {
 
@@ -155,9 +152,10 @@ public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integ
 
     /**
      * Retrieve absolute path from URL
-     * @param context
-     * @param contentUri
-     * @return
+     *
+     * @param context pass a context for the URL resolver
+     * @param contentUri content uri of the file
+     * @return absolute path to the file
      */
     public String getRealPathFromURI(Context context, Uri contentUri) {
         Cursor cursor = null;

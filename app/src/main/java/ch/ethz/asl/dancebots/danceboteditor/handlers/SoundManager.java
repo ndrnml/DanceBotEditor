@@ -277,11 +277,10 @@ public class SoundManager {
      * extraction process.
      *
      * @param musicFile the music file, which will be decoded
-     * @param beatView the view, which will be updated after successful decoding
      * @param numThreads number of threads that will be used for the decoding task
      * @return the executing worker Thread
      */
-    static public SoundTask startDecoding(Context context, DanceBotMusicFile musicFile, HorizontalRecyclerViews beatView, int numThreads) {
+    static public SoundTask startDecoding(Context context, DanceBotMusicFile musicFile, int numThreads) {
 
         // Ensure that at least one Thread is invoked
         if (numThreads <= 0) {
@@ -292,7 +291,7 @@ public class SoundManager {
         SoundTask decodeTask = new SoundTask(numThreads);
 
         // Initializes the decoding task
-        decodeTask.initializeDecoderTask(context, musicFile, beatView);
+        decodeTask.initializeDecoderTask(context, musicFile);
 
         /*
          * "Executes" the tasks' download Runnable in order to download the image. If no
