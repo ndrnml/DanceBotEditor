@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/background"
-    android:theme="@style/AppTheme"
     tools:context=".MainActivity" >
 
     <Button
@@ -18,13 +17,13 @@
         android:text="@string/btn_txt_open_media_library"
         />
 
-    <Button
+    <!--<Button
         android:id="@+id/btn_load_project"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
         android:text="@string/string_btn_load_project"
-        />
+        />-->
 
 </LinearLayout>

@@ -136,8 +136,6 @@ public class MainActivity extends Activity {
 
                 // resultCode == RESULT_CANCEL
                 Log.v(LOG_TAG, "onActivityResult() ERROR: resultCode != RESULT_OK");
-
-                finish();
             }
         }
     }

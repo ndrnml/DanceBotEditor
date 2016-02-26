@@ -53,6 +53,8 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
 
         void pause();
 
+        boolean isReady();
+
         boolean isPlaying();
 
         void setPlayButtonPlay();
@@ -171,7 +173,11 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
 
             //Log.d(LOG_TAG, "seek bar changed");
 
+            // Get the seek bar progress
             int currentTimeInMilliSecs = mSeekBar.getProgress();
+
+            // Update view
+            mCurrentTimeView.setText(Helper.songTimeFormat(currentTimeInMilliSecs));
 
             // Estimate beat position
             int estimatedBeatElement = (int) (((float) mRecyclerView.getNumElements() / mTotalDurationInMilliSecs * (float) currentTimeInMilliSecs));
@@ -260,14 +266,18 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
             for (OnMediaPlayerChangeListener mediaPlayer : registeredListeners) {
 
                 if (mediaPlayer.getPlayButton().getId() == id) {
-                    mActiveMediaPlayer = mediaPlayer;
-                    mediaPlayer.play();
-                    if (!mIsRunning) {
-                        mIsRunning = true;
+
+                    if (mediaPlayer.isReady()) {
+                        mActiveMediaPlayer = mediaPlayer;
+                        mediaPlayer.play();
                         mediaPlayer.setPlayButtonPause();
 
-                        mHandler.postDelayed(this, 100);
+                        if (!mIsRunning) {
+                            mIsRunning = true;
+                            mHandler.postDelayed(this, 100);
+                        }
                     }
+
                 }
             }
         }

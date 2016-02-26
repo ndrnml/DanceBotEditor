@@ -126,8 +126,6 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-        //Log.d(LOG_TAG, "seekBar: on progress changed");
-
         if (mMediaPlayer != null && mIsReady) {
 
             // If user interaction, set media player progress
@@ -135,6 +133,8 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
                 mMediaPlayer.seekTo(progress);
                 //Log.d(LOG_TAG, "fromUser: on progress changed");
             }
+        } else {
+            Log.d(LOG_TAG, "Error onProgressChanged, media player == null, or not ready!");
         }
     }
 
@@ -195,6 +195,11 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean isReady() {
+        return mIsReady;
     }
 
     public void onStop() {

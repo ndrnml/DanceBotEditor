@@ -1,11 +1,14 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
+import android.app.Activity;
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
+import android.media.projection.MediaProjectionManager;
 import android.os.*;
 import android.os.Process;
 import android.util.Log;
@@ -18,6 +21,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.dialogs.StickyOkDialog;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerListener;
 
 /**
@@ -450,6 +454,21 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
     }
 
     @Override
+    public boolean isReady() {
+        // Check that streaming is only possible with attached head set (cable)
+        if (MusicIntentReceiver.isHeadSetPlugged()) {
+            return true;
+        } else {
+            Context context = DanceBotEditorManager.getInstance().getContext();
+            new StickyOkDialog()
+                    .setTitle("Streaming not possible!")
+                    .setMessage("Please connect the audio cable to the Dance Bot")
+                    .show(((Activity) context).getFragmentManager(), "ok_dialog");
+            return false;
+        }
+    }
+
+    @Override
     public boolean isPlaying() {
         return mStreamStates.isPlaying();
     }
@@ -481,8 +500,6 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
         if (mSeekBar != null) {
-
-            //Log.d(LOG_TAG, "seekBar: on progress changed");
 
             // If user interaction, set media player progress
             if (fromUser) {

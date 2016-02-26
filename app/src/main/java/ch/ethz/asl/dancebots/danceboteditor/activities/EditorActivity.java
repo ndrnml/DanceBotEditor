@@ -2,8 +2,9 @@ package ch.ethz.asl.dancebots.danceboteditor.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -12,7 +13,6 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import ch.ethz.asl.dancebots.danceboteditor.dialogs.StickyOkDialog;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerListener;
 import ch.ethz.asl.dancebots.danceboteditor.utils.CompositeSeekBarListener;
@@ -22,6 +22,7 @@ import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicStream;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Helper;
+import ch.ethz.asl.dancebots.danceboteditor.utils.MusicIntentReceiver;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
@@ -40,6 +41,7 @@ public class EditorActivity extends Activity {
     private DanceBotMusicStream mMediaStream;
     private SeekBar mSeekBar;
     private MediaPlayerListener mMediaPlayerListener;
+    private MusicIntentReceiver mMusicIntentReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,8 +126,9 @@ public class EditorActivity extends Activity {
         mMediaPlayer.setEventListener(mMediaPlayerListener);
         mMediaStream.setEventListener(mMediaPlayerListener);
 
-        Log.d(LOG_TAG, "onCreate");
+        mMusicIntentReceiver = new MusicIntentReceiver();
 
+        Log.d(LOG_TAG, "onCreate");
     }
 
 
@@ -133,9 +136,6 @@ public class EditorActivity extends Activity {
     protected void onStart() {
         super.onStart();
         // The activity is about to become visible.
-
-        // Restart/Prepare the media player
-        mMediaPlayer.onStart();
 
         Log.d(LOG_TAG, "onStart");
     }
@@ -145,6 +145,12 @@ public class EditorActivity extends Activity {
         super.onResume();
         // The activity has become visible (it is now "resumed").
 
+        // Restart/Prepare the media player
+        mMediaPlayer.onStart();
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(mMusicIntentReceiver, filter);
+
         Log.d(LOG_TAG, "onResume");
     }
 
@@ -153,6 +159,8 @@ public class EditorActivity extends Activity {
     protected void onPause() {
         super.onPause();
         // Another activity is taking focus (this activity is about to be "paused").
+
+        unregisterReceiver(mMusicIntentReceiver);
 
         // Stop if any media player playback
         mMediaPlayer.onStop();
