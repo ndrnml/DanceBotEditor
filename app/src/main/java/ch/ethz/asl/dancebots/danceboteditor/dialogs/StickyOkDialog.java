@@ -53,15 +53,19 @@ public class StickyOkDialog extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        mOkDialogView = inflater.inflate(R.layout.ok_dialog, null);
+        mOkDialogView = inflater.inflate(R.layout.dialog_ok, null);
 
-        // Title of submenu view
-        final TextView messageView = (TextView) mOkDialogView.findViewById(R.id.tv_ok_dialog_message);
-        messageView.setText(mMessageText);
-
-        // Title of submenu view
+        // Set a title to the dialog
         final TextView titleView = (TextView) mOkDialogView.findViewById(R.id.tv_ok_dialog_title);
         titleView.setText(mTitleText);
+
+        // Set a text to the dialog
+        final TextView messageView = (TextView) mOkDialogView.findViewById(R.id.tv_ok_dialog_message);
+        if (mMessageText == null) {
+            messageView.setVisibility(View.GONE);
+        } else {
+            messageView.setText(mMessageText);
+        }
 
         // Get beat element menu OK button
         Button btnOk = (Button) mOkDialogView.findViewById(R.id.btn_ok_dialog);

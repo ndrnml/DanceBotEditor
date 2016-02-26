@@ -463,7 +463,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
             new StickyOkDialog()
                     .setTitle("Streaming not possible!")
                     .setMessage("Please connect the audio cable to the Dance Bot")
-                    .show(((Activity) context).getFragmentManager(), "ok_dialog");
+                    .show(((Activity) context).getFragmentManager(), "dialog_ok");
             return false;
         }
     }

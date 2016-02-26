@@ -131,10 +131,12 @@ public class SoundEncodeRunnable implements Runnable {
             int mp3bufSize = (int) numSamples / 3;
             byte[] mp3buf = new byte[mp3bufSize];
 
+            // Encode the audio and data buffer to a new mp3 file
             mEncoder = new Encoder.Builder(SAMPLE_RATE, CHANNEL_COUNT, SAMPLE_RATE, BIT_RATE).create();
             mEncoder.encode(mPcmMusic, mPcmData, (int) numSamples, mp3buf);
             mEncoder.flush(mp3buf);
 
+            // Save raw audio buffer to a new file
             File file = Helper.saveToMusicFolder(musicFile.getSongTitle(), mp3buf);
 
             if (file != null) {
@@ -142,8 +144,14 @@ public class SoundEncodeRunnable implements Runnable {
                 new StickyOkDialog()
                         .setTitle("File successfully written")
                         .setMessage("Path: " + file.getAbsolutePath())
-                        .show(((Activity) context).getFragmentManager(), "ok_dialog");
+                        .show(((Activity) context).getFragmentManager(), "dialog_ok");
             } else {
+                Context context = DanceBotEditorManager.getInstance().getContext();
+                new StickyOkDialog()
+                        .setTitle("Error: Could not write file!")
+                        .setMessage(null)
+                        .show(((Activity) context).getFragmentManager(), "dialog_ok_negative");
+
                 Log.d(LOG_TAG, "Error writing file.");
             }
 
