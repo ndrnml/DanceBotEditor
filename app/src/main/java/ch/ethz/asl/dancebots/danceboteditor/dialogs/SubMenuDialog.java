@@ -28,6 +28,7 @@ public class SubMenuDialog extends DialogFragment {
     private String[] mMenuList;
     private int mMenuListIdx;
     private int mMenuTitleResource;
+    private boolean mMotionTypeChanged = false;
 
     public void initializeSubMenu(BeatElementMenuDialog dialog,
                                   BeatElementMenuDialog.MENU_TYPE menuType,
@@ -52,7 +53,7 @@ public class SubMenuDialog extends DialogFragment {
         // Pass null as the parent view because its going in the dialog layout
         mSubmenuView = inflater.inflate(R.layout.menu_sub_element, null);
 
-        // TODO Get title view
+        // Title of submenu view
         final TextView subMenuTitleView = (TextView) mSubmenuView.findViewById(R.id.id_submenu_title);
         subMenuTitleView.setText(mMenuTitleResource);
 
@@ -69,9 +70,13 @@ public class SubMenuDialog extends DialogFragment {
         numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                // TODO: change title
-                //subMenuTitleView.setText(newVal);
-                int i = 1;
+
+                // If changed motion style, adapt menu view
+                if (mMenuType == BeatElementMenuDialog.MENU_TYPE.MOTION) {
+                    mMotionTypeChanged = true;
+                    //Log.d(LOG_TAG, "motion type: onValueChange");
+                }
+
             }
         });
 
@@ -85,7 +90,14 @@ public class SubMenuDialog extends DialogFragment {
                         // Callback of parent menu
                         mCallerDialog.doPositiveClick(mMenuType, numberPicker.getValue());
 
-                        Log.v(LOG_TAG, mMenuList[numberPicker.getValue()]);
+                        if (mMotionTypeChanged) {
+
+                            mCallerDialog.changeVisibility(numberPicker.getValue());
+
+                            Log.d(LOG_TAG, "motion type changed");
+                        }
+
+                        Log.d(LOG_TAG, mMenuList[numberPicker.getValue()]);
                     }
                 })
                 .setNegativeButton(R.string.txt_cancel, new DialogInterface.OnClickListener() {

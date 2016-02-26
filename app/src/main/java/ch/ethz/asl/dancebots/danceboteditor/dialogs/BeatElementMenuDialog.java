@@ -89,7 +89,6 @@ public class BeatElementMenuDialog extends DialogFragment {
         mMenuListVelocities = mVelocityMenu.getStrings();
         mMenuChoreoLengths = mChoreoLengthMenu.getStrings();
 
-        // TODO: USE INSTANCEOF?
         // Further menu lists based on motion type
         if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE
 
@@ -122,6 +121,25 @@ public class BeatElementMenuDialog extends DialogFragment {
 
         } else {
             Log.v(LOG_TAG, "Error doing menu initialization based on beat element type");
+        }
+    }
+
+    /**
+     * Change visibility of individual menu elements based on the selected motion type
+     * @param newVal value for which menu element visibility -should be inspected
+     */
+    public void changeVisibility(int newVal) {
+
+        if (mBeatElement.getClass() == LedBeatElement.class) {
+
+            mLedTypeMenu.setVisibility(mBeatElementMenuView, newVal);
+
+        } else if (mBeatElement.getClass() == MotorBeatElement.class) {
+
+            mMotorTypeMenu.setVisibility(mBeatElementMenuView, newVal);
+
+        } else {
+            Log.v(LOG_TAG, "Error change visibility");
         }
     }
 
