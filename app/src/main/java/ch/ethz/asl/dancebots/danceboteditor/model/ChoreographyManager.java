@@ -43,6 +43,8 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
     private int mNumSamplesOne;
     private int mNumSamplesZero;
 
+    private int mSampleRate;
+
 
     /**
      * An interface that defines methods that SoundTask implements. An instance of
@@ -226,10 +228,10 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
         mLedElements = mLedChoregraphy.getBeatElements();
 
         // Get the detected sample rate of decoding
-        int sampleRate = mMusicFile.getSampleRate();
+        mSampleRate = mMusicFile.getSampleRate();
 
         // Compute the nominal sampling scale
-        float sampleScale = sampleRate / DanceBotConfiguration.SAMPLE_FREQUENCY_NOMINAL;
+        float sampleScale = mSampleRate / DanceBotConfiguration.SAMPLE_FREQUENCY_NOMINAL;
 
         // Round to the closest Integer
         mNumSamplesZero = Math.round(sampleScale * DanceBotConfiguration.BIT_LENGTH_ZERO_NOMINAL);
@@ -290,7 +292,7 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
 
         int samplePos = 0;
 
-        // Iterate over all detected beats in the song
+        // Iterate over all detected beats in the song (skipping the first)
         for (int i = 0; i < numBeats - 1; ++i) {
 
             // Get the corresponding MotorBeatElement and LedBeatElement
@@ -311,7 +313,7 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
             while (samplePos < samplesToProcess) {
 
                 // Get relative beat in percent
-                float relativeBeat = ((float) samplePos / (float) samplesToProcess) * 100;
+                float relativeBeat = ((float) samplePos / (float) samplesToProcess);
 
                 // Initialize velocities and led
                 short vLeft = 0;
@@ -363,41 +365,49 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
      * Read dance sequence data stream into outputDataBuffer
      *
      * @param outputDataBuffer output data buffer, containing dance sequence pcm encoding
-     * @param sampleCountMicroSecs number of shorts written so far
+     * @param currentMicroSecs number of shorts written so far
      * @return number of samples written to the output data buffer
      */
     @Override
-    public int readDataStream(short[] outputDataBuffer, long sampleCountMicroSecs) {
+    public int readDataStream(short[] outputDataBuffer, long currentMicroSecs) {
 
-        int pcmDataShortCount = outputDataBuffer.length;
-        int beatPos = mMusicFile.getBeatFromMicroSecs(sampleCountMicroSecs);
-        //Log.d(LOG_TAG, "beat: " + startBeat);
+        int outputDataBufferSize = outputDataBuffer.length;
+        int beatPos = mMusicFile.getBeatFromMicroSecs(currentMicroSecs);
+        //Log.d(LOG_TAG, "beat: " + beatPos);
 
-        // Get the true number of shorts from the input
-        // Only shorts within this range will be needed
-        long trueSampleStart = sampleCountMicroSecs;
-        long trueSampleEnd = sampleCountMicroSecs + pcmDataShortCount;
+        // Get the start sample of the buffer
+        long sampleStartBuffer = (long) (currentMicroSecs * 0.001 * 0.001 * mSampleRate);
 
         // Fill buffer with default value initially
         Arrays.fill(outputDataBuffer, (short) -DanceBotConfiguration.DATA_LEVEL);
 
-        // Process next beat
-        int i = beatPos;
-
         // Get the corresponding MotorBeatElement and LedBeatElement
-        MotorBeatElement motorElement = mMotorElements.get(i);
-        LedBeatElement ledElement = mLedElements.get(i);
+        MotorBeatElement motorElement = mMotorElements.get(beatPos);
+        LedBeatElement ledElement = mLedElements.get(beatPos);
+
+        // Get beat based sample start and end positions
+        long sampleStartBeat = mMotorElements.get(beatPos).getSamplePosition();
+        long sampleEndBeat = 0;
+        if (beatPos + 1 < mMotorElements.size()) {
+            sampleEndBeat = mMotorElements.get(beatPos + 1).getSamplePosition();
+        }
 
         // Compute the total number of samples to process for the current beat
-        int samplesToProcess = (int) (trueSampleEnd - trueSampleStart);
+        int samplesToProcess = outputDataBufferSize;
+        // Check that samples to process does not exceed to next beat
+        if (sampleStartBuffer + outputDataBufferSize >= sampleEndBeat) {
+            samplesToProcess = outputDataBufferSize - (int) (sampleStartBuffer + outputDataBufferSize - sampleEndBeat);
+        }
 
         // Initialize the (current) relative sample start position to zero
         int samplePos = 0;
 
-        // Iterate while not all samples at the current beat are processed
+        // Iterate while current buffer is not full AND while not all samples at the current beat
+        // are processed
         while (samplePos < samplesToProcess) {
 
-            float relativeBeat = ((float) samplePos / (float) samplesToProcess) * 100;
+            // Relative beat must be calculated from real start and end position of beat
+            float relativeBeat = ((float) (samplePos + sampleStartBuffer - sampleStartBeat) / (float) (sampleEndBeat - sampleStartBeat));
 
             // Initialize velocities and led
             short vLeft = 0;

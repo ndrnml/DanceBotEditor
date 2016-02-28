@@ -26,12 +26,12 @@
     <string name="motor_type_spin">Spin</string>
     <string name="motor_type_twist">Twist</string>
     <string name="motor_type_back_and_forth">Vor und Zurück</string>
-    <string name="motor_type_constant">Konstant</string>
+    <string name="motor_type_constant">Individuell</string>
     <string name="motor_type_wait">Warten</string>
     <string name="led_type_knight_rider">Knight Rider</string>
     <string name="led_type_random">Zufällig</string>
     <string name="led_type_blink">Blinken</string>
-    <string name="led_type_same_blink">Gleichmässig</string>
+    <string name="led_type_same_blink">Gleichmässig Blinken</string>
     <string name="led_type_constant">Konstant</string>
     <string name="txt_delete">Löschen</string>
     <string name="string_btn_ok">OK</string>

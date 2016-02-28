@@ -91,6 +91,7 @@ public class BeatElementContents {
         frequencyList.add(new Pair<>(1, 3));
         frequencyList.add(new Pair<>(1, 2));
         frequencyList.add(new Pair<>(2, 3));
+        frequencyList.add(new Pair<>(1, 1));
         frequencyList.add(new Pair<>(3, 2));
         frequencyList.add(new Pair<>(2, 1));
         frequencyList.add(new Pair<>(3, 1));

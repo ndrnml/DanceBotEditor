@@ -43,8 +43,8 @@ public class LedBeatElement extends BeatElement {
 
             case KNIGHT_RIDER:
 
-                byte pos = (byte) (3.5 + 3.49 * Math.sin(relativeBeat * mFrequencyVal * 2.0 * Math.PI));
-                ledByte |= (byte) (0x0003 << pos);
+                int pos = (int) (3.5 + 3.49 * Math.sin(relativeBeat * mFrequencyVal * 2.0 * Math.PI));
+                ledByte |= (0x03 << pos);
                 break;
 
             case RANDOM:
