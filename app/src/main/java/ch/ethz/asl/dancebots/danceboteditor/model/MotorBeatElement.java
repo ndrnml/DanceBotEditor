@@ -56,14 +56,14 @@ public class MotorBeatElement extends BeatElement {
 
             case TWIST:
                 if (isLeft) {
-                    velocity = mLeftVelocityValue * (int) Math.sin(relativeBeat * mFrequencyVal * 2.0 * Math.PI);
+                    velocity = (int) (mLeftVelocityValue * Math.sin(relativeBeat * mFrequencyVal * 2.0 * Math.PI));
                 } else {
-                    velocity = -mLeftVelocityValue * (int) Math.sin(relativeBeat * mFrequencyVal * 2.0 * Math.PI);
+                    velocity = (int) (-mLeftVelocityValue * Math.sin(relativeBeat * mFrequencyVal * 2.0 * Math.PI));
                 }
                 break;
 
             case BACK_AND_FORTH:
-                velocity = mLeftVelocityValue * (int) Math.sin(relativeBeat * mFrequencyVal * 2.0 * Math.PI);
+                velocity = (int) (mLeftVelocityValue * Math.sin(relativeBeat * mFrequencyVal * 2.0 * Math.PI));
                 break;
 
             case CONSTANT:
