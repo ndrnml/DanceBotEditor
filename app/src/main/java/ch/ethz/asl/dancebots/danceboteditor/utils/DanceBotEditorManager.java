@@ -22,6 +22,7 @@ public class DanceBotEditorManager {
     private DanceBotMusicFile mDanceBotMusicFile;
     private ChoreographyManager mChoreoManager;
     private HorizontalRecyclerViews mBeatViews;
+    private Decoder mDecoder;
 
     /**
      * Static Menu implementations
@@ -109,7 +110,6 @@ public class DanceBotEditorManager {
     public void setBeatViews(HorizontalRecyclerViews beatViews) {
         mBeatViews = beatViews;
     }
-
     /**
      * This method is really important. It sets the application context, which is needed
      * for a few objects, since some properties are constant encoded.
@@ -118,6 +118,9 @@ public class DanceBotEditorManager {
      */
     public void setContext(Context c) {
         mContext = c;
+    }
+    public void setDecoder(Decoder decoder) {
+        mDecoder = decoder;
     }
 
     /**********
@@ -151,4 +154,7 @@ public class DanceBotEditorManager {
         return mChoreoLengthMenu;
     }
 
+    public Decoder getDecoder() {
+        return mDecoder;
+    }
 }

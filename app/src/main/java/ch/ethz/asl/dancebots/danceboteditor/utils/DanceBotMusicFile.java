@@ -21,6 +21,14 @@ public class DanceBotMusicFile {
     private int mNumberOfBeatsDetected;
     private int[] mBeatBuffer;
 
+    /**
+     * Create new music file
+     *
+     * @param songTitle title of the selected song
+     * @param songArtist artist of the selected song
+     * @param songPath path to the selected song
+     * @param duration duration in milliseconds
+     */
     public DanceBotMusicFile(String songTitle, String songArtist, String songPath, int duration) {
 
         mSongTitle = songTitle;
@@ -34,7 +42,7 @@ public class DanceBotMusicFile {
      */
     public void cleanUp() {
         if (mSongPath != null) {
-            Decoder.cleanUp();
+            DanceBotEditorManager.getInstance().getDecoder().cleanUp();
         }
     }
 
@@ -46,6 +54,14 @@ public class DanceBotMusicFile {
     }
     public void setNumberOfBeatsDected(int numBeats) {
         mNumberOfBeatsDetected = numBeats;
+    }
+
+    /**
+     * Set duration of the selected song
+     * @param duration duration in milliseconds
+     */
+    public void setDuration(int duration) {
+        mDurationInMiliSeconds = duration;
     }
 
     public String getSongPath() {

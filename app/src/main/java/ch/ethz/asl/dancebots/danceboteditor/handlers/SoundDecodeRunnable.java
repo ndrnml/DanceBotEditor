@@ -2,6 +2,7 @@ package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
 import android.util.Log;
 
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 
@@ -128,6 +129,16 @@ public class SoundDecodeRunnable implements Runnable {
                 // Get the total number of samples, which were decoded
                 musicFile.setTotalNumberOfSamples(mp3Decoder.getNumberOfSamples());
                 Log.v(LOG_TAG, "total number of samples: " + musicFile.getSampleCount());
+
+                /**
+                 * As it turned out, MediaStore.Audio.Media.DURATION sometimes gives the wrong
+                 * duration. Thus it is re-computed here based on the sample rate and the total
+                 * number of samples
+                 */
+                musicFile.setDuration((int) (musicFile.getSampleCount() / musicFile.getSampleRate() * 1000));
+
+                // Set the valid decoder object to the current project manager
+                DanceBotEditorManager.getInstance().setDecoder(mp3Decoder);
 
                 // Handle the state of the decoding Thread
                 mSoundTask.handleDecodeState(DECODE_STATE_COMPLETED);

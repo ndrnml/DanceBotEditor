@@ -9,8 +9,8 @@ public class Decoder {
 
     private static final String LOG_TAG = "DECODER";
 
-    // TODO: Is static what we want?
-    private static long mSoundFileHandle;
+    // Pointer of the sound file handle used by the native decoder implementation
+    private long mSoundFileHandle;
 
     public Decoder()
     {
@@ -40,11 +40,25 @@ public class Decoder {
         return decode(mSoundFileHandle);
     }
 
-    // TODO: making this method static is reeeeeally dangerous. What if mSoundFileHandle is not yet initialized?
-    public static int transfer(short[] pcmBuffer) {
+    /**
+     * Transfer method to fill the java buffer with the native decoded pcm audio channel
+     *
+     * Attention: This implementation is not so nice, at it uses a tremendously high amount
+     * of memory. If possible change this to a deocder stream
+     *
+     * @param pcmBuffer java short buffer that will be filled with pcm bytes
+     * @return number of samples (shorts) transferred
+     */
+    public int transfer(short[] pcmBuffer) {
         return transfer(mSoundFileHandle, pcmBuffer);
     }
 
+    /**
+     * Check the audio format of a file at a given path
+     *
+     * @param filePath file path to the file
+     * @return audio format check result
+     */
     public static int checkAudioFormat(String filePath) {
 
         // Initialize mpg123 library for this thread
@@ -68,14 +82,13 @@ public class Decoder {
      * This function is really important.
      * It cleans up all internally (native) used data structures and objects.
      */
-    public static void cleanUp() {
+    public void cleanUp() {
         if (mSoundFileHandle != 0) {
             cleanUp(mSoundFileHandle);
             mSoundFileHandle = 0;
         }
     }
 
-    // TODO: IS THIS CALL SAFE?
     @Override
     protected void finalize() throws Throwable {
         //cleanUp();
@@ -83,7 +96,6 @@ public class Decoder {
         super.finalize();
     }
 
-    // TODO should this method be static, if mSoundFileHandle is static?
     public long getHandle() {
         return mSoundFileHandle;
     }

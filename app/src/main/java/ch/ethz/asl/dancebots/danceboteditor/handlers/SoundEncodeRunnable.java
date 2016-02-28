@@ -123,8 +123,9 @@ public class SoundEncodeRunnable implements Runnable {
 
             // Prepare data channel and music channel
             mSoundTask.getChoreographyManager().readDataAll(mPcmData);
-            //int result = Decoder.transfer(pcmData);
-            Decoder.transfer(mPcmMusic);
+
+            Decoder mp3Decoder = DanceBotEditorManager.getInstance().getDecoder();
+            mp3Decoder.transfer(mPcmMusic);
 
             // Create new mp3 buffer and specify size in bytes
             // Calculate buffer size in bytes
