@@ -207,15 +207,18 @@ public class BeatElementMenuDialog extends DialogFragment {
 
     /**
      * Build the sub menu for value selection
-     * @param id layout id of the menu that is inflated
+     * @param textViewId layout id of the menu that is inflated
      * @param menuList menu string values needed for this sub menu
      */
-    private void buildSubMenu(int id, final int elemIdx, final String[] menuList, final MENU_TYPE menuType, final String menuTag, final int menuTitleResource) {
+    private void buildSubMenu(int menuViewId, int textViewId, final int elemIdx, final String[] menuList, final MENU_TYPE menuType, final String menuTag, final int menuTitleResource) {
 
         // Create submenu for specific TextView
-        TextView textView = (TextView) mBeatElementMenuView.findViewById(id);
+        TextView textView = (TextView) mBeatElementMenuView.findViewById(textViewId);
         textView.setText(menuList[elemIdx]);
-        textView.setOnClickListener(new View.OnClickListener() {
+
+        // Get menu view to set onClickListener
+        View menuView = mBeatElementMenuView.findViewById(menuViewId);
+        menuView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -252,13 +255,13 @@ public class BeatElementMenuDialog extends DialogFragment {
     private void createLedElementMenu(LedBeatElement elem) {
 
         // Add motion submenu
-        buildSubMenu(R.id.txt_motion_type_default, mSelectedMotionTypeIdx, mMenuListMotionTypes, MENU_TYPE.MOTION, "motion_menu", R.string.menu_motion_type);
+        buildSubMenu(R.id.menu_item_motion_type, R.id.txt_motion_type_default, mSelectedMotionTypeIdx, mMenuListMotionTypes, MENU_TYPE.MOTION, "motion_menu", R.string.menu_motion_type);
 
         // Add frequency submenu
-        buildSubMenu(R.id.txt_frequency_default, elem.getFrequencyIdx(), mMenuListFrequencies, MENU_TYPE.FREQUENCY, "frequency_menu", R.string.menu_frequency);
+        buildSubMenu(R.id.menu_item_frequency, R.id.txt_frequency_default, elem.getFrequencyIdx(), mMenuListFrequencies, MENU_TYPE.FREQUENCY, "frequency_menu", R.string.menu_frequency);
 
         // Add choreography length submenu
-        buildSubMenu(R.id.txt_length_default, elem.getChoreoLengthIdx(), mMenuChoreoLengths, MENU_TYPE.CHOREO_LENGTH, "choreo_length_menu", R.string.menu_lengths);
+        buildSubMenu(R.id.menu_item_length, R.id.txt_length_default, elem.getChoreoLengthIdx(), mMenuChoreoLengths, MENU_TYPE.CHOREO_LENGTH, "choreo_length_menu", R.string.menu_lengths);
 
         // Add a check box menu
         buildCheckBoxMenu(elem.getLedLightSwitches());
@@ -270,19 +273,19 @@ public class BeatElementMenuDialog extends DialogFragment {
     private void createMotorElementMenu(MotorBeatElement elem) {
 
         // Add motion submenu
-        buildSubMenu(R.id.txt_motion_type_default, elem.getMotionTypeIdx(), mMenuListMotionTypes, MENU_TYPE.MOTION, "motion_menu", R.string.menu_motion_type);
+        buildSubMenu(R.id.menu_item_motion_type, R.id.txt_motion_type_default, elem.getMotionTypeIdx(), mMenuListMotionTypes, MENU_TYPE.MOTION, "motion_menu", R.string.menu_motion_type);
 
         // Add frequency submenu
-        buildSubMenu(R.id.txt_frequency_default, elem.getFrequencyIdx(), mMenuListFrequencies, MENU_TYPE.FREQUENCY, "frequency_menu", R.string.menu_frequency);
+        buildSubMenu(R.id.menu_item_frequency, R.id.txt_frequency_default, elem.getFrequencyIdx(), mMenuListFrequencies, MENU_TYPE.FREQUENCY, "frequency_menu", R.string.menu_frequency);
 
         // Add velocity left submenu
-        buildSubMenu(R.id.txt_velocity_left_default, elem.getVelocityLeftIdx(), mMenuListVelocities, MENU_TYPE.VELOCITY_LEFT, "velocity_left_menu", R.string.menu_velocity_left);
+        buildSubMenu(R.id.menu_item_velocity_left, R.id.txt_velocity_left_default, elem.getVelocityLeftIdx(), mMenuListVelocities, MENU_TYPE.VELOCITY_LEFT, "velocity_left_menu", R.string.menu_velocity_left);
 
         // Add velocity right submenu
-        buildSubMenu(R.id.txt_velocity_right_default, elem.getVelocityRightIdx(), mMenuListVelocities, MENU_TYPE.VELOCITY_RIGHT, "velocity_right_menu", R.string.menu_velocity_right);
+        buildSubMenu(R.id.menu_item_velocity_right, R.id.txt_velocity_right_default, elem.getVelocityRightIdx(), mMenuListVelocities, MENU_TYPE.VELOCITY_RIGHT, "velocity_right_menu", R.string.menu_velocity_right);
 
         // Add choreography length submenu
-        buildSubMenu(R.id.txt_length_default, elem.getChoreoLengthIdx(), mMenuChoreoLengths, MENU_TYPE.CHOREO_LENGTH, "choreo_length_menu", R.string.menu_lengths);
+        buildSubMenu(R.id.menu_item_length, R.id.txt_length_default, elem.getChoreoLengthIdx(), mMenuChoreoLengths, MENU_TYPE.CHOREO_LENGTH, "choreo_length_menu", R.string.menu_lengths);
 
         // Set appropriate visibility of menu elements
         mMotorTypeMenu.setVisibility(mBeatElementMenuView, elem.getMotionTypeIdx());
