@@ -97,7 +97,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         });
 
         // Create and attach on long click listener
-        listItemViewHolder.mTextView.setOnLongClickListener(new View.OnLongClickListener() {
+        /*listItemViewHolder.mTextView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
 
@@ -114,7 +114,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
 
                 return true;
             }
-        });
+        });*/
 
         return listItemViewHolder;
     }
