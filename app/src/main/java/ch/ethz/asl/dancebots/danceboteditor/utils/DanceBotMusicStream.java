@@ -8,13 +8,11 @@ import android.media.AudioTrack;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
-import android.media.projection.MediaProjectionManager;
 import android.os.*;
 import android.os.Process;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -67,7 +65,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
      */
     public interface StreamPlayback {
 
-        void prepareStreamPlayback();
+        void prepareDataBuffer();
 
         int readDataStream(short[] outBuffer, long shortCount);
     }
@@ -97,7 +95,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
 
     public void setStreamSource(StreamPlayback dataSource) {
         mDataSource = dataSource;
-        mDataSource.prepareStreamPlayback();
+        mDataSource.prepareDataBuffer();
         mDataSourceSet = true;
     }
 

@@ -92,7 +92,7 @@ public class Helper {
                 file = new File(musicDir, fileName + FILE_SUFFIX + numExtension + ".mp3");
                 numExtension++;
 
-                Log.d(LOG_TAG, "file already existed");
+                //Log.d(LOG_TAG, "file already existed");
             }
 
             // Store actual byte data to mp3 file

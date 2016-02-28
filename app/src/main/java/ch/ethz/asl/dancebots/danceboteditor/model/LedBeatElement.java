@@ -73,9 +73,9 @@ public class LedBeatElement extends BeatElement {
             case SAME_BLINK:
 
                 if (Math.round(relativeBeat * mFrequencyVal) % 2 == 0) {
-                    ledByte = 0;
-                } else {
                     ledByte = computeByteFromSwitches();
+                } else {
+                    ledByte = 0;
                 }
 
                 break;

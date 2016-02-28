@@ -44,6 +44,7 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
     private int mNumSamplesZero;
 
     private int mSampleRate;
+    private int mNumBeats;
 
 
     /**
@@ -221,12 +222,14 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
     }
 
     @Override
-    public void prepareStreamPlayback() {
+    public void prepareDataBuffer() {
 
         // Get beat element lists for motor and led elements
         mMotorElements = mMotorChoreography.getBeatElements();
         mLedElements = mLedChoregraphy.getBeatElements();
 
+        // Get the total number of beats detected
+        mNumBeats = mMusicFile.getBeatCount();
         // Get the detected sample rate of decoding
         mSampleRate = mMusicFile.getSampleRate();
 
@@ -261,47 +264,21 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
      */
     public int readDataAll(short[] outputBuffer) {
 
-        // Get beat element lists for motor and led elements
-        ArrayList<MotorBeatElement> motorElements = getMotorBeatElements();
-        ArrayList<LedBeatElement> ledElements = getLedBeatElements();
-
-        // Get the total number of beats detected
-        int numBeats = mMusicFile.getBeatCount();
-        // Get the detected sample rate of decoding
-        int samplingRate = mMusicFile.getSampleRate();
-
-        // Compute the nominal sampling scale
-        float sampleScale = samplingRate / DanceBotConfiguration.SAMPLE_FREQUENCY_NOMINAL;
-
-        // Round to the closest Integer
-        mNumSamplesZero = Math.round(sampleScale * DanceBotConfiguration.BIT_LENGTH_ZERO_NOMINAL);
-        mNumSamplesOne = Math.round(sampleScale * DanceBotConfiguration.BIT_LENGTH_ONE_NOMINAL);
-        mNumSamplesReset = Math.round(sampleScale * DanceBotConfiguration.BIT_LENGTH_RESET_NOMINAL);
-
-        // Define the maximum number of bits in a robot message
-        int numBitsInMsg = 2 * (DanceBotConfiguration.NUM_BIT_MOTOR + 1) + 8;
-
-        // Define the maximum number of samples in a robot message
-        int maxNumSamplesInMsg = numBitsInMsg * mNumSamplesOne + mNumSamplesReset;
-
-        // Initialize a new data buffer, which stores the current calculated message
-        short dataBuffer[] = new short[maxNumSamplesInMsg];
-
-        // Keep a state of the last sample written
-        short lastSampleLevel = DanceBotConfiguration.DATA_LEVEL;
+        // Prepare data buffer related information
+        prepareDataBuffer();
 
         int samplePos = 0;
 
-        // Iterate over all detected beats in the song (skipping the first)
-        for (int i = 0; i < numBeats - 1; ++i) {
+        // Iterate over all detected beats in the song (skipping the first (why?))
+        for (int i = 1; i < mNumBeats - 1; ++i) {
 
             // Get the corresponding MotorBeatElement and LedBeatElement
-            MotorBeatElement motorElement = motorElements.get(i);
-            LedBeatElement ledElement = ledElements.get(i);
+            MotorBeatElement motorElement = mMotorElements.get(i);
+            LedBeatElement ledElement = mLedElements.get(i);
 
             // Get the start and end sample for the current selected beat
-            long startSamplePosition = motorElements.get(i).getSamplePosition();
-            long endSamplePosition = motorElements.get(i + 1).getSamplePosition();
+            long startSamplePosition = mMotorElements.get(i).getSamplePosition();
+            long endSamplePosition = mMotorElements.get(i + 1).getSamplePosition();
 
             // Compute the total number of samples to process for the current beat
             int samplesToProcess = (int) (endSamplePosition - startSamplePosition);
@@ -331,10 +308,10 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
                     led = ledElement.getLedBytes(relativeBeat);
                 }
 
-                int numSamplesInMsg = calculateMessage(dataBuffer, vLeft, vRight, led, lastSampleLevel);
+                int numSamplesInMsg = calculateMessage(mDataBuffer, vLeft, vRight, led, mLastSampleLevel);
 
                 // Get last sample level
-                lastSampleLevel = dataBuffer[numSamplesInMsg - 1];
+                mLastSampleLevel = mDataBuffer[numSamplesInMsg - 1];
 
                 /*
                  * If the end of samples to process is not reached, the data buffer is copied to
@@ -345,7 +322,7 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
                     // Compute the current absolute sample position and write data to the pcm buffer
                     int currentSamplePosition = (int) startSamplePosition + samplePos;
                     // Write calculated data message to pcm buffer
-                    writeMessage(outputBuffer, dataBuffer, currentSamplePosition, numSamplesInMsg);
+                    writeMessage(outputBuffer, mDataBuffer, currentSamplePosition, numSamplesInMsg);
 
                 } else {
 
@@ -608,11 +585,4 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
         return offsetSamples;
     }
 
-    public ArrayList<MotorBeatElement> getMotorBeatElements() {
-        return mMotorChoreography.getBeatElements();
-    }
-
-    public ArrayList<LedBeatElement> getLedBeatElements() {
-        return mLedChoregraphy.getBeatElements();
-    }
 }
