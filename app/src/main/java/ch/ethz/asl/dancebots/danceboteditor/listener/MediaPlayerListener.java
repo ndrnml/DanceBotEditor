@@ -158,8 +158,6 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
     @Override
     public void run() {
 
-        //Log.d(LOG_TAG, "run listener");
-
         // Check if currently song is playing
         if (mActiveMediaPlayer != null) {
 
@@ -171,7 +169,6 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
 
         // Check if seek bar progress changed
         if (seekBarChanged()) {
-
             //Log.d(LOG_TAG, "seek bar changed");
 
             // Get the seek bar progress
@@ -181,37 +178,23 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
             mCurrentTimeView.setText(Helper.songTimeFormat(currentTimeInMilliSecs));
 
             // Estimate beat position
-            int estimatedBeatElement = (int) (((float) mRecyclerView.getNumElements() / mTotalDurationInMilliSecs * (float) currentTimeInMilliSecs));
+            int estimatedBeatElement = (int) (((float) mNumElements / mTotalDurationInMilliSecs * (float) currentTimeInMilliSecs));
 
-            // Compute current sample
-            long currentSample = (long) ((float) currentTimeInMilliSecs * 0.001 * mSampleRate);
-            //Log.d(LOG_TAG, "current sample: " + currentSample);
+            // Compute exact beat based on beat start sample
+            /*long currentSample = (long) ((float) currentTimeInMilliSecs * 0.001 * mSampleRate);
+            int exactBeat = 0;
+            for (int i = 1; i < mNumElements; ++i) {
+                long sampleAtBeat = mRecyclerView.getSampleAt(i);
+                if (currentSample < sampleAtBeat) {
+                    exactBeat = i - 1;
+                    break;
+                }
+            }
+            Log.d(LOG_TAG, "exact beat: " + exactBeat);
+            */
 
             int exactBeatElement = estimatedBeatElement;
 
-            // Check exact beat position for previous, current and next beat
-            /*int searchSpace = 20;
-            for (int i = -searchSpace; i <= searchSpace; ++i) {
-
-                // Check boundaries
-                if (estimatedBeatElement + i > 0 && estimatedBeatElement + i < mNumElements - 1) {
-
-                    // Get start and end beat sample positions
-                    long estimatedBeatStartSample = mRecyclerView.getSampleAt(estimatedBeatElement + i);
-                    long estimatedBeatEndSample = mRecyclerView.getSampleAt(estimatedBeatElement + i + 1);
-
-                    //Log.d(LOG_TAG, "start sample: " + estimatedBeatStartSample);
-                    //Log.d(LOG_TAG, "end sample: " + estimatedBeatEndSample);
-
-                    // Check if current sample is in range
-                    if (estimatedBeatStartSample < currentSample && currentSample < estimatedBeatEndSample) {
-                        exactBeatElement = estimatedBeatElement + i;
-                        break;
-                    }
-                }
-            }*/
-
-            //int currentBeatElement = (int) (((float) mRecyclerViewScrollListener.getNumElements() / (float) mMediaPlayerListener.getTotalTime()) * (float) currentTimeInMilliseconds);
             int firstVisibleItem = mRecyclerView.getFirstVisibleItem();
             int lastVisibleItem = mRecyclerView.getLastVisibleItem();
 
@@ -221,6 +204,7 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
                 mRecyclerView.setFocus(exactBeatElement);
             }
 
+            //Log.d(LOG_TAG, "exact beat: " + exactBeat);
             //Log.d(LOG_TAG, "estimated element: " + estimatedBeatElement);
             //Log.d(LOG_TAG, "update scroll to element: " + exactBeatElement);
         }
