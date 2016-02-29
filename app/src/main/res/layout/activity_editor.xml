@@ -115,17 +115,21 @@
             android:orientation="horizontal"
             android:layout_gravity="center_horizontal">
 
-            <Button
-                android:layout_width="wrap_content"
+            <ImageButton
+                android:id="@+id/btn_music_player"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Play"
-                android:id="@+id/btn_play" />
+                android:src="@drawable/play_music_play_icon"
+                android:scaleType="fitCenter"
+                />
 
-            <Button
-                android:layout_width="wrap_content"
+            <ImageButton
+                android:id="@+id/btn_stream_player"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Stream"
-                android:id="@+id/btn_stream" />
+                android:src="@drawable/play_robot_play_icon"
+                android:scaleType="fitCenter"
+                />
 
         </LinearLayout>
 

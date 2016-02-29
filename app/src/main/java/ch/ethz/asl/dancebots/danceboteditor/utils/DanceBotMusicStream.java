@@ -12,6 +12,7 @@ import android.os.*;
 import android.os.Process;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
     private StreamPlayback mDataSource;
     private boolean mDataSourceSet = false;
     private long mSampleCountMicroSecs = 0;
-    private Button mPlayButton;
+    private ImageButton mPlayButton;
 
     /**
      * Interface for any instance that
@@ -99,7 +100,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
         mDataSourceSet = true;
     }
 
-    public void setPlayButton(Button playButton) {
+    public void setPlayButton(ImageButton playButton) {
         mPlayButton = playButton;
     }
 
@@ -393,7 +394,7 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
             @Override
             public void run() {
                 if (mPlayButton != null) {
-                    mPlayButton.setText(R.string.txt_stream);
+                    mPlayButton.setImageResource(R.drawable.play_robot_play_icon);
                 }
             }
         });
@@ -470,16 +471,16 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
 
     @Override
     public void setPlayButtonPlay() {
-        mPlayButton.setText(R.string.txt_stream);
+        mPlayButton.setImageResource(R.drawable.play_robot_play_icon);
     }
 
     @Override
     public void setPlayButtonPause() {
-        mPlayButton.setText(R.string.txt_pause);
+        mPlayButton.setImageResource(R.drawable.play_robot_pause_icon);
     }
 
     @Override
-    public Button getPlayButton() {
+    public ImageButton getPlayButton() {
         return mPlayButton;
     }
 

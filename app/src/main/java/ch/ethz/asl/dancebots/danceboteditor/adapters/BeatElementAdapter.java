@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +75,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
     public ListItemViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
 
         // Create a new view
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.beat_element, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_beat_element, parent, false);
 
         // Set the view's size, margins, paddings and layout parameters
         final ListItemViewHolder listItemViewHolder = new ListItemViewHolder(itemView);

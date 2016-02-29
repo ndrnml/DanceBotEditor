@@ -322,7 +322,7 @@ public class BeatElementMenuDialog extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        mBeatElementMenuView = inflater.inflate(R.layout.menu_beat_element, null);
+        mBeatElementMenuView = inflater.inflate(R.layout.dialog_menu_beat, null);
 
         // Create submenu based on the element type
         if (mBeatElement.getClass() == LedBeatElement.class) { // LED_TYPE

@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -86,13 +86,13 @@ public class EditorActivity extends Activity {
         mMediaPlayer = new DanceBotMediaPlayer(this);
         mMediaPlayer.setDataSource(mMusicFile);
         mMediaPlayer.setMediaPlayerSeekBar((SeekBar) findViewById(R.id.seekbar_media_player));
-        mMediaPlayer.setPlayButton((Button) findViewById(R.id.btn_play));
+        mMediaPlayer.setPlayButton((ImageButton) findViewById(R.id.btn_music_player));
 
         // Initialize media stream player
         mMediaStream = new DanceBotMusicStream(mMusicFile);
         mMediaStream.setStreamSource(mProjectManager.getChoreoManager());
         mMediaStream.setMediaPlayerSeekBar((SeekBar) findViewById(R.id.seekbar_media_player));
-        mMediaStream.setPlayButton((Button) findViewById(R.id.btn_stream));
+        mMediaStream.setPlayButton((ImageButton) findViewById(R.id.btn_stream_player));
 
         // Update music file information
         // Update Title

@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -23,14 +24,12 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
     private static final String LOG_TAG = DanceBotMediaPlayer.class.getSimpleName();
 
     private final Activity mActivity;
-    private TextView mSeekBarTotalTimeView;
-    private TextView mSeekBarCurrentTimeView;
     private SeekBar mSeekBar;
     private MediaPlayer mMediaPlayer;
     private boolean mIsReady = false;
     private boolean mIsPlaying = false;
     private DanceBotMusicFile mMusicFile;
-    private Button mPlayPauseButton;
+    private ImageButton mPlayPauseButton;
     private MediaPlayerListener mEventListener;
 
     public DanceBotMediaPlayer(Activity activity) {
@@ -55,7 +54,7 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
         CompositeSeekBarListener.registerListener(this);
     }
 
-    public void setPlayButton(Button playButton) {
+    public void setPlayButton(ImageButton playButton) {
         mPlayPauseButton = playButton;
     }
 
@@ -102,16 +101,16 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
 
     @Override
     public void setPlayButtonPlay() {
-        mPlayPauseButton.setText(R.string.txt_play);
+        mPlayPauseButton.setImageResource(R.drawable.play_music_play_icon);
     }
 
     @Override
     public void setPlayButtonPause() {
-        mPlayPauseButton.setText(R.string.txt_pause);
+        mPlayPauseButton.setImageResource(R.drawable.play_music_pause_icon);
     }
 
     @Override
-    public Button getPlayButton() {
+    public ImageButton getPlayButton() {
         return mPlayPauseButton;
     }
 
@@ -160,7 +159,7 @@ public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, Se
         mMediaPlayer.seekTo(0);
 
         if (mPlayPauseButton != null) {
-            mPlayPauseButton.setText(R.string.txt_play);
+            mPlayPauseButton.setImageResource(R.drawable.play_music_play_icon);
         }
 
         if (mEventListener != null) {

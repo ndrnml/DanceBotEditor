@@ -1,6 +1,5 @@
 package ch.ethz.asl.dancebots.danceboteditor.adapters;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +56,7 @@ public class SongListAdapter extends BaseAdapter {
 
         // Create new view from layout
         LinearLayout songLayout = (LinearLayout) mSongElementInflater.inflate
-                (R.layout.song_list_details, null);
+                (R.layout.list_songs, null);
 
         //get title and artist views
         TextView songView = (TextView)songLayout.findViewById(R.id.song_title);

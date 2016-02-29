@@ -70,7 +70,7 @@ public class SubMenuDialog extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        mSubmenuView = inflater.inflate(R.layout.menu_sub_element, null);
+        mSubmenuView = inflater.inflate(R.layout.dialog_menu_item, null);
 
         // Title of submenu view
         final TextView subMenuTitleView = (TextView) mSubmenuView.findViewById(R.id.id_submenu_title);
