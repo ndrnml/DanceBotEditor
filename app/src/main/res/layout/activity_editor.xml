@@ -117,18 +117,20 @@
 
             <ImageButton
                 android:id="@+id/btn_music_player"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:src="@drawable/play_music_play_icon"
                 android:scaleType="fitCenter"
+                android:background="@null"
                 />
 
             <ImageButton
                 android:id="@+id/btn_stream_player"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:src="@drawable/play_robot_play_icon"
                 android:scaleType="fitCenter"
+                android:background="@null"
                 />
 
         </LinearLayout>
