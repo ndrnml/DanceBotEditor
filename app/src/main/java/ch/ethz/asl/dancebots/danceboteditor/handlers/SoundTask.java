@@ -158,6 +158,7 @@ public class SoundTask implements
         mSoundTaskProgressDialog.setCanceledOnTouchOutside(false);
         mSoundTaskProgressDialog.setIndeterminate(true);
         mSoundTaskProgressDialog.setProgress(0);
+        mSoundTaskProgressDialog.setProgressNumberFormat(null);
     }
 
     public ArrayList<Runnable> getSoundBeatExtractionRunnables() {

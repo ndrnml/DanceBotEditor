@@ -199,7 +199,6 @@ public class SoundManager {
                     case ENCODING_STARTED:
 
                         // Not so nice way of removing disturbing percentage numbers
-                        dialog.setProgressNumberFormat(null);
                         dialog.setProgressPercentFormat(null);
 
                         dialog.setMessage(DanceBotEditorManager.getInstance().getContext().getString(R.string.string_encoding_started_message));
