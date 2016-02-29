@@ -288,8 +288,4 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
         }
     }
 
-    private boolean isInRange(long estimatedBeatStartSample, long estimatedBeatEndSample, long currentSample) {
-        return (currentSample <= estimatedBeatEndSample && currentSample >= estimatedBeatStartSample);
-    }
-
 }
