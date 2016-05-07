@@ -32,5 +32,6 @@
     <color name="led_elem_color6">#8D6E63</color>
     <color name="led_elem_color7">#BDBDBD</color>
     <color name="led_elem_color8">#FFEE58</color>
+    <color name="white">#FFFFFF</color>
 
 </resources>

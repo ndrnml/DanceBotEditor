@@ -9,8 +9,8 @@
     <string name="txt_title_song_infos">Song Infos</string>
     <string name="txt_song_title">Titel:</string>
     <string name="txt_song_path">Pfad:</string>
-    <string name="menu_editor_txt_open_music_file">Öffnen</string>
-    <string name="menu_editor_txt_save_music_file">Speichern</string>
+    <string name="menu_editor_txt_open_music_file">Projekt Speichern</string>
+    <string name="menu_editor_txt_save_music_file">MP3 Speichern</string>
     <string name="alert_ask_exit_txt">Do you really wanna exit?</string>
     <string name="txt_yes">Yes</string>
     <string name="txt_no">No</string>

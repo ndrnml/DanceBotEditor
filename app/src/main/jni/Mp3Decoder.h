@@ -20,23 +20,29 @@ public:
 extern "C" {
 #endif
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_initialize
+JNIEXPORT jint JNICALL Java_de_mpg123_MPG123Decoder_initialize
         (JNIEnv*, jobject);
 
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_open
+JNIEXPORT jlong JNICALL Java_de_mpg123_MPG123Decoder_open
         (JNIEnv*, jobject self, jstring);
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_decode
+JNIEXPORT jint JNICALL Java_de_mpg123_MPG123Decoder_decode
         (JNIEnv*, jobject, jlong);
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_transfer
+JNIEXPORT jint JNICALL Java_de_mpg123_MPG123Decoder_transfer
         (JNIEnv*, jobject, jlong, jshortArray);
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_cleanUp
+JNIEXPORT jint JNICALL Java_de_mpg123_MPG123Decoder_cleanUp
         (JNIEnv*, jobject, jlong);
 
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_checkFormat
+JNIEXPORT jlong JNICALL Java_de_mpg123_MPG123Decoder_checkFormat
         (JNIEnv*, jobject self, jstring);
+
+JNIEXPORT jlong JNICALL Java_de_mpg123_MPG123Decoder_getSampleRate
+        (JNIEnv*, jobject, jlong);
+
+JNIEXPORT jlong JNICALL Java_de_mpg123_MPG123Decoder_getNumberOfSamples
+        (JNIEnv*, jobject, jlong);
 
 #ifdef __cplusplus
 }

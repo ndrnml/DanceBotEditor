@@ -8,7 +8,6 @@ static const char* LOG_TAG = "NATIVE_SOUND_FILE";
 SoundFile::SoundFile(const char* file_path_) :
     file_path(file_path_),
     number_beats_detected(0),
-    num_of_proc_beat_extract_samples(0),
     channels(0),
     rate(0),
     num_samples(0),
@@ -86,36 +85,4 @@ int SoundFile::interleaveChannels()
         return -1;
     }
 
-}
-
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getSampleRate
-        (JNIEnv *env, jobject self, jlong sound_file_handle)
-{
-    SoundFile *sound_file = (SoundFile *)sound_file_handle;
-
-    return sound_file->rate;
-}
-
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getNumberOfSamples
-        (JNIEnv *env, jobject self, jlong sound_file_handle)
-{
-    SoundFile *sound_file = (SoundFile *)sound_file_handle;
-
-    return sound_file->num_samples;
-}
-
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_getNumBeatsDetected
-        (JNIEnv *env, jobject self, jlong sound_file_handle)
-{
-    SoundFile *sound_file = (SoundFile *)sound_file_handle;
-
-    return sound_file->number_beats_detected;
-}
-
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_getNumSamplesProcessed
-        (JNIEnv *env, jobject self, jlong sound_file_handle)
-{
-    SoundFile *sound_file = (SoundFile *)sound_file_handle;
-
-    return sound_file->num_of_proc_beat_extract_samples;
 }

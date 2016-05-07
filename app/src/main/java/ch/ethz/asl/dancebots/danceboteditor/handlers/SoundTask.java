@@ -5,6 +5,8 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.vamp.beatextraction.VampBeatExtractor;
+
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
@@ -300,7 +302,8 @@ public class SoundTask implements
      * Compute the progress percentage for beat extraction
      */
     public int getProgress() {
-        float fraction = (float) BeatExtractor.getNumberOfProcessedSamples(mSoundFileHandler) / (float) getNumSamples();
+        BeatExtractor beatExtractor = new VampBeatExtractor();
+        float fraction = (float) beatExtractor.getNumberOfProcessedSamples(mSoundFileHandler) / (float) getNumSamples();
         return (int) (fraction * 100);
     }
 
@@ -338,6 +341,7 @@ public class SoundTask implements
 
             case SoundDecodeRunnable.DECODE_STATE_FAILED:
                 soundTaskState = SoundManager.DECODING_FAILED;
+
                 break;
 
             default:

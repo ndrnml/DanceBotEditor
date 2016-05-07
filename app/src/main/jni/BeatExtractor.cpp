@@ -9,11 +9,13 @@
 
 static const char* LOG_TAG = "NATIVE_BEAT_EXTRACTOR";
 
+long BeatExtractor::num_processed_samples = 0;
+
 /**
  * This method computes the features (beat peaks) at sample positions for a selected song
  * which soundFileHandle is pointing to
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_extractBeats
+JNIEXPORT jint JNICALL Java_org_vamp_beatextraction_VampBeatExtractor_extractBeats
         (JNIEnv *env, jobject self, jlong soundFileHandle, jobject intBuffer, jint intBufferSize)
 {
     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "start BeatExtractor::extractBeats");
@@ -175,7 +177,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
  * THIS METHOD IS NOT THREAD SAFE
  * This method computes the features (beat peaks) at sample positions for a given range of samples
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_extract(
+JNIEXPORT jint JNICALL Java_org_vamp_beatextraction_VampBeatExtractor_extract(
         JNIEnv *env,
         jobject self,
         jlong soundFileHandle,
@@ -311,7 +313,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
         // THIS IS NOT THREAD SAFE
         // It is possible to make a callback to the UI thread, so that the progress can be properly
         // updated
-        sound_file->num_of_proc_beat_extract_samples += step_size;
+        BeatExtractor::num_processed_samples += step_size;
         //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "processed samples: %d", sound_file->num_of_proc_beat_extract_samples);
     }
 
@@ -361,7 +363,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
     return number_of_beats_detected;
 }
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_cleanUp
+JNIEXPORT jint JNICALL Java_org_vamp_beatextraction_VampBeatExtractor_cleanUp
         (JNIEnv *env, jobject self, jlong sound_file_handle)
 {
     if (sound_file_handle != 0)
@@ -373,4 +375,19 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtra
     {
         __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Error: sound file handle clean up failed, sound_file_handle: %lld", sound_file_handle);
     }
+}
+
+JNIEXPORT jlong JNICALL Java_org_vamp_beatextraction_VampBeatExtractor_getProcessedSamples
+        (JNIEnv*, jobject)
+{
+    return BeatExtractor::num_processed_samples;
+}
+
+
+JNIEXPORT jint JNICALL Java_org_vamp_beatextraction_VampBeatExtractor_getNumBeatsDetected
+        (JNIEnv *env, jobject self, jlong sound_file_handle)
+{
+    SoundFile *sound_file = (SoundFile *)sound_file_handle;
+
+    return sound_file->number_beats_detected;
 }

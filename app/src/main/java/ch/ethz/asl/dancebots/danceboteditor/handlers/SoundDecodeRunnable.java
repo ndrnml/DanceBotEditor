@@ -5,6 +5,7 @@ import android.util.Log;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
+import de.mpg123.MPG123Decoder;
 
 /**
  * Created by andrin on 14.11.15.
@@ -96,7 +97,7 @@ public class SoundDecodeRunnable implements Runnable {
             DanceBotMusicFile musicFile = mSoundTask.getDanceBotMusicFile();
 
             // Create and initialize decoder object
-            Decoder mp3Decoder = new Decoder();
+            Decoder mp3Decoder = new MPG123Decoder();
 
             // Open a music file path
             Log.v(LOG_TAG, "opening mp3 file...");
@@ -110,6 +111,8 @@ public class SoundDecodeRunnable implements Runnable {
             if (result <= 0) {
 
                 Log.v(LOG_TAG, "Error: Decoding failed.");
+
+                mp3Decoder.close();
 
                 // Handle the state of the decoding Thread
                 mSoundTask.handleDecodeState(DECODE_STATE_FAILED);
@@ -136,9 +139,6 @@ public class SoundDecodeRunnable implements Runnable {
                  * number of samples
                  */
                 musicFile.setDuration((int) (musicFile.getSampleCount() / musicFile.getSampleRate() * 1000));
-
-                // Set the valid decoder object to the current project manager
-                DanceBotEditorManager.getInstance().setDecoder(mp3Decoder);
 
                 // Handle the state of the decoding Thread
                 mSoundTask.handleDecodeState(DECODE_STATE_COMPLETED);

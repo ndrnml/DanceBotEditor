@@ -8,7 +8,7 @@
 
 static std::vector<lame_global_flags*> glfList(2);
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Encoder_init(
+JNIEXPORT jint JNICALL Java_net_lame_LameEncoder_init(
         JNIEnv *env, jclass cls, jint inSamplerate, jint outChannel,
         jint outSamplerate, jint outBitrate, jint quality,
         jstring id3tagTitle, jstring id3tagArtist, jstring id3tagAlbum,
@@ -21,33 +21,33 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Encoder_i
     return glfList.size() - 1;
 }
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Encoder_encode(
+JNIEXPORT jint JNICALL Java_net_lame_LameEncoder_encode(
         JNIEnv *env, jclass cls, jint instanceIndex, jshortArray buffer_l,
         jshortArray buffer_r, jint samples, jbyteArray mp3buf)
 {
     return simple_lame_lib_encode(env, glfList.at(instanceIndex), buffer_l, buffer_r, samples, mp3buf);
 }
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Encoder_encodeBufferInterleaved(
+JNIEXPORT jint JNICALL Java_net_lame_LameEncoder_encodeBufferInterleaved(
         JNIEnv *env, jclass cls, jint instanceIndex, jshortArray pcm,
         jint samples, jbyteArray mp3buf)
 {
     return simple_lame_lib_encodeBufferInterleaved(env, glfList.at(instanceIndex), pcm, samples, mp3buf);
 }
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Encoder_flush(
+JNIEXPORT jint JNICALL Java_net_lame_LameEncoder_flush(
         JNIEnv *env, jclass cls, jint instanceIndex, jbyteArray mp3buf)
 {
     return simple_lame_lib_flush(env, glfList.at(instanceIndex), mp3buf);
 }
 
-JNIEXPORT void JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Encoder_close(
+JNIEXPORT void JNICALL Java_net_lame_LameEncoder_close(
         JNIEnv *env, jclass cls, jint instanceIndex)
 {
     simple_lame_lib_close(glfList.at(instanceIndex));
 }
 
-JNIEXPORT void JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Encoder_log(
+JNIEXPORT void JNICALL Java_net_lame_LameEncoder_log(
         JNIEnv *env, jclass cls, jboolean on)
 {
     simple_lame_lib_log(on);

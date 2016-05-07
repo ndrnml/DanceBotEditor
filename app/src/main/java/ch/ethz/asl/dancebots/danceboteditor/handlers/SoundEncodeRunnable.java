@@ -6,6 +6,8 @@ import android.os.*;
 import android.os.Process;
 import android.util.Log;
 
+import net.lame.LameEncoder;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Encoder;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Helper;
+import de.mpg123.MPG123Decoder;
 
 /**
  * Created by andrin on 29.11.15.
@@ -43,7 +46,7 @@ public class SoundEncodeRunnable implements Runnable {
 
     // Defines a field that contains the calling object of type SoundTask.
     private final TaskRunnableEncodeMethods mSoundTask;
-    private Encoder mEncoder;
+    private LameEncoder mEncoder;
 
     private long t1,t2;
     private short[] mPcmData;
@@ -124,7 +127,9 @@ public class SoundEncodeRunnable implements Runnable {
             // Prepare data channel and music channel
             mSoundTask.getChoreographyManager().readDataAll(mPcmData);
 
-            Decoder mp3Decoder = DanceBotEditorManager.getInstance().getDecoder();
+            Decoder mp3Decoder = new MPG123Decoder();
+            mp3Decoder.openFile(musicFile.getSongPath());
+            mp3Decoder.decode();
             mp3Decoder.transfer(mPcmMusic);
 
             // Create new mp3 buffer and specify size in bytes
@@ -133,7 +138,7 @@ public class SoundEncodeRunnable implements Runnable {
             byte[] mp3buf = new byte[mp3bufSize];
 
             // Encode the audio and data buffer to a new mp3 file
-            mEncoder = new Encoder.Builder(SAMPLE_RATE, CHANNEL_COUNT, SAMPLE_RATE, BIT_RATE).create();
+            mEncoder = new LameEncoder.Builder(SAMPLE_RATE, CHANNEL_COUNT, SAMPLE_RATE, BIT_RATE).create();
             mEncoder.encode(mPcmMusic, mPcmData, (int) numSamples, mp3buf);
             mEncoder.flush(mp3buf);
 

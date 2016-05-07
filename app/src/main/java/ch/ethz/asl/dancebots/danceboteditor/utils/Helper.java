@@ -6,6 +6,8 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.PipedOutputStream;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -17,10 +19,8 @@ public class Helper {
 
     // DanceBot default directory names
     private static final String MAIN_DIRECTORY = "DanceBot";
-    private static final String MUSIC_DIRECTORY = "MusicFiles";
-    private static final String PROJECT_DIRECTORY = "ProjectFiles";
-    private static final String FILE_EXTENSION_DANCE_BOT = ".proj";
-    private static final String FILE_EXTENSION_MP3 = ".mp3";
+    private static final String PROJECT_FILE_EXTENSION = ".proj";
+    private static final String MP3_FILE_EXTENSION = ".mp3";
     private static final String FILE_SUFFIX = "_DANCE";
 
     /**
@@ -66,6 +66,18 @@ public class Helper {
         return file;
     }
 
+    public static File getProjectDirectory(Context context) {
+
+        File file = new File(context.getExternalFilesDir(
+                Environment.DIRECTORY_DOCUMENTS), MAIN_DIRECTORY);
+
+        if (!file.mkdirs()) {
+            Log.d(LOG_TAG, "Directory not created or already exists");
+        }
+
+        return file;
+    }
+
     /**
      * Save music buffer to default DanceBot storage directory
      *
@@ -81,7 +93,7 @@ public class Helper {
             File musicDir = getMusicDirectory();
 
             // Save file within this directory
-            File file = new File(musicDir, fileName + FILE_SUFFIX + ".mp3");
+            File file = new File(musicDir, fileName + FILE_SUFFIX + MP3_FILE_EXTENSION);
 
             // Prepare extension number if file already exists
             int numExtension = 1;
@@ -89,7 +101,7 @@ public class Helper {
             // Create new file name and try again
             while (file.exists()) {
 
-                file = new File(musicDir, fileName + FILE_SUFFIX + numExtension + ".mp3");
+                file = new File(musicDir, fileName + FILE_SUFFIX + numExtension + MP3_FILE_EXTENSION);
                 numExtension++;
 
                 //Log.d(LOG_TAG, "file already existed");
@@ -115,5 +127,35 @@ public class Helper {
         }
     }
 
+
+    public static File saveToProjectFolder(Context context, String fileName, DanceBotMusicFile musicFile) {
+
+        if (isExternalStorageWritable()) {
+
+            File projectDirectory = getProjectDirectory(context);
+
+            // Save file within this directory
+            File file = new File(projectDirectory, fileName + FILE_SUFFIX + PROJECT_FILE_EXTENSION);
+
+            // Store actual byte data to mp3 file
+            try {
+                FileOutputStream fos = new FileOutputStream(file.getPath());
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(musicFile);
+                oos.close();
+
+            } catch (java.io.IOException e) {
+                Log.d(LOG_TAG, "Exception in file writing", e);
+                return null;
+            }
+
+            return file;
+
+        } else {
+
+            Log.d(LOG_TAG, "Error: external storage is not writable");
+            return null;
+        }
+    }
 
 }

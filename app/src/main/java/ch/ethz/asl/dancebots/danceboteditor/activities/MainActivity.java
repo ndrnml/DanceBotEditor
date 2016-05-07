@@ -95,10 +95,6 @@ public class MainActivity extends Activity {
      * @param view calling view
      */
     public void startMediaLibraryActivity(View view) {
-/*        Intent editorIntent = new Intent(this, EditorActivity.class);
-        startActivity(editorIntent);
-*/
-        // Start intent that loads the editor view and starts pick-song-activity
         Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
         startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
     }

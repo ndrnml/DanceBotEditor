@@ -22,7 +22,6 @@ public class DanceBotEditorManager {
     private DanceBotMusicFile mDanceBotMusicFile;
     private ChoreographyManager mChoreoManager;
     private HorizontalRecyclerViews mBeatViews;
-    private Decoder mDecoder;
 
     /**
      * Static Menu implementations
@@ -95,13 +94,9 @@ public class DanceBotEditorManager {
      */
     public void cleanUp() {
         if (mDanceBotMusicFile != null) {
-            // Cleanup DanceBotMusicFile
-            mDanceBotMusicFile.cleanUp();
-
             // Detach from DanceBotEditorManager
             mDanceBotMusicFile = null;
         }
-
     }
 
     /**********
@@ -118,9 +113,6 @@ public class DanceBotEditorManager {
      */
     public void setContext(Context c) {
         mContext = c;
-    }
-    public void setDecoder(Decoder decoder) {
-        mDecoder = decoder;
     }
 
     /**********
@@ -152,9 +144,5 @@ public class DanceBotEditorManager {
     }
     public IntegerSelectionMenu getChoreoLengthMenu() {
         return mChoreoLengthMenu;
-    }
-
-    public Decoder getDecoder() {
-        return mDecoder;
     }
 }

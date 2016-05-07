@@ -1,10 +1,12 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
+import java.io.Serializable;
+
 /**
  * The DanceBotMusicFile class stores all relevant data about the selected song.
  * Meta data, details and extracted beats are stored in this object.
  */
-public class DanceBotMusicFile {
+public class DanceBotMusicFile implements Serializable {
 
     // Meta data
     private String mSongTitle;
@@ -35,15 +37,6 @@ public class DanceBotMusicFile {
         mSongArtist = songArtist;
         mSongPath = songPath;
         mDurationInMiliSeconds = duration;
-    }
-
-    /**
-     * Clean up decoder
-     */
-    public void cleanUp() {
-        if (mSongPath != null) {
-            DanceBotEditorManager.getInstance().getDecoder().cleanUp();
-        }
     }
 
     public void setSampleRate(int rate) {

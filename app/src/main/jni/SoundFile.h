@@ -36,28 +36,6 @@ public:
 
     // The number of beats detected by one or multiple threads
     int number_beats_detected;
-
-    // The number of process samples for beat extraction can be accessed by multiple threads
-    long num_of_proc_beat_extract_samples;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getSampleRate
-        (JNIEnv*, jobject, jlong);
-
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_getNumberOfSamples
-        (JNIEnv*, jobject, jlong);
-
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_getNumBeatsDetected
-        (JNIEnv*, jobject, jlong);
-
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_BeatExtractor_getNumSamplesProcessed
-        (JNIEnv*, jobject, jlong);
-
-#ifdef __cplusplus
-}
-#endif
 #endif

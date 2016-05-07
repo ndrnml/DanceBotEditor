@@ -24,7 +24,7 @@ Mp3Decoder::~Mp3Decoder() {
 /**
  * TODO comment
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_initialize
+JNIEXPORT jint JNICALL Java_de_mpg123_MPG123Decoder_initialize
         (JNIEnv *env, jobject self)
 {
     // Initialize mpg123 library
@@ -34,7 +34,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_i
 /**
  * TODO
  */
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_open
+JNIEXPORT jlong JNICALL Java_de_mpg123_MPG123Decoder_open
         (JNIEnv *env, jobject self, jstring path_to_file)
 {
 
@@ -124,7 +124,7 @@ JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_
 /**
  * TODO: The hole method is fixed to short encoding
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_decode
+JNIEXPORT jint JNICALL Java_de_mpg123_MPG123Decoder_decode
         (JNIEnv *env, jobject self, jlong sound_file_handle)
 {
     // Load sound file TODO: Check for NULL?
@@ -189,7 +189,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_d
 }
 
 
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_transfer
+JNIEXPORT jint JNICALL Java_de_mpg123_MPG123Decoder_transfer
         (JNIEnv *env, jobject self, jlong sound_file_handle, jshortArray pcm)
 {
 
@@ -215,7 +215,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_t
 /**
  *
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_cleanUp
+JNIEXPORT jint JNICALL Java_de_mpg123_MPG123Decoder_cleanUp
         (JNIEnv *env, jobject self, jlong sound_file_handle)
 {
     SoundFile *sound_file = (SoundFile *)sound_file_handle;
@@ -223,7 +223,7 @@ JNIEXPORT jint JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_c
     delete sound_file;
 }
 
-JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_checkFormat
+JNIEXPORT jlong JNICALL Java_de_mpg123_MPG123Decoder_checkFormat
         (JNIEnv *env, jobject self, jstring path_to_file)
 {
 
@@ -280,4 +280,20 @@ JNIEXPORT jlong JNICALL Java_ch_ethz_asl_dancebots_danceboteditor_utils_Decoder_
     __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG,
                         "Error: no proper initialization of mpg123lib.");
     return MPG123_ERR;
+}
+
+JNIEXPORT jlong JNICALL Java_de_mpg123_MPG123Decoder_getSampleRate
+        (JNIEnv *env, jobject self, jlong sound_file_handle)
+{
+    SoundFile *sound_file = (SoundFile *)sound_file_handle;
+
+    return sound_file->rate;
+}
+
+JNIEXPORT jlong JNICALL Java_de_mpg123_MPG123Decoder_getNumberOfSamples
+        (JNIEnv *env, jobject self, jlong sound_file_handle)
+{
+    SoundFile *sound_file = (SoundFile *)sound_file_handle;
+
+    return sound_file->num_samples;
 }

@@ -14,6 +14,7 @@ import ch.ethz.asl.dancebots.danceboteditor.adapters.SongListAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.model.Song;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
+import de.mpg123.MPG123Decoder;
 
 /**
  * Created by andrin on 30.12.15.
@@ -126,7 +127,8 @@ public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integ
      * @return correct format boolean
      */
     private boolean correctAudioFormat(String thisPath) {
-        return getMimeType(thisPath).equals("audio/mpeg") || Decoder.checkAudioFormat(thisPath) == DanceBotError.NO_ERROR;
+        Decoder mpg123decoder = new MPG123Decoder();
+        return getMimeType(thisPath).equals("audio/mpeg") || mpg123decoder.checkAudioFormat(thisPath) == DanceBotError.NO_ERROR;
     }
 
     /**

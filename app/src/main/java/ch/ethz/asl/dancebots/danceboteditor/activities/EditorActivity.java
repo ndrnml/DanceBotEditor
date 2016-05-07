@@ -2,6 +2,7 @@ package ch.ethz.asl.dancebots.danceboteditor.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -13,6 +14,9 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.io.File;
+
+import ch.ethz.asl.dancebots.danceboteditor.dialogs.StickyOkDialog;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerListener;
 import ch.ethz.asl.dancebots.danceboteditor.utils.CompositeSeekBarListener;
@@ -221,6 +225,28 @@ public class EditorActivity extends Activity {
         alertDialog.show();
     }
 
+    private void saveProjectFile() {
+
+        // Save raw audio buffer to a new file
+        File file = Helper.saveToProjectFolder(this, "test_name", mMusicFile);
+
+        if (file != null) {
+            Context context = DanceBotEditorManager.getInstance().getContext();
+            new StickyOkDialog()
+                    .setTitle("File successfully written")
+                    .setMessage("Path: " + file.getAbsolutePath())
+                    .show(((Activity) context).getFragmentManager(), "dialog_ok");
+        } else {
+            Context context = DanceBotEditorManager.getInstance().getContext();
+            new StickyOkDialog()
+                    .setTitle("Error: Could not write file!")
+                    .setMessage(null)
+                    .show(((Activity) context).getFragmentManager(), "dialog_ok_negative");
+
+            Log.d(LOG_TAG, "Error writing file.");
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -238,7 +264,13 @@ public class EditorActivity extends Activity {
         // Handle all menu options here
         switch (id) {
 
-            case R.id.editor_action_save:
+            case R.id.editor_action_save_project:
+
+                saveProjectFile();
+
+                return true;
+
+            case R.id.editor_action_save_music:
 
                 // Ask if user really wants to save file
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(EditorActivity.this);

@@ -1,20 +1,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="ch.ethz.asl.dancebots.danceboteditor.activities.EditorActivity">
 
-    <!--<item
-        android:id="@+id/editor_action_open"
+    <item
+        android:id="@+id/editor_action_save_project"
         android:title="@string/menu_editor_txt_open_music_file"
-        android:showAsAction="ifRoom" />-->
+        app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/editor_action_save"
+        android:id="@+id/editor_action_save_music"
         android:title="@string/menu_editor_txt_save_music_file"
-        android:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"
-        android:showAsAction="never" />
+        app:showAsAction="never" />
 </menu>

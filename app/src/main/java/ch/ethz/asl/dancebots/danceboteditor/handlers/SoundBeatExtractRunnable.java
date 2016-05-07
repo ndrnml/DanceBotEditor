@@ -2,6 +2,8 @@ package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
 import android.util.Log;
 
+import org.vamp.beatextraction.VampBeatExtractor;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -21,6 +23,8 @@ public class SoundBeatExtractRunnable implements Runnable {
 
     // A pointer to the native sound file handle object
     private long mSoundFileHandle;
+
+    private BeatExtractor beatExtractor = new VampBeatExtractor();
 
     // Range of samples to process
     private long mStartSample;
@@ -148,7 +152,7 @@ public class SoundBeatExtractRunnable implements Runnable {
              * Call to native beat extraction algorithm.
              * mBeatBuffer is filled with detected beats
              */
-            mNumBeatsDetected = BeatExtractor.extract(mSoundFileHandle, mBeatBuffer, mStartSample, mEndSample);
+            mNumBeatsDetected = beatExtractor.extract(mSoundFileHandle, mBeatBuffer, mStartSample, mEndSample);
 
             /*for (int b = 0; b < result; ++b) {
                 Log.v(LOG_TAG, "IntBuffer at " + b + ": " + buf.get(b));
@@ -174,6 +178,9 @@ public class SoundBeatExtractRunnable implements Runnable {
             // Set feedback to the SoundTask that this Thread finished execution
             mSoundTask.setBeatExtractionRunnableStatus(mThreadId, mNumBeatsDetected);
             mSoundTask.setBeatBuffer(mThreadId, mBeatBuffer);
+
+            // Close mp3 file
+            beatExtractor.close(mSoundFileHandle);
 
             // In all cases, handle the results
             Log.v(LOG_TAG, "BeatExtractThread: " + mThreadId + " finished.");
