@@ -181,6 +181,7 @@ public class SoundManager {
                         // Start new EditorActivity
                         Context context = DanceBotEditorManager.getInstance().getContext();
                         Intent editorIntent = new Intent(context, EditorActivity.class);
+                        editorIntent.putExtra(EditorActivity.INTENT_EDITOR_STATE, EditorActivity.INTENT_EDITOR_NEW);
                         context.startActivity(editorIntent);
 
                         Log.v(LOG_TAG, "handleMessage: BEAT_EXTRACTION_COMPLETE");

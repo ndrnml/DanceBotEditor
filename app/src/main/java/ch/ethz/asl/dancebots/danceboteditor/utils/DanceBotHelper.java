@@ -5,17 +5,18 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PipedOutputStream;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by andrin on 01.02.16.
  */
-public class Helper {
+public class DanceBotHelper {
 
-    private static final String LOG_TAG = Helper.class.getSimpleName();
+    private static final String LOG_TAG = DanceBotHelper.class.getSimpleName();
 
     // DanceBot default directory names
     private static final String MAIN_DIRECTORY = "DanceBot";
@@ -103,8 +104,7 @@ public class Helper {
 
                 file = new File(musicDir, fileName + FILE_SUFFIX + numExtension + MP3_FILE_EXTENSION);
                 numExtension++;
-
-                //Log.d(LOG_TAG, "file already existed");
+                //Log.v(LOG_TAG, "file already existed");
             }
 
             // Store actual byte data to mp3 file
@@ -127,22 +127,22 @@ public class Helper {
         }
     }
 
-
-    public static File saveToProjectFolder(Context context, String fileName, DanceBotMusicFile musicFile) {
+    public static File saveDanceBotProject(Context context, DanceBotProjectFile projectFile) {
 
         if (isExternalStorageWritable()) {
 
             File projectDirectory = getProjectDirectory(context);
 
             // Save file within this directory
-            File file = new File(projectDirectory, fileName + FILE_SUFFIX + PROJECT_FILE_EXTENSION);
+            File file = new File(projectDirectory, projectFile.getProjectName() + FILE_SUFFIX + PROJECT_FILE_EXTENSION);
 
             // Store actual byte data to mp3 file
             try {
                 FileOutputStream fos = new FileOutputStream(file.getPath());
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(musicFile);
+                oos.writeObject(projectFile);
                 oos.close();
+                fos.close();
 
             } catch (java.io.IOException e) {
                 Log.d(LOG_TAG, "Exception in file writing", e);
@@ -158,4 +158,38 @@ public class Helper {
         }
     }
 
+    public static DanceBotProjectFile loadDanceBotProject(Context context, String filePath) {
+
+        if (isExternalStorageWritable()) {
+
+            DanceBotProjectFile danceBotProjectFile = null;
+            try {
+                FileInputStream fin = new FileInputStream(filePath);
+                ObjectInputStream ois = new ObjectInputStream(fin);
+                danceBotProjectFile = (DanceBotProjectFile) ois.readObject();
+                ois.close();
+                fin.close();
+
+                return danceBotProjectFile;
+
+            } catch (java.io.IOException e) {
+                Log.d(LOG_TAG, "Could not write file: ", e);
+                return null;
+            } catch (ClassNotFoundException e) {
+                Log.d(LOG_TAG, "Class not found: ", e);
+                return null;
+            }
+
+        } else {
+
+            Log.d(LOG_TAG, "Error: external storage is not writable");
+            return null;
+        }
+    }
+
+    public static boolean isProjectFile(File file) {
+        String fileName = file.getName();
+        String extension = "." + fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
+        return extension.equals(PROJECT_FILE_EXTENSION);
+    }
 }

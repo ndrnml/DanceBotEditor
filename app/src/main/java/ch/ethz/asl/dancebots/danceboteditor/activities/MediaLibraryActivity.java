@@ -28,6 +28,10 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
 public class MediaLibraryActivity extends ListActivity {
 
     private static final String LOG_TAG = "MEDIA_LIBRARY_ACTIVITY";
+    public static final String INTENT_MEDIA_TITLE = "TITLE";
+    public static final String INTENT_MEDIA_ARTIST = "ARTIST";
+    public static final String INTENT_MEDIA_PATH = "PATH";
+    public static final String INTENT_MEDIA_DURATION = "DURATION";
 
     private ArrayList<Song> mSongList = new ArrayList<>();
 
@@ -54,10 +58,10 @@ public class MediaLibraryActivity extends ListActivity {
         // Create return results for intent
         Intent returnIntent = new Intent();
         Song s = mSongList.get(position);
-        returnIntent.putExtra("TITLE", s.mTitle);
-        returnIntent.putExtra("ARTIST", s.mArtist);
-        returnIntent.putExtra("PATH", s.mPath);
-        returnIntent.putExtra("DURATION", s.mDuration);
+        returnIntent.putExtra(INTENT_MEDIA_TITLE, s.mTitle);
+        returnIntent.putExtra(INTENT_MEDIA_ARTIST, s.mArtist);
+        returnIntent.putExtra(INTENT_MEDIA_PATH, s.mPath);
+        returnIntent.putExtra(INTENT_MEDIA_DURATION, s.mDuration);
         // TODO: enable album image
         //returnIntent.putExtra("ALBUM_ART_PATH", s.mAlbumArtPath);
 

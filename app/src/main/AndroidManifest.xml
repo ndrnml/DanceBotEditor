@@ -26,11 +26,14 @@
         <activity
             android:name=".activities.MediaLibraryActivity"
             android:label="@string/activity_label_media_library"
-            android:parentActivityName=".activities.EditorActivity"
+            android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="landscape">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.EditorActivity" />
+        </activity>
+        <activity
+            android:name=".activities.ProjectLibraryActivity"
+            android:label="@string/activity_label_project_library"
+            android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="landscape">
         </activity>
         <activity
             android:name=".activities.EditorActivity"
@@ -38,6 +41,7 @@
             android:screenOrientation="landscape">
             // android:configChanges="keyboardHidden|orientation|screenSize"
         </activity>
+
     </application>
 
 </manifest>

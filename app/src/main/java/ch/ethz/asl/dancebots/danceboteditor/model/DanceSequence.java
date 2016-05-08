@@ -1,5 +1,6 @@
 package ch.ethz.asl.dancebots.danceboteditor.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -7,7 +8,7 @@ import java.util.UUID;
 /**
  * Created by andrin on 06.12.15.
  */
-public class DanceSequence<T extends BeatElement> {
+public class DanceSequence<T extends BeatElement> implements Serializable {
 
     private UUID mSequenceID;
     private T mStartElement;

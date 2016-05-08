@@ -3,6 +3,7 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -15,6 +16,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotConfiguration;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicStream;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
@@ -45,7 +47,6 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
 
     private int mSampleRate;
     private int mNumBeats;
-
 
     /**
      * An interface that defines methods that SoundTask implements. An instance of
@@ -91,6 +92,21 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
         mMusicFile = musicFile;
     }
 
+    public ChoreographyManager(Context context, HorizontalRecyclerViews beatViews, DanceBotProjectFile projectFile) {
+        mContext = context;
+        mBeatViews = beatViews;
+
+        mLedChoregraphy = projectFile.loadLedChoreography();
+        mMotorChoreography = projectFile.loadMotorChoreography();
+
+        ArrayList<LedBeatElement> ledElements = projectFile.loadLedElements();
+        ArrayList<MotorBeatElement> motorElements = projectFile.loadMotorElements();
+
+        mBeatViews.setLedElementAdapter(new BeatElementAdapter<>(mContext, ledElements, mLedChoregraphy));
+        mBeatViews.setMotorElementAdapter(new BeatElementAdapter<>(mContext, motorElements, mMotorChoreography));
+
+        mMusicFile = projectFile.loadMusicFile();
+    }
 
     public void processPositiveClick(
             BeatElement selectedBeatElem,
@@ -583,6 +599,22 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
         }
 
         return offsetSamples;
+    }
+
+    public Choreography<LedBeatElement> getLedChoreography() {
+        return mLedChoregraphy;
+    }
+
+    public Choreography<MotorBeatElement> getMotorChoreography() {
+        return mMotorChoreography;
+    }
+
+    public ArrayList<LedBeatElement> getLedElements() {
+        return mLedElements;
+    }
+
+    public ArrayList<MotorBeatElement> getMotorElements() {
+        return mMotorElements;
     }
 
 }

@@ -2,30 +2,21 @@ package ch.ethz.asl.dancebots.danceboteditor.handlers;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.*;
 import android.os.Process;
 import android.util.Log;
 
 import net.lame.LameEncoder;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import ch.ethz.asl.dancebots.danceboteditor.dialogs.StickyOkDialog;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
-import ch.ethz.asl.dancebots.danceboteditor.model.LedBeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.LedType;
-import ch.ethz.asl.dancebots.danceboteditor.model.MotorBeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.model.MotorType;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotConfiguration;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotError;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.Decoder;
-import ch.ethz.asl.dancebots.danceboteditor.utils.Encoder;
-import ch.ethz.asl.dancebots.danceboteditor.utils.Helper;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotHelper;
 import de.mpg123.MPG123Decoder;
 
 /**
@@ -143,7 +134,7 @@ public class SoundEncodeRunnable implements Runnable {
             mEncoder.flush(mp3buf);
 
             // Save raw audio buffer to a new file
-            File file = Helper.saveToMusicFolder(musicFile.getSongTitle(), mp3buf);
+            File file = DanceBotHelper.saveToMusicFolder(musicFile.getSongTitle(), mp3buf);
 
             if (file != null) {
                 Context context = DanceBotEditorManager.getInstance().getContext();

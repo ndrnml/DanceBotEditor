@@ -25,7 +25,8 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicStream;
-import ch.ethz.asl.dancebots.danceboteditor.utils.Helper;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotHelper;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotProjectFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.MusicIntentReceiver;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
@@ -37,6 +38,12 @@ import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 public class EditorActivity extends Activity {
 
     private static final String LOG_TAG = "EDITOR_ACTIVITY";
+
+    public static final String INTENT_EDITOR_STATE = "EDITOR_STATE";
+    public static final String INTENT_EDITOR_NEW = "NEW";
+    public static final String INTENT_EDITOR_LOAD = "LOAD";
+    public static final String INTENT_EDITOR_LOAD_FILE_NAME = "EDITOR_FILE_NAME";
+    public static final String INTENT_EDITOR_LOAD_FILE_PATH = "EDITOR_FILE_PATH";
 
     private DanceBotEditorManager mProjectManager;
     private HorizontalRecyclerViews mBeatElementViews;
@@ -52,9 +59,32 @@ public class EditorActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
+        String editorState = getIntent().getStringExtra(INTENT_EDITOR_STATE);
+
+        switch (editorState) {
+
+            case INTENT_EDITOR_NEW:
+
+                createNewProject();
+                initEditorActivity();
+
+                break;
+            case INTENT_EDITOR_LOAD:
+
+                loadProject();
+                initEditorActivity();
+
+                break;
+            default:
+
+                Log.d(LOG_TAG, "Error: EditorActivity state does not exist: " + editorState);
+                break;
+        }
+    }
+
+    private void createNewProject() {
         // Project file initialization
         mProjectManager = DanceBotEditorManager.getInstance();
-
         // Global application context is this (EditorActivity)
         mProjectManager.setContext(this);
         mProjectManager.initSelectionMenus();
@@ -63,13 +93,30 @@ public class EditorActivity extends Activity {
         mBeatElementViews = new HorizontalRecyclerViews(EditorActivity.this);
 
         // Store global reference to HorizontalRecyclerViews beatViews
-        mProjectManager.setBeatViews(mBeatElementViews);
+        mProjectManager.createBeatViews(mBeatElementViews);
+    }
+
+    private void loadProject() {
+
+        String projectFileName = getIntent().getStringExtra(INTENT_EDITOR_LOAD_FILE_NAME);
+        String projectFilePath = getIntent().getStringExtra(INTENT_EDITOR_LOAD_FILE_PATH);
+
+        DanceBotProjectFile projectFile = DanceBotHelper.loadDanceBotProject(this, projectFilePath);
+
+        mProjectManager = DanceBotEditorManager.getInstance();
+        mProjectManager.setContext(this);
+        mProjectManager.initSelectionMenus();
+        mProjectManager.attachMusicFile(projectFile.loadMusicFile());
+
+        // Initialize and setup recycler beat element views
+        mBeatElementViews = new HorizontalRecyclerViews(EditorActivity.this);
+        mProjectManager.loadBeatElementViews(mBeatElementViews, projectFile);
+    }
+
+    private void initEditorActivity() {
 
         // Get selected music file
         mMusicFile = mProjectManager.getDanceBotMusicFile();
-
-        // Initialize the beat views, the beat adapters and the dance bot choreography manager
-        DanceBotEditorManager.getInstance().initChoreography();
 
         mSeekBar = (SeekBar) findViewById(R.id.seekbar_media_player);
         mSeekBar.setClickable(true);
@@ -79,11 +126,11 @@ public class EditorActivity extends Activity {
 
         // Set start time of seek bar text view
         TextView seekBarStartTime = (TextView) findViewById(R.id.seekbar_current_time);
-        seekBarStartTime.setText(Helper.songTimeFormat(0));
+        seekBarStartTime.setText(DanceBotHelper.songTimeFormat(0));
 
         // Set total duration of seek bar text view
         TextView seekBarTotalTime = (TextView) findViewById(R.id.seekbar_total_time);
-        seekBarTotalTime.setText(Helper.songTimeFormat(mMusicFile.getDurationInMilliSecs()));
+        seekBarTotalTime.setText(DanceBotHelper.songTimeFormat(mMusicFile.getDurationInMilliSecs()));
 
         // Create new media player instance, be sure to pass the current activity to resolve
         // all necessary view elements
@@ -101,19 +148,19 @@ public class EditorActivity extends Activity {
         // Update music file information
         // Update Title
         TextView selectedSongTitle = (TextView) findViewById(R.id.id_song_title);
-        selectedSongTitle.setText(mProjectManager.getDanceBotMusicFile().getSongTitle());
+        selectedSongTitle.setText(mMusicFile.getSongTitle());
 
         // Update Artist view
         TextView selectedSongArtist = (TextView) findViewById(R.id.id_song_artist);
-        selectedSongArtist.setText(mProjectManager.getDanceBotMusicFile().getSongArtist());
+        selectedSongArtist.setText(mMusicFile.getSongArtist());
 
         // Update Path view
         TextView selectedSongFilePath = (TextView) findViewById(R.id.id_song_path);
-        selectedSongFilePath.setText(mProjectManager.getDanceBotMusicFile().getSongPath());
+        selectedSongFilePath.setText(mMusicFile.getSongPath());
 
         // Update Duration view
         TextView selectedSongDuration = (TextView) findViewById(R.id.id_song_duration);
-        selectedSongDuration.setText(mProjectManager.getDanceBotMusicFile().getDurationReadable());
+        selectedSongDuration.setText(mMusicFile.getDurationReadable());
 
         // TODO enable album cover images
         /*if (songAlbumArtPath != null) {
@@ -131,10 +178,7 @@ public class EditorActivity extends Activity {
         mMediaStream.setEventListener(mMediaPlayerListener);
 
         mMusicIntentReceiver = new MusicIntentReceiver();
-
-        Log.d(LOG_TAG, "onCreate");
     }
-
 
     @Override
     protected void onStart() {
@@ -228,7 +272,15 @@ public class EditorActivity extends Activity {
     private void saveProjectFile() {
 
         // Save raw audio buffer to a new file
-        File file = Helper.saveToProjectFolder(this, "test_name", mMusicFile);
+        DanceBotProjectFile projectFile = new DanceBotProjectFile("test_name_project");
+        projectFile.saveProject(
+                mMusicFile,
+                mProjectManager.getChoreoManager().getLedChoreography(),
+                mProjectManager.getChoreoManager().getMotorChoreography(),
+                mProjectManager.getChoreoManager().getLedElements(),
+                mProjectManager.getChoreoManager().getMotorElements());
+
+        File file = DanceBotHelper.saveDanceBotProject(this, projectFile);
 
         if (file != null) {
             Context context = DanceBotEditorManager.getInstance().getContext();
@@ -236,6 +288,7 @@ public class EditorActivity extends Activity {
                     .setTitle("File successfully written")
                     .setMessage("Path: " + file.getAbsolutePath())
                     .show(((Activity) context).getFragmentManager(), "dialog_ok");
+
         } else {
             Context context = DanceBotEditorManager.getInstance().getContext();
             new StickyOkDialog()

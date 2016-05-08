@@ -1,8 +1,7 @@
 package ch.ethz.asl.dancebots.danceboteditor.activities;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,10 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.dialogs.StickyOkDialog;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
@@ -25,6 +22,7 @@ public class MainActivity extends Activity {
 
     // On activity result identifier
     private static final int PICK_SONG_REQUEST = 1;
+    private static final int PICK_PROJECT_REQUEST = 2;
 
     private DanceBotEditorManager mProjectManager;
 
@@ -36,36 +34,23 @@ public class MainActivity extends Activity {
         // Project file initialization
         mProjectManager = DanceBotEditorManager.getInstance();
         mProjectManager.setContext(this);
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // The activity is about to become visible.
-    }
+        Button newProjectBtn = (Button) findViewById(R.id.btn_start_media_library);
+        newProjectBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startMediaLibraryActivity();
+            }
+        });
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // The activity has become visible (it is now "resumed").
-    }
+        Button loadProjectBtn = (Button) findViewById(R.id.btn_load_project);
+        loadProjectBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startProjectLibraryActivity();
+            }
+        });
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // Another activity is taking focus (this activity is about to be "paused").
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // The activity is no longer visible (it is now "stopped")
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // The activity is about to be destroyed.
     }
 
     @Override
@@ -92,11 +77,15 @@ public class MainActivity extends Activity {
 
     /**
      * Start the media library activity. This function is coupled to the button.
-     * @param view calling view
      */
-    public void startMediaLibraryActivity(View view) {
+    public void startMediaLibraryActivity() {
         Intent mediaLibraryIntent = new Intent(this, MediaLibraryActivity.class);
         startActivityForResult(mediaLibraryIntent, PICK_SONG_REQUEST);
+    }
+
+    public void startProjectLibraryActivity() {
+        Intent projectLibraryIntent = new Intent(this, ProjectLibraryActivity.class);
+        startActivityForResult(projectLibraryIntent, PICK_PROJECT_REQUEST);
     }
 
     /**
@@ -110,16 +99,16 @@ public class MainActivity extends Activity {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
 
-                String songTitle = data.getStringExtra("TITLE");
-                String songArtist = data.getStringExtra("ARTIST");
-                String songPath = data.getStringExtra("PATH");
-                int songDuration = data.getIntExtra("DURATION", 0); // Duration in ms
-                String songAlbumArtPath = data.getStringExtra("ALBUM_ART_PATH");
+                String songTitle = data.getStringExtra(MediaLibraryActivity.INTENT_MEDIA_TITLE);
+                String songArtist = data.getStringExtra(MediaLibraryActivity.INTENT_MEDIA_ARTIST);
+                String songPath = data.getStringExtra(MediaLibraryActivity.INTENT_MEDIA_PATH);
+                int songDuration = data.getIntExtra(MediaLibraryActivity.INTENT_MEDIA_DURATION, 0); // Duration in ms
+                //String songAlbumArtPath = data.getStringExtra("ALBUM_ART_PATH");
 
                 Log.v(LOG_TAG, "title: " + songTitle);
                 Log.v(LOG_TAG, "path: " + songPath);
                 Log.v(LOG_TAG, "duration: " + songDuration);
-                Log.v(LOG_TAG, "album art: " + songAlbumArtPath);
+                //Log.v(LOG_TAG, "album art: " + songAlbumArtPath);
 
                 // Selected music file is attached to the current project file
                 DanceBotMusicFile dbMusicFile = new DanceBotMusicFile(songTitle, songArtist, songPath, songDuration);
@@ -132,6 +121,24 @@ public class MainActivity extends Activity {
 
                 // resultCode == RESULT_CANCEL
                 Log.v(LOG_TAG, "onActivityResult() ERROR: resultCode != RESULT_OK");
+            }
+        } else if (requestCode == PICK_PROJECT_REQUEST) {
+
+            if (resultCode == RESULT_OK) {
+
+                Context context = DanceBotEditorManager.getInstance().getContext();
+                Intent editorIntent = new Intent(context, EditorActivity.class);
+                editorIntent.putExtra(EditorActivity.INTENT_EDITOR_STATE, EditorActivity.INTENT_EDITOR_LOAD);
+                editorIntent.putExtra(EditorActivity.INTENT_EDITOR_LOAD_FILE_NAME, data.getStringExtra(ProjectLibraryActivity.INTENT_PROJECT_NAME));
+                editorIntent.putExtra(EditorActivity.INTENT_EDITOR_LOAD_FILE_PATH, data.getStringExtra(ProjectLibraryActivity.INTENT_PROJECT_PATH));
+                context.startActivity(editorIntent);
+
+                Log.v(LOG_TAG, "Selected: "
+                        + data.getStringExtra(ProjectLibraryActivity.INTENT_PROJECT_NAME)
+                        + " located at: " + data.getStringExtra(ProjectLibraryActivity.INTENT_PROJECT_PATH));
+
+            } else {
+                Log.v(LOG_TAG, "Error: Could not select project. Request code: " + requestCode);
             }
         }
     }

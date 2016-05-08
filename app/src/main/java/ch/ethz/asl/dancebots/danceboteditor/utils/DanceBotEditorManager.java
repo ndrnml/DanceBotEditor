@@ -2,6 +2,8 @@ package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import android.content.Context;
 
+import java.io.Serializable;
+
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElementContents;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.ui.FloatSelectionMenu;
@@ -13,7 +15,7 @@ import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 /**
  * Created by andrin on 09.07.15.
  */
-public class DanceBotEditorManager {
+public class DanceBotEditorManager implements Serializable {
 
     // Singleton instance
     private static DanceBotEditorManager instance = null;
@@ -99,12 +101,15 @@ public class DanceBotEditorManager {
         }
     }
 
-    /**********
-     * SETTERS
-     **********/
-    public void setBeatViews(HorizontalRecyclerViews beatViews) {
+    public void createBeatViews(HorizontalRecyclerViews beatViews) {
         mBeatViews = beatViews;
+        mChoreoManager = new ChoreographyManager(mContext, mBeatViews, mDanceBotMusicFile);
     }
+
+    public void loadBeatElementViews(HorizontalRecyclerViews beatViews, DanceBotProjectFile projectFile) {
+        mChoreoManager = new ChoreographyManager(mContext, beatViews, projectFile);
+    }
+
     /**
      * This method is really important. It sets the application context, which is needed
      * for a few objects, since some properties are constant encoded.
@@ -145,4 +150,5 @@ public class DanceBotEditorManager {
     public IntegerSelectionMenu getChoreoLengthMenu() {
         return mChoreoLengthMenu;
     }
+
 }

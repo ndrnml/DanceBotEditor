@@ -3,9 +3,7 @@ package ch.ethz.asl.dancebots.danceboteditor.listener;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -16,7 +14,7 @@ import java.util.List;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
-import ch.ethz.asl.dancebots.danceboteditor.utils.Helper;
+import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotHelper;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
@@ -164,7 +162,7 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
             int currentDuration = mActiveMediaPlayer.getCurrentPosition();
             mSeekBar.setProgress(currentDuration);
 
-            mCurrentTimeView.setText(Helper.songTimeFormat(currentDuration));
+            mCurrentTimeView.setText(DanceBotHelper.songTimeFormat(currentDuration));
         }
 
         // Check if seek bar progress changed
@@ -175,7 +173,7 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
             int currentTimeInMilliSecs = mSeekBar.getProgress();
 
             // Update view
-            mCurrentTimeView.setText(Helper.songTimeFormat(currentTimeInMilliSecs));
+            mCurrentTimeView.setText(DanceBotHelper.songTimeFormat(currentTimeInMilliSecs));
 
             // Estimate beat position
             int estimatedBeatElement = (int) (((float) mNumElements / mTotalDurationInMilliSecs * (float) currentTimeInMilliSecs));

@@ -2,13 +2,14 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.util.Pair;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
 /**
  * Created by andrin on 03.12.15.
  */
-public class BeatElementContents {
+public class BeatElementContents implements Serializable {
 
     private final int VELOCITY_MIN = 0;
     private final int VELOCITY_MAX = 110;

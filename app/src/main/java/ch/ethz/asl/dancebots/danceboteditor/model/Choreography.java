@@ -2,6 +2,7 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -9,7 +10,7 @@ import java.util.UUID;
 /**
  * Created by andrin on 16.10.15.
  */
-public class Choreography<T extends BeatElement> {
+public class Choreography<T extends BeatElement> implements Serializable {
 
     private static final String LOG_TAG = "CHOREOGRAPHY";
 

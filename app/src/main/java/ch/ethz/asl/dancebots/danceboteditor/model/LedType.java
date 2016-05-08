@@ -1,5 +1,7 @@
 package ch.ethz.asl.dancebots.danceboteditor.model;
 
+import java.io.Serializable;
+
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 
@@ -7,7 +9,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
  * Created by andrin on 21.10.15.
  */
 // 'Static' enum types are instantiated with the object
-public enum LedType implements MotionType {
+public enum LedType implements MotionType, Serializable {
 
     DEFAULT(mContext.getResources().getColor(R.color.led_list_default_color),
             "",

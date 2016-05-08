@@ -56,7 +56,7 @@ public class SongListAdapter extends BaseAdapter {
 
         // Create new view from layout
         LinearLayout songLayout = (LinearLayout) mSongElementInflater.inflate
-                (R.layout.list_songs, null);
+                (R.layout.list_song_element, null);
 
         //get title and artist views
         TextView songView = (TextView)songLayout.findViewById(R.id.song_title);

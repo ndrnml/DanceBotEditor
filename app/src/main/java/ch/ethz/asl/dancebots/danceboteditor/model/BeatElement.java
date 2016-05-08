@@ -2,12 +2,13 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 
 import android.content.Context;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
  * Created by andrin on 28.08.15.
  */
-public abstract class BeatElement {
+public abstract class BeatElement implements Serializable {
 
     // Context properties
     protected static Context mContext;
