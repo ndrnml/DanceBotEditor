@@ -20,8 +20,8 @@ public class SplashScreenActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         /** set time to splash out */
-        final int welcomeScreenDisplay = 3000;
-        final int stepSize = 500;
+        final int welcomeScreenDisplay = 4000;
+        final int stepSize = 1000;
         /** create a thread to show splash up to splash time */
 
         Animation fadeIn = new AlphaAnimation(0, 1);

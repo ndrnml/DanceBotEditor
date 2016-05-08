@@ -5,6 +5,12 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:width">300dp</item>
+    </style>
+
     <style name="ListView">
         <item name="android:padding">16dp</item>
     </style>

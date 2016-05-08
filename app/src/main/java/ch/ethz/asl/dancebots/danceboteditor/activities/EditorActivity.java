@@ -272,7 +272,7 @@ public class EditorActivity extends Activity {
     private void saveProjectFile() {
 
         // Save raw audio buffer to a new file
-        DanceBotProjectFile projectFile = new DanceBotProjectFile("test_name_project");
+        DanceBotProjectFile projectFile = new DanceBotProjectFile(mMusicFile.getSongTitle());
         projectFile.saveProject(
                 mMusicFile,
                 mProjectManager.getChoreoManager().getLedChoreography(),

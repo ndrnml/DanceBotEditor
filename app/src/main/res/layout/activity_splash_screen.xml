@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="DanceBots Editor"
+        android:text="@string/splash_screen_message"
         android:textStyle="bold"
         android:textSize="64sp"
         android:textColor="@color/white"/>

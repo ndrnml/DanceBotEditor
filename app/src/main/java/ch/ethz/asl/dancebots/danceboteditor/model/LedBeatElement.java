@@ -49,9 +49,8 @@ public class LedBeatElement extends BeatElement {
 
             case RANDOM:
 
-                // TODO: what is this magic number 2 * beatDuration * Frequency + 1?
                 int NUM = 100;
-                int numRands = (int) (NUM);
+                int numRands = NUM;
                 byte[] bs = new byte[numRands];
                 new Random().nextBytes(bs);
                 ledByte = bs[new Random().nextInt(numRands)];

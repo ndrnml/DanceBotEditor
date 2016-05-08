@@ -142,7 +142,7 @@ public class SoundManager {
                     case DECODING_STARTED:
 
                         // Update progress dialog
-                        dialog.setMessage("PREPARING YOUR ABSOLUTE FAVORITE SONG ;)");
+                        dialog.setMessage(DanceBotEditorManager.getInstance().getContext().getString(R.string.loading_song_message));
                         dialog.show();
 
                         Log.v(LOG_TAG, "handleMessage: " + "DECODING_STARTED");
