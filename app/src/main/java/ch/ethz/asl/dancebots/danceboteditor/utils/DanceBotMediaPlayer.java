@@ -5,19 +5,19 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
+import ch.ethz.asl.dancebots.danceboteditor.listener.CompositeSeekBarListener;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerListener;
 
 /**
- * Created by andrin on 21.10.15.
+ * Author: Andrin Jenal
+ * Copyright: ETH Zürich
  */
 public class DanceBotMediaPlayer implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener, MediaPlayerListener.OnMediaPlayerChangeListener {
 

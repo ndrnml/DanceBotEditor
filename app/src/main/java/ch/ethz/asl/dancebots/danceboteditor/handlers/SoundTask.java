@@ -14,7 +14,6 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.BeatExtractor;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
-import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**
  * Created by andrin on 14.11.15.
@@ -281,7 +280,7 @@ public class SoundTask implements
         }
 
         // Update the music file with the total number of beats extracted
-        mMusicFile.setNumberOfBeatsDected(totalNumBeats);
+        mMusicFile.setNumberOfBeatsDetected(totalNumBeats);
         // Update the music file with the final collection of extracted beat positions
         mMusicFile.setBeatBuffer(beatBuffer);
     }

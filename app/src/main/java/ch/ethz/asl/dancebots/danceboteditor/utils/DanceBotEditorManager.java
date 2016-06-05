@@ -77,13 +77,6 @@ public class DanceBotEditorManager implements Serializable {
     }
 
     /**
-     * Based on the detected beats, create a new choreography manager
-     */
-    public void initChoreography() {
-        mChoreoManager = new ChoreographyManager(mContext, mBeatViews, mDanceBotMusicFile);
-    }
-
-    /**
      * Attach the selected music file
      * @param dbMusicFile selected music file
      */

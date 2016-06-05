@@ -19,7 +19,7 @@ import java.io.File;
 import ch.ethz.asl.dancebots.danceboteditor.dialogs.StickyOkDialog;
 import ch.ethz.asl.dancebots.danceboteditor.handlers.SoundManager;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerListener;
-import ch.ethz.asl.dancebots.danceboteditor.utils.CompositeSeekBarListener;
+import ch.ethz.asl.dancebots.danceboteditor.listener.CompositeSeekBarListener;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMediaPlayer;
 import ch.ethz.asl.dancebots.danceboteditor.R;
@@ -27,7 +27,7 @@ import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicFile;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotMusicStream;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotHelper;
 import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotProjectFile;
-import ch.ethz.asl.dancebots.danceboteditor.utils.MusicIntentReceiver;
+import ch.ethz.asl.dancebots.danceboteditor.listener.MusicIntentReceiver;
 import ch.ethz.asl.dancebots.danceboteditor.view.HorizontalRecyclerViews;
 
 /**

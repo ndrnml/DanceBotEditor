@@ -8,13 +8,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import java.io.Serializable;
-
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.listener.RecyclerViewScrollListener;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
 
 /**
  * Created by andrin on 24.10.15.

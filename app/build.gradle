@@ -11,7 +11,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        /* TODO: THIS IS A WORKAROUND */
+        /* THIS IS A WORKAROUND */
         sourceSets.main {
             jniLibs.srcDir 'src/main/libs'
             jni.srcDirs = []
@@ -44,4 +44,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:recyclerview-v7:23.1.0'
     //compile 'com.wefika:horizontal-picker:1.1.0'
+    testCompile 'junit:junit:4.12'
 }

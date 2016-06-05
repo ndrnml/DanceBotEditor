@@ -1,11 +1,19 @@
 package ch.ethz.asl.dancebots.danceboteditor.utils;
 
 import java.io.Serializable;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+
+/**
+ * Author: Andrin Jenal
+ * Copyright: ETH Zürich
+ */
 
 /**
  * The DanceBotMusicFile class stores all relevant data about the selected song.
  * Meta data, details and extracted beats are stored in this object.
  */
+
 public class DanceBotMusicFile implements Serializable {
 
     // Meta data
@@ -22,6 +30,8 @@ public class DanceBotMusicFile implements Serializable {
     // Decoding and Beat Extraction
     private int mNumberOfBeatsDetected;
     private int[] mBeatBuffer;
+
+    private NavigableMap<Integer, Integer> mBeatIntervalTree;
 
     /**
      * Create new music file
@@ -45,7 +55,7 @@ public class DanceBotMusicFile implements Serializable {
     public void setTotalNumberOfSamples(long samples) {
         mNumberOfSamples = samples;
     }
-    public void setNumberOfBeatsDected(int numBeats) {
+    public void setNumberOfBeatsDetected(int numBeats) {
         mNumberOfBeatsDetected = numBeats;
     }
 
@@ -88,6 +98,16 @@ public class DanceBotMusicFile implements Serializable {
 
     public void setBeatBuffer(int[] beatBuffer) {
         mBeatBuffer = beatBuffer;
+        createBeatIntervalTree();
+    }
+
+    private void createBeatIntervalTree() {
+        mBeatIntervalTree = new TreeMap<>();
+
+        for (int beatIdx = 0; beatIdx < mBeatBuffer.length; ++beatIdx) {
+            int samplePosition = mBeatBuffer[beatIdx];
+            mBeatIntervalTree.put(samplePosition, beatIdx);
+        }
     }
 
     public int[] getBeatBuffer() {
@@ -98,7 +118,7 @@ public class DanceBotMusicFile implements Serializable {
         return mSongArtist;
     }
 
-    public int getBeatFromMicroSecs(long microSecs) {
+    /*public int getBeatFromMicroSecs(long microSecs) {
 
         // Time in seconds
         double secs = microSecs * 0.001 * 0.001;
@@ -120,6 +140,25 @@ public class DanceBotMusicFile implements Serializable {
         // If time window too large, beat is ahead
         // Correct with -1
         return i - 1;
+    }*/
+
+    public int getBeatFromMicroSecs(long microSeconds) {
+        // Time in seconds
+        double secs = microSeconds * 0.001 * 0.001;
+
+        // The n-th sample
+        int sample = (int) (secs * mSampleRate);
+
+        return getBeatFromSample(sample);
     }
 
+    public int getBeatFromSample(int samplePosition) {
+        if (samplePosition <= 0) {
+            return 0;
+        }
+        if (samplePosition >= mBeatBuffer[mBeatBuffer.length - 1]) {
+            return mBeatBuffer.length - 1;
+        }
+        return mBeatIntervalTree.ceilingEntry(samplePosition).getValue();
+    }
 }

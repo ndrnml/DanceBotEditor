@@ -99,7 +99,6 @@ public class MPG123Decoder implements Decoder {
 
     @Override
     protected void finalize() throws Throwable {
-        //cleanUp();
         Log.d(LOG_TAG, "Decoder finalize()");
         super.finalize();
     }

@@ -3,6 +3,7 @@ package ch.ethz.asl.dancebots.danceboteditor.listener;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -28,9 +29,7 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
     public static final int STOP_PLAYING_FLAG = 1;
 
     private final Activity mActivity;
-    private final float mTotalDurationInMilliSecs;
-    private final float mSampleRate;
-    private final int mNumElements;
+    private final DanceBotMusicFile mMusicFile;
 
     private List<OnMediaPlayerChangeListener> registeredListeners = new ArrayList<>();
 
@@ -81,11 +80,7 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
         mRecyclerView = recyclerView;
         mSeekBar = seekBar;
 
-        // To speed up media player listener store variables
-        mTotalDurationInMilliSecs = (float) musicFile.getDurationInMilliSecs();
-        mSampleRate = (float) musicFile.getSampleRate();
-
-        mNumElements = recyclerView.getNumElements();
+        mMusicFile = musicFile;
     }
 
     /**
@@ -165,33 +160,14 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
             mCurrentTimeView.setText(DanceBotHelper.songTimeFormat(currentDuration));
         }
 
-        // Check if seek bar progress changed
         if (seekBarChanged()) {
-            //Log.d(LOG_TAG, "seek bar changed");
 
-            // Get the seek bar progress
             int currentTimeInMilliSecs = mSeekBar.getProgress();
 
-            // Update view
+            // Update time view text in milliseconds
             mCurrentTimeView.setText(DanceBotHelper.songTimeFormat(currentTimeInMilliSecs));
 
-            // Estimate beat position
-            int estimatedBeatElement = (int) (((float) mNumElements / mTotalDurationInMilliSecs * (float) currentTimeInMilliSecs));
-
-            // Compute exact beat based on beat start sample
-            /*long currentSample = (long) ((float) currentTimeInMilliSecs * 0.001 * mSampleRate);
-            int exactBeat = 0;
-            for (int i = 1; i < mNumElements; ++i) {
-                long sampleAtBeat = mRecyclerView.getSampleAt(i);
-                if (currentSample < sampleAtBeat) {
-                    exactBeat = i - 1;
-                    break;
-                }
-            }
-            Log.d(LOG_TAG, "exact beat: " + exactBeat);
-            */
-
-            int exactBeatElement = estimatedBeatElement;
+            int exactBeatElement = mMusicFile.getBeatFromMicroSecs(currentTimeInMilliSecs * 1000);
 
             int firstVisibleItem = mRecyclerView.getFirstVisibleItem();
             int lastVisibleItem = mRecyclerView.getLastVisibleItem();
@@ -202,9 +178,7 @@ public class MediaPlayerListener implements Runnable, View.OnClickListener {
                 mRecyclerView.setFocus(exactBeatElement);
             }
 
-            //Log.d(LOG_TAG, "exact beat: " + exactBeat);
-            //Log.d(LOG_TAG, "estimated element: " + estimatedBeatElement);
-            //Log.d(LOG_TAG, "update scroll to element: " + exactBeatElement);
+            Log.d(LOG_TAG, "update scroll to element: " + exactBeatElement);
         }
 
         mHandler.postDelayed(this, 100);

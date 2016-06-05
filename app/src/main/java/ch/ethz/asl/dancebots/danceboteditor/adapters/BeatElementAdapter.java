@@ -17,7 +17,7 @@ import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.model.Choreography;
 import ch.ethz.asl.dancebots.danceboteditor.model.DanceSequence;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DividerItemDecoration;
+import ch.ethz.asl.dancebots.danceboteditor.view.DividerItemDecoration;
 
 /**
  * Created by andrin on 28.08.15.

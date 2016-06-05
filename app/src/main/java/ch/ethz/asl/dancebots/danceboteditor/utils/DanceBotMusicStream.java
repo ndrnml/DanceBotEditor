@@ -11,7 +11,6 @@ import android.media.MediaFormat;
 import android.os.*;
 import android.os.Process;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 
@@ -21,10 +20,13 @@ import java.nio.ByteOrder;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.dialogs.StickyOkDialog;
+import ch.ethz.asl.dancebots.danceboteditor.listener.CompositeSeekBarListener;
 import ch.ethz.asl.dancebots.danceboteditor.listener.MediaPlayerListener;
+import ch.ethz.asl.dancebots.danceboteditor.listener.MusicIntentReceiver;
 
 /**
- * Created by andrin on 28.01.16.
+ * Author: Andrin Jenal
+ * Copyright: ETH Zürich
  */
 public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeListener, MediaPlayerListener.OnMediaPlayerChangeListener {
 
@@ -419,10 +421,8 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
 
         // Fill dance sequence pcm data into output buffer tmpDataBuffer
         int shortCount = dataSource.readDataStream(tmpDataBuffer, sampleCountMicroSecs);
-        // shortCount should be equal to tmpDataBuffer.length
 
-        // Data buffer index
-        int idx = 0;
+        int dataBufferIdx = 0;
 
         /*
          * Replace every second signal entry
@@ -432,11 +432,11 @@ public class DanceBotMusicStream implements Runnable, SeekBar.OnSeekBarChangeLis
          * stereo channel: {24, 58, 45, 28, 9, 12...}
          */
         for (int i = 1; i < chunk.length; i+=2) {
-            chunk[i] = tmpDataBuffer[idx];
-            idx++;
+            chunk[i] = tmpDataBuffer[dataBufferIdx];
+            dataBufferIdx++;
         }
 
-        return idx;
+        return dataBufferIdx;
     }
 
     @Override
