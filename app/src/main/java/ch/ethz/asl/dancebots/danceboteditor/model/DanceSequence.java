@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Created by andrin on 06.12.15.
+ * Author: Andrin Jenal
+ * Copyright: ETH Zürich
  */
 public class DanceSequence<T extends BeatElement> implements Serializable {
 

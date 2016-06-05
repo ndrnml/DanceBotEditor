@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 /**
- * Created by andrin on 16.10.15.
+ * Author: Andrin Jenal
+ * Copyright: ETH Zürich
  */
 public class Choreography<T extends BeatElement> implements Serializable {
 

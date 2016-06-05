@@ -15,10 +15,6 @@ public interface RecyclerViewScrollListener {
 
     void setFocus(int position);
 
-    int getNumElements();
-
-    long getSampleAt(int position);
-
     int getFirstVisibleItem();
 
     int getLastVisibleItem();

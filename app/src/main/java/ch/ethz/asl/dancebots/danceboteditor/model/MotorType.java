@@ -3,12 +3,11 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 import java.io.Serializable;
 
 import ch.ethz.asl.dancebots.danceboteditor.R;
-import ch.ethz.asl.dancebots.danceboteditor.utils.DanceBotEditorManager;
 
 /**
- * Created by andrin on 21.10.15.
+ * Author: Andrin Jenal
+ * Copyright: ETH Zürich
  */
-
 // 'Static' enum types are instantiated with the object
 public enum MotorType implements MotionType, Serializable {
 

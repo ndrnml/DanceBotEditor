@@ -6,7 +6,8 @@ import java.io.Serializable;
 import java.util.UUID;
 
 /**
- * Created by andrin on 28.08.15.
+ * Author: Andrin Jenal
+ * Copyright: ETH Zürich
  */
 public abstract class BeatElement implements Serializable {
 
