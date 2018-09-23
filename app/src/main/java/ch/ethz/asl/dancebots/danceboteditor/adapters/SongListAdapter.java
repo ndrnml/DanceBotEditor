@@ -61,7 +61,7 @@ public class SongListAdapter extends BaseAdapter {
         //get title and artist views
         TextView songView = (TextView)songLayout.findViewById(R.id.song_title);
         TextView artistView = (TextView)songLayout.findViewById(R.id.song_artist);
-        TextView dirView = (TextView)songLayout.findViewById(R.id.song_dir);
+        //TextView dirView = (TextView)songLayout.findViewById(R.id.song_dir);
 
         // Retrieve song details using position
         Song s = mSongList.get(position);
@@ -72,7 +72,7 @@ public class SongListAdapter extends BaseAdapter {
         // Display all relevant properties of this song
         songView.setText(currTitle);
         artistView.setText(currArtist);
-        dirView.setText(currPah);
+        //dirView.setText(currPah);
 
         return songLayout;
     }

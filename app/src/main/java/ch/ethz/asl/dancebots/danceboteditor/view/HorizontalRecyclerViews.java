@@ -8,9 +8,13 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.afollestad.dragselectrecyclerview.DragSelectRecyclerView;
+import com.afollestad.dragselectrecyclerview.DragSelectRecyclerViewAdapter;
+
 import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.adapters.BeatElementAdapter;
 import ch.ethz.asl.dancebots.danceboteditor.listener.RecyclerViewScrollListener;
+import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
 import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
 
 /**
@@ -21,7 +25,9 @@ import ch.ethz.asl.dancebots.danceboteditor.model.ChoreographyManager;
  * The HorizontalRecyclerViews implements the motor and the led beat view. Scrolling of either
  * view is synced with the other and blocked while the view itself is scrolling.
  */
-public class HorizontalRecyclerViews implements ChoreographyManager.ChoreographyViewManager, RecyclerViewScrollListener {
+public class HorizontalRecyclerViews implements
+        ChoreographyManager.ChoreographyViewManager, RecyclerViewScrollListener,
+        BeatElementAdapter.TouchClickListener, DragSelectRecyclerViewAdapter.SelectionListener{
 
     private static final String LOG_TAG = "RECYCLER_VIEW";
 
@@ -32,8 +38,8 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
 
     private LinearLayoutManager mMotorLayoutManager;
     private LinearLayoutManager mLedLayoutManager;
-    private RecyclerView mMotorView;
-    private RecyclerView mLedView;
+    private DragSelectRecyclerView mMotorView;
+    private DragSelectRecyclerView mLedView;
 
     private final RecyclerView.OnScrollListener mMotorViewOnScrollListener = new SelfRemovingOnScrollListener() {
 
@@ -68,7 +74,7 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         mDivider = context.getDrawable(R.drawable.divider);
 
         // Attach motor adapter and linear layout manager to the horizontal recycler view
-        mMotorView = (RecyclerView) ((Activity) context).findViewById(R.id.motor_element_list);
+        mMotorView = (DragSelectRecyclerView) ((Activity) context).findViewById(R.id.motor_element_list);
         mMotorView.setHasFixedSize(true);
         mMotorView.setLayoutManager(mMotorLayoutManager);
         mMotorView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
@@ -118,7 +124,7 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         });
 
         // Attach led adapter and linear layout manager
-        mLedView = (RecyclerView) ((Activity) context).findViewById(R.id.led_element_list);
+        mLedView = (DragSelectRecyclerView) ((Activity) context).findViewById(R.id.led_element_list);
         mLedView.setHasFixedSize(true);
         mLedView.setLayoutManager(mLedLayoutManager);
         mLedView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
@@ -175,6 +181,9 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         mLedView.setAdapter(ledAdapter);
         mLedView.addItemDecoration(new DividerItemDecoration(mDivider, ledAdapter));
 
+        ((BeatElementAdapter) mLedView.getAdapter()).setTouchClickListener(this);
+        ((BeatElementAdapter) mLedView.getAdapter()).setSelectionListener(this);
+
         // Notify adapter that list content changed
         ledAdapter.notifyDataSetChanged();
     }
@@ -215,14 +224,6 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
         ledAdapter.notifyDataSetChanged();
     }
 
-    public int getNumElements() {
-        return mMotorView.getAdapter().getItemCount();
-    }
-
-    public long getSampleAt(int position) {
-        return ((BeatElementAdapter) mMotorView.getAdapter()).getItem(position).getSamplePosition();
-    }
-
     public int getFirstVisibleItem() {
         return mMotorLayoutManager.findFirstVisibleItemPosition();
     }
@@ -232,5 +233,17 @@ public class HorizontalRecyclerViews implements ChoreographyManager.Choreography
     }
 
 
+    @Override
+    public void onDragSelectionChanged(int count) {
 
+    }
+
+    @Override
+    public void onClick(int index) {
+
+    }
+
+    @Override
+    public void onLongClick(int index) {
+    }
 }

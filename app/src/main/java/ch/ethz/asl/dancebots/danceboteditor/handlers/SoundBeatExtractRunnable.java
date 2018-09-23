@@ -148,6 +148,7 @@ public class SoundBeatExtractRunnable implements Runnable {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
             Log.v(LOG_TAG, "start beat extraction...");
+            Log.v(LOG_TAG, "mSoundFileHandle: " + mSoundFileHandle);
             /*
              * Call to native beat extraction algorithm.
              * mBeatBuffer is filled with detected beats
@@ -166,7 +167,7 @@ public class SoundBeatExtractRunnable implements Runnable {
             } else {
 
                 // If no error occurred, the beat extraction will have found zero or more beats
-                Log.v(LOG_TAG, "Thread: " + mThreadId + " Successfully decoded and beats extracted: " + mNumBeatsDetected);
+                Log.v(LOG_TAG, "Thread #" + mThreadId + ": Successfully decoded and beats extracted: " + mNumBeatsDetected);
             }
 
         } catch (InterruptedException e1) {
@@ -178,12 +179,15 @@ public class SoundBeatExtractRunnable implements Runnable {
             // Set feedback to the SoundTask that this Thread finished execution
             mSoundTask.setBeatExtractionRunnableStatus(mThreadId, mNumBeatsDetected);
             mSoundTask.setBeatBuffer(mThreadId, mBeatBuffer);
+            Log.v(LOG_TAG, "BeatExtractionThread thread#" + mThreadId + ": updates runnable status and sets beat buffer.");
 
             // Close mp3 file
-            beatExtractor.close(mSoundFileHandle);
+            // TODO: I STILL NEED IT, DON'T I?
+            //beatExtractor.close(mSoundFileHandle);
+            //Log.v(LOG_TAG, "BeatExtractionThread thread#" + mThreadId + ": closes mp3 file.");
 
             // In all cases, handle the results
-            Log.v(LOG_TAG, "BeatExtractThread: " + mThreadId + " finished.");
+            Log.v(LOG_TAG, "BeatExtractThread thread#" + mThreadId + ": finished.");
         }
     }
 

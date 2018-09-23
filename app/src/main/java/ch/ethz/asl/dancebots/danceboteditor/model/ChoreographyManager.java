@@ -3,7 +3,6 @@ package ch.ethz.asl.dancebots.danceboteditor.model;
 import android.content.Context;
 import android.util.Log;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -30,10 +29,10 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
 
     private Context mContext;
 
-    private Choreography<LedBeatElement> mLedChoregraphy;
+    private Choreography<LedBeatElement> mLedChoreography;
     private Choreography<MotorBeatElement> mMotorChoreography;
 
-    private final ChoreographyViewManager mBeatViews;
+    private final ChoreographyViewManager mViewManager;
 
     // Data source fields
     private ArrayList<MotorBeatElement> mMotorElements;
@@ -77,33 +76,33 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
         mContext = context;
 
         // Store the beat view interface object
-        mBeatViews = beatViews;
+        mViewManager = beatViews;
 
         ArrayList<LedBeatElement> ledElements = initLedBeatElements(musicFile);
-        mLedChoregraphy = new Choreography<>(ledElements);
+        mLedChoreography = new Choreography<>(ledElements);
 
-        mBeatViews.setLedElementAdapter(new BeatElementAdapter<>(mContext, ledElements, mLedChoregraphy));
+        mViewManager.setLedElementAdapter(new BeatElementAdapter<>(mContext, ledElements, mLedChoreography));
 
         ArrayList<MotorBeatElement> motorElements = initMotorBeatElements(musicFile);
         mMotorChoreography = new Choreography<>(motorElements);
 
-        mBeatViews.setMotorElementAdapter(new BeatElementAdapter<>(mContext, motorElements, mMotorChoreography));
+        mViewManager.setMotorElementAdapter(new BeatElementAdapter<>(mContext, motorElements, mMotorChoreography));
 
         mMusicFile = musicFile;
     }
 
     public ChoreographyManager(Context context, HorizontalRecyclerViews beatViews, DanceBotProjectFile projectFile) {
         mContext = context;
-        mBeatViews = beatViews;
+        mViewManager = beatViews;
 
-        mLedChoregraphy = projectFile.loadLedChoreography();
+        mLedChoreography = projectFile.loadLedChoreography();
         mMotorChoreography = projectFile.loadMotorChoreography();
 
         ArrayList<LedBeatElement> ledElements = projectFile.loadLedElements();
         ArrayList<MotorBeatElement> motorElements = projectFile.loadMotorElements();
 
-        mBeatViews.setLedElementAdapter(new BeatElementAdapter<>(mContext, ledElements, mLedChoregraphy));
-        mBeatViews.setMotorElementAdapter(new BeatElementAdapter<>(mContext, motorElements, mMotorChoreography));
+        mViewManager.setLedElementAdapter(new BeatElementAdapter<>(mContext, ledElements, mLedChoreography));
+        mViewManager.setMotorElementAdapter(new BeatElementAdapter<>(mContext, motorElements, mMotorChoreography));
 
         mMusicFile = projectFile.loadMusicFile();
     }
@@ -140,11 +139,11 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
 
             if (selectedBeatElem.getDanceSequenceId() == null) {
 
-                mLedChoregraphy.addNewDanceSequence((LedBeatElement) selectedBeatElem, selectedChoreoLength.getValAt(selectedChoreoLengthIdx));
+                mLedChoreography.addNewDanceSequence((LedBeatElement) selectedBeatElem, selectedChoreoLength.getValAt(selectedChoreoLengthIdx));
 
             } else {
 
-                mLedChoregraphy.updateDanceSequence((LedBeatElement) selectedBeatElem, selectedChoreoLength.getValAt(selectedChoreoLengthIdx));
+                mLedChoreography.updateDanceSequence((LedBeatElement) selectedBeatElem, selectedChoreoLength.getValAt(selectedChoreoLengthIdx));
 
             }
 
@@ -179,7 +178,7 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
 
             if (selectedBeatElem.getClass() == LedBeatElement.class) { // LED_TYPE
 
-                mLedChoregraphy.removeDanceSequence((LedBeatElement) selectedBeatElem);
+                mLedChoreography.removeDanceSequence((LedBeatElement) selectedBeatElem);
 
             } else if (selectedBeatElem.getClass() == MotorBeatElement.class) { // MOTOR_TYPE
 
@@ -242,7 +241,7 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
 
         // Get beat element lists for motor and led elements
         mMotorElements = mMotorChoreography.getBeatElements();
-        mLedElements = mLedChoregraphy.getBeatElements();
+        mLedElements = mLedChoreography.getBeatElements();
 
         // Get the total number of beats detected
         mNumBeats = mMusicFile.getBeatCount();
@@ -602,7 +601,7 @@ public class ChoreographyManager implements DanceBotMusicStream.StreamPlayback {
     }
 
     public Choreography<LedBeatElement> getLedChoreography() {
-        return mLedChoregraphy;
+        return mLedChoreography;
     }
 
     public Choreography<MotorBeatElement> getMotorChoreography() {

@@ -9,12 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.afollestad.dragselectrecyclerview.DragSelectRecyclerViewAdapter;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.dialogs.BeatElementMenuDialog;
 import ch.ethz.asl.dancebots.danceboteditor.model.BeatElement;
-import ch.ethz.asl.dancebots.danceboteditor.R;
 import ch.ethz.asl.dancebots.danceboteditor.model.Choreography;
 import ch.ethz.asl.dancebots.danceboteditor.model.DanceSequence;
 import ch.ethz.asl.dancebots.danceboteditor.view.DividerItemDecoration;
@@ -22,25 +24,51 @@ import ch.ethz.asl.dancebots.danceboteditor.view.DividerItemDecoration;
 /**
  * Created by andrin on 28.08.15.
  */
-public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adapter<BeatElementAdapter.ListItemViewHolder> implements DividerItemDecoration.VisibilityProvider {
+public class BeatElementAdapter<T extends BeatElement> extends DragSelectRecyclerViewAdapter<BeatElementAdapter.ListItemViewHolder>
+        implements DividerItemDecoration.VisibilityProvider {
+
+    public interface TouchClickListener {
+        void onClick(int index);
+
+        void onLongClick(int index);
+    }
 
     private final Context mContext;
     private ArrayList<T> mBeatElements;
     private int mPlayingItem;
-    private Choreography<T> mChoregoraphy;
+    private Choreography<T> mChoreography;
 
     private SparseBooleanArray selectedItems = new SparseBooleanArray();
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public static class ListItemViewHolder extends RecyclerView.ViewHolder {
-        // Each data item is just a string in this case
-        public TextView mTextView;
+    private TouchClickListener mCallback;
 
-        public ListItemViewHolder(View textView) {
+    public static class ListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+
+        private final TouchClickListener mCallback;
+        public final TextView mTextView;
+
+        public ListItemViewHolder(View textView, TouchClickListener callback) {
             super(textView);
             mTextView = (TextView) textView.findViewById(R.id.tv_list_item);
+            mCallback = callback;
+
+            this.mTextView.setOnClickListener(this);
+            this.mTextView.setOnLongClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mCallback != null) {
+                mCallback.onClick(getAdapterPosition());
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (mCallback != null) {
+                mCallback.onLongClick(getAdapterPosition());
+            }
+            return true;
         }
     }
 
@@ -48,7 +76,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
 
         mContext = context;
         mBeatElements = elems;
-        mChoregoraphy = choreography;
+        mChoreography = choreography;
 
         mPlayingItem = 0;
     }
@@ -70,7 +98,10 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         }
     }
 
-    // Create new views (invoked by the layout manager)
+    public void setTouchClickListener(TouchClickListener clickListener) {
+        this.mCallback = clickListener;
+    }
+
     @Override
     public ListItemViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
 
@@ -78,7 +109,7 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_beat_element, parent, false);
 
         // Set the view's size, margins, paddings and layout parameters
-        final ListItemViewHolder listItemViewHolder = new ListItemViewHolder(itemView);
+        final ListItemViewHolder listItemViewHolder = new ListItemViewHolder(itemView, mCallback);
 
         // Ensure long clicks are enabled
         listItemViewHolder.mTextView.setLongClickable(true);
@@ -95,60 +126,30 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
             }
         });
 
-        // Create and attach on long click listener
-        /*listItemViewHolder.mTextView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-
-                Toast mToast = Toast.makeText(mContext, "", Toast.LENGTH_LONG);
-                mToast.setText("Item long clicked: " + listItemViewHolder.getAdapterPosition());
-                mToast.show();
-
-                BeatElement selBeatElem = mBeatElements.get(listItemViewHolder.getAdapterPosition());
-                DanceSequence<T> danceSequence = mChoregoraphy.getDanceSequence(selBeatElem.getDanceSequenceId());
-
-                if (danceSequence != null) {
-                    selectDanceSequence(danceSequence.getElementIndices());
-                }
-
-                return true;
-            }
-        });*/
-
         return listItemViewHolder;
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ListItemViewHolder viewHolder, int position) {
+        super.onBindViewHolder(viewHolder, position);
 
-        /*
-         * Get element from dataset at this position
-         * Replace the contents of the view with that element
-         * Populate the data into the template view using the data object
-         */
         viewHolder.mTextView.setText(mBeatElements.get(position).getMotionType().getTag());
 
-        /**
-         * It would be nice to perform all selected and active elements with 'selector' in a xml file.
-         *
-         * Each motion has its own background color which is set here. This background color
-         * overwrites all active or selected states set by the view holder.
-         *
-         * viewHolder.itemView.setSelected(true);
-         * viewHolder.itemView.setActivated(selectedItems.get(position, false));
-         */
-        // Stylize list item according to type
         viewHolder.itemView.setBackgroundColor(mBeatElements.get(position).getMotionType().getColor());
 
         // Set background color of current playing/(selected) item
         if (mPlayingItem == position) {
             viewHolder.itemView.setBackground(mContext.getDrawable(R.drawable.playing_item));
         }
-
         // Set background color of activate items, belonging to this dance sequence
         if (selectedItems.get(position, false)) {
             viewHolder.itemView.setBackground(mContext.getDrawable(R.drawable.activated_item));
+        }
+
+        if (isIndexSelected(position)) {
+            // Change item somehow
+        } else {
+            // Reset item
         }
     }
 
@@ -157,15 +158,11 @@ public class BeatElementAdapter<T extends BeatElement> extends RecyclerView.Adap
         return mBeatElements.size();
     }
 
-    public BeatElement getItem(int position) {
-        return mBeatElements.get(position);
-    }
-
     @Override
     public boolean shouldHideDivider(int position, RecyclerView parent) {
 
         BeatElement selBeatElem = mBeatElements.get(position);
-        DanceSequence<T> danceSequence = mChoregoraphy.getDanceSequence(selBeatElem.getDanceSequenceId());
+        DanceSequence<T> danceSequence = mChoreography.getDanceSequence(selBeatElem.getDanceSequenceId());
         boolean isMiddleElement = false;
 
         // Check if element at position, belongs to a middle part of a dance sequence

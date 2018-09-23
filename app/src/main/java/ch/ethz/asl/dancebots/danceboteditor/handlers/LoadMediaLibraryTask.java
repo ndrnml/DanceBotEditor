@@ -128,7 +128,8 @@ public class LoadMediaLibraryTask extends AsyncTask<SongListAdapter, Song, Integ
      */
     private boolean correctAudioFormat(String thisPath) {
         Decoder mpg123decoder = new MPG123Decoder();
-        return getMimeType(thisPath).equals("audio/mpeg") || mpg123decoder.checkAudioFormat(thisPath) == DanceBotError.NO_ERROR;
+        return mpg123decoder.checkAudioFormat(thisPath) == DanceBotError.NO_ERROR;
+        //return getMimeType(thisPath).equals("audio/mpeg") || mpg123decoder.checkAudioFormat(thisPath) == DanceBotError.NO_ERROR;
     }
 
     /**
