@@ -26,7 +26,7 @@ No motion or led elements are placed a the beginning.
 Start placing dance move elements by clicking on the corresponding beat.
 
 <img src="https://github.com/TheRiddance/DanceBotEditor/blob/master/demo_images/dancebot_editor_edit_motion.png" width="300" />
-Choose different predefined motions and led activations.
+Choose from various predefined motions and led activation.
 
 <img src="https://github.com/TheRiddance/DanceBotEditor/blob/master/demo_images/dancebot_editor_menu_list.png" width="300" />
 Save current project or load it to any connected dancebot.
