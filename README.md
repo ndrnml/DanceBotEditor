@@ -10,11 +10,11 @@ Checkout this website for more information: http://www.dancebots.ch/
 The mobile version of the Dancebot Editor will facilitate the creation of a choreography for dancebots.
 Since the app is not yet available on the Play Store a few screenshots will demonstrate the look and feel.
 
+##### Main Menu
 <img src="https://github.com/TheRiddance/DanceBotEditor/blob/master/demo_images/dancebot_editor_2_menu.png" width="300" />
-Main Menu
 
+##### Create new project and select a song
 <img src="https://github.com/TheRiddance/DanceBotEditor/blob/master/demo_images/dancebot_editor_3_songlist.png" width="300" />
-Create new project and select a song.
 
 <img src="https://github.com/TheRiddance/DanceBotEditor/blob/master/demo_images/dancebot_editor_4_load_song.png" width="300" />
 Selected song will be loaded and a beat extraction is performed.
