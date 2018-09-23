@@ -1,27 +1,20 @@
-# DanceBotEditor
+# Dancebot Editor
 
-App to create choreography music files for DanceBots.
+This is the Android version for the dancebot editor.
+It was developed in collaboration with the ASL (Autonomous Systems Lab) at ETH Zurich
+The app let's students create choreography of mp3 files for Dancebots they create in a workshop.
+Checkout this website for more information: http://www.dancebots.ch/
 
-## Synopsis
+## Demo
 
-This application is intended to work on any Android device that supports API 21 or later.
+The mobile version of the Dancebot Editor will facilitate the creation of a choreography for dancebots.
+Since the app is not yet available on the Play Store a few screenshots will demonstrate the look and feel.
 
-## Motivation
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
 
-This project was realized for educational purposes only in collaboration with the Autonomous Systems Lab (ASL) @ETH.
-
-## Installation
-
-The App should any time in future be downloadable @ Google Play Store.
-
-## API Reference
-
-Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
 
 ## Contributors
 
-Let people know how they can dive into the project, include important links to things like issue trackers, irc, twitter accounts if applicable.
+Andrin Jenal
 
-## License
-
-A short snippet describing the license (MIT, Apache, etc.)
+advised by Philipp Reist and Stefan Bertschi
