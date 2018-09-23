@@ -257,6 +257,7 @@ JNIEXPORT jlong JNICALL Java_de_mpg123_MPG123Decoder_checkFormat
 
             if (err == MPG123_OK) {
 
+                __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "Success: loaded file: %s", file_path);
                 return MPG123_OK;
 
             } else {

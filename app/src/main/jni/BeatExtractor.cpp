@@ -366,9 +366,11 @@ JNIEXPORT jint JNICALL Java_org_vamp_beatextraction_VampBeatExtractor_extract(
 JNIEXPORT jint JNICALL Java_org_vamp_beatextraction_VampBeatExtractor_cleanUp
         (JNIEnv *env, jobject self, jlong sound_file_handle)
 {
+    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "cleanUp(): sound_file_handle: %lld", sound_file_handle);
     if (sound_file_handle != 0)
     {
         SoundFile *sound_file = (SoundFile *)sound_file_handle;
+        __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "cleanUp(): hugo: %d", sound_file->channels);
         delete sound_file;
     }
     else
