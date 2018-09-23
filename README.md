@@ -10,8 +10,7 @@ Checkout this website for more information: http://www.dancebots.ch/
 The mobile version of the Dancebot Editor will facilitate the creation of a choreography for dancebots.
 Since the app is not yet available on the Play Store a few screenshots will demonstrate the look and feel.
 
-![](https://github.com/TheRiddance/DanceBotEditor/blob/master/demo_images/dancebot_editor_2_menu.png | width=200)
-
+<img src="https://github.com/TheRiddance/DanceBotEditor/blob/master/demo_images/dancebot_editor_2_menu.png", width="300" />
 
 ## Contributors
 
