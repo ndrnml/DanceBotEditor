@@ -30,7 +30,7 @@ android {
 
     /* TODO: THIS IS A WORKAROUND */
     task ndkBuild(type: Exec) {
-        commandLine '/home/andrin/Android/Ndk/ndk-build', '-C', file('src/main/jni').absolutePath
+        commandLine '/home/andrin/Android/Sdk/ndk-bundle/ndk-build', '-C', file('src/main/jni').absolutePath
         /*commandLine '/home/andrin/Android/Ndk/ndk-build', '-B', '-C', file('src/main/jni').absolutePath*/
     }
 
@@ -43,6 +43,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:recyclerview-v7:23.1.0'
-    //compile 'com.wefika:horizontal-picker:1.1.0'
+    compile 'com.afollestad:drag-select-recyclerview:0.3.6'
     testCompile 'junit:junit:4.12'
 }
