@@ -3,7 +3,7 @@
 This is the Android version for the dancebot editor.
 It was developed in collaboration with the ASL (Autonomous Systems Lab) at ETH Zurich
 The app let's students create choreography of mp3 files for Dancebots they create in a workshop.
-Checkout this website for more information: <a href="http://www.dancebots.ch/ target="_blank">http://www.dancebots.ch/</a>
+Checkout this website for more information: <a href="http://www.dancebots.ch/" target="_blank">http://www.dancebots.ch/</a>
 
 ## Demo
 
